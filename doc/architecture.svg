@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="360" viewBox="0 0 1160 360" font-family="Menlo, monospace">
+  <defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#38BDF8"/></marker></defs>
+  <rect width="1160" height="360" fill="#0B1220"/>
+  <text x="44" y="50" font-size="22" font-weight="bold" fill="#E2E8F0">How a workbook is written</text>
+  <rect x="44" y="90" width="250" height="150" rx="10" fill="#0E1A2E" stroke="#1E3A5F"/>
+  <text x="62" y="118" font-size="13" fill="#64748B">DART</text>
+  <text x="62" y="150" font-size="15" fill="#E2E8F0">Workbook / Worksheet</text>
+  <text x="62" y="176" font-size="13" fill="#94A3B8">writeString, writeNumber,</text>
+  <text x="62" y="196" font-size="13" fill="#94A3B8">Format, mergeRange, close()</text>
+  <text x="62" y="222" font-size="12.5" fill="#64748B">strings encoded as UTF-8</text>
+
+  <rect x="360" y="90" width="150" height="150" rx="10" fill="#0E1A2E" stroke="#1E3A5F" stroke-dasharray="5 4"/>
+  <text x="378" y="118" font-size="13" fill="#64748B">dart:ffi</text>
+  <text x="435" y="172" font-size="14" fill="#E2E8F0" text-anchor="middle" transform="rotate(-90 435 172)">C ABI shim</text>
+
+  <rect x="576" y="90" width="270" height="150" rx="10" fill="#0E1A2E" stroke="#38BDF8"/>
+  <text x="594" y="118" font-size="13" fill="#64748B">NATIVE (build hooks)</text>
+  <text x="594" y="150" font-size="15" fill="#E2E8F0">libxlsxwriter + zlib</text>
+  <text x="594" y="176" font-size="13" fill="#94A3B8">vendored, compiled from source,</text>
+  <text x="594" y="196" font-size="13" fill="#94A3B8">no prebuilt binaries to match</text>
+  <text x="594" y="222" font-size="12.5" fill="#64748B">constant-memory mode streams rows</text>
+
+  <rect x="912" y="90" width="204" height="150" rx="10" fill="#111C2E" stroke="#1E3A5F"/>
+  <text x="930" y="118" font-size="13" fill="#64748B">OUTPUT</text>
+  <text x="930" y="152" font-size="15" fill="#E2E8F0">report.xlsx</text>
+  <text x="930" y="178" font-size="13" fill="#94A3B8">a zipped OOXML</text>
+  <text x="930" y="198" font-size="13" fill="#94A3B8">workbook, Excel-ready</text>
+
+  <path d="M294 165 L360 165" stroke="#38BDF8" stroke-width="2" marker-end="url(#a)"/>
+  <path d="M510 165 L576 165" stroke="#38BDF8" stroke-width="2" marker-end="url(#a)"/>
+  <path d="M846 165 L912 165" stroke="#38BDF8" stroke-width="2" marker-end="url(#a)"/>
+  <text x="44" y="300" font-size="13" fill="#64748B">All native code is vendored and compiled at build time, so there is nothing to install beyond a C toolchain.</text>
+</svg>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="470" viewBox="0 0 1100 470" font-family="Menlo, monospace">
+  <rect width="1100" height="470" fill="#0B1220"/>
+  <text x="48" y="52" font-size="24" font-weight="bold" fill="#E2E8F0">Writing 100,000 rows x 10 columns</text>
+  <text x="48" y="80" font-size="14" fill="#94A3B8">Measured, one process each, Apple Silicon, Dart 3.11. Lower is better.</text>
+
+  <!-- Peak memory panel -->
+  <text x="48" y="128" font-size="15" fill="#E2E8F0">Peak memory (MiB)</text>
+  <!-- axis baseline -->
+  <g font-size="13">
+    <!-- excel 2025 -> full width scale: max 2025 -> 620px -->
+    <rect x="250" y="146" width="88" height="26" fill="#334155"/>
+    <text x="60" y="164" fill="#94A3B8">xlsxwriter const-mem</text><text x="346" y="164" fill="#E2E8F0">289</text>
+    <rect x="250" y="180" width="120" height="26" fill="#475569"/>
+    <text x="60" y="198" fill="#94A3B8">xlsxwriter default</text><text x="378" y="198" fill="#E2E8F0">391</text>
+    <rect x="250" y="214" width="620" height="26" fill="#38BDF8"/>
+    <text x="60" y="232" fill="#94A3B8">excel (pure Dart)</text><text x="878" y="232" fill="#38BDF8">2025</text>
+  </g>
+
+  <!-- Time panel -->
+  <text x="48" y="296" font-size="15" fill="#E2E8F0">Wall time (seconds)</text>
+  <g font-size="13">
+    <rect x="250" y="314" width="113" height="26" fill="#334155"/>
+    <text x="60" y="332" fill="#94A3B8">xlsxwriter const-mem</text><text x="371" y="332" fill="#E2E8F0">0.8</text>
+    <rect x="250" y="348" width="127" height="26" fill="#475569"/>
+    <text x="60" y="366" fill="#94A3B8">xlsxwriter default</text><text x="385" y="366" fill="#E2E8F0">0.9</text>
+    <rect x="250" y="382" width="620" height="26" fill="#38BDF8"/>
+    <text x="60" y="400" fill="#94A3B8">excel (pure Dart)</text><text x="878" y="400" fill="#38BDF8">4.4</text>
+  </g>
+  <text x="48" y="446" font-size="13" fill="#64748B">Constant-memory mode: 7x less memory and ~5x faster than the pure-Dart incumbent at this size.</text>
+</svg>
