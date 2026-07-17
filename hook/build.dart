@@ -105,6 +105,11 @@ void main(List<String> args) async {
         // Windows uses its own <io.h> path inside gzguts.h, so leave it unset
         // there.
         if (targetOS != OS.windows) 'HAVE_UNISTD_H': null,
+        // Under -std=c11 glibc sets __STRICT_ANSI__ and hides its POSIX
+        // extensions, so tmpfileplus loses fdopen, P_tmpdir and S_IFDIR.
+        // _GNU_SOURCE turns them back on. macOS headers expose them without
+        // it, and it is harmless there; Windows does not use this path.
+        if (targetOS != OS.windows) '_GNU_SOURCE': null,
         // Quiet MSVC's fopen/strcpy deprecation errors in zlib, minizip and
         // tmpfileplus, and keep <windows.h> from shadowing min/max.
         if (targetOS == OS.windows) '_CRT_SECURE_NO_WARNINGS': null,
