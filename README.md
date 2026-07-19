@@ -73,6 +73,28 @@ sheet.writeNumber(1, 0, 1999.5, money);
 Both integers and doubles go through `writeNumber`; Excel has a single numeric
 type.
 
+## Tables
+
+Wrap a written range in an Excel table to get banded rows, a filter dropdown on
+each column, and a name you can use in formulas, which is what most reports and
+exports want. Pass the column names; they are written into the header row for
+you.
+
+```dart
+sheet.writeString(1, 0, 'Widgets');
+sheet.writeNumber(1, 1, 1250);
+// ... more rows ...
+sheet.addTable(
+  0, 0, 3, 1, // A1:B4
+  name: 'Sales',
+  columns: ['Item', 'Amount'],
+);
+```
+
+`autofilter`, `bandedRows`, `bandedColumns` and `totalRow` toggle the matching
+table features. Excel writes the default `Column1`, `Column2`... names over the
+header cells when `columns` is omitted, so pass it whenever the header matters.
+
 ## Constant-memory mode for large sheets
 
 The default workbook holds everything in memory until `close()`. For very large

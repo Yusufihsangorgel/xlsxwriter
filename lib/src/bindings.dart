@@ -281,6 +281,45 @@ external void xlsxwFormatSetBorderColor(Pointer<Void> format, int color);
 @Native<Pointer<Utf8> Function(Int32)>(symbol: 'xlsxw_strerror')
 external Pointer<Utf8> xlsxwStrerror(int errorCode);
 
+/// Adds a formatted table over a cell range. The flags are booleans (0 or 1);
+/// [name] may be an empty string for an auto-generated table name. [headers]
+/// is an array of [numColumns] column-header C strings, or [nullptr] with
+/// [numColumns] 0 to use libxlsxwriter's default column names.
+@Native<
+  Int32 Function(
+    Pointer<Void>,
+    Uint32,
+    Uint32,
+    Uint32,
+    Uint32,
+    Pointer<Utf8>,
+    Pointer<Pointer<Utf8>>,
+    Int32,
+    Int32,
+    Int32,
+    Int32,
+    Int32,
+    Int32,
+    Int32,
+  )
+>(symbol: 'xlsxw_add_table')
+external int xlsxwAddTable(
+  Pointer<Void> worksheet,
+  int firstRow,
+  int firstCol,
+  int lastRow,
+  int lastCol,
+  Pointer<Utf8> name,
+  Pointer<Pointer<Utf8>> headers,
+  int numColumns,
+  int noHeaderRow,
+  int noAutofilter,
+  int noBandedRows,
+  int bandedColumns,
+  int totalRow,
+  int styleType,
+);
+
 /// Address of the native `xlsxw_workbook_free`, used by a [NativeFinalizer] to
 /// reclaim a workbook that was garbage-collected without [xlsxwClose]. It frees
 /// memory only and does not write the file.

@@ -234,4 +234,91 @@ class Worksheet {
     _validateCell(row, col);
     bindings.xlsxwFreezePanes(_handle, row, col);
   }
+
+  /// Adds a formatted table over the range from ([firstRow], [firstCol]) to
+  /// ([lastRow], [lastCol]).
+  ///
+  /// A table gives the range banded rows, a filter dropdown on each column, and
+  /// a name you can reference in formulas, which is the shape most "export to
+  /// Excel" output wants.
+  ///
+  /// [columns] names the table's columns, one per column in the range, and the
+  /// names are written into the header row for you. If it is null the columns
+  /// are named `Column1`, `Column2`, and so on; note that Excel writes those
+  /// default names over the header cells, so pass [columns] whenever the header
+  /// matters. Set [headerRow] to false to treat the whole range as data with no
+  /// header.
+  ///
+  /// [name] names the table; Excel requires the name to be unique in the
+  /// workbook and to start with a letter. Pass null for an auto-generated name.
+  /// [autofilter] toggles the per-column filter dropdowns, [bandedRows] and
+  /// [bandedColumns] the alternating stripes, and [totalRow] adds a totals row
+  /// at the bottom of the range.
+  ///
+  /// Throws an [ArgumentError] if [columns] is given but its length does not
+  /// match the number of columns in the range, a [RangeError] if a coordinate
+  /// is out of range, and an [XlsxWriterException] if the native call fails.
+  void addTable(
+    int firstRow,
+    int firstCol,
+    int lastRow,
+    int lastCol, {
+    String? name,
+    List<String>? columns,
+    bool headerRow = true,
+    bool autofilter = true,
+    bool bandedRows = true,
+    bool bandedColumns = false,
+    bool totalRow = false,
+  }) {
+    _workbook._ensureOpen();
+    _validateCell(firstRow, firstCol);
+    _validateCell(lastRow, lastCol);
+    final rangeColumns = lastCol - firstCol + 1;
+    if (columns != null && columns.length != rangeColumns) {
+      throw ArgumentError.value(
+        columns.length,
+        'columns',
+        'must have one name per column in the range ($rangeColumns)',
+      );
+    }
+
+    final cName = (name ?? '').toNativeUtf8();
+    final headerPtrs = columns == null
+        ? nullptr
+        : malloc.allocate<Pointer<Utf8>>(sizeOf<Pointer<Utf8>>() * columns.length);
+    try {
+      if (columns != null) {
+        for (var i = 0; i < columns.length; i++) {
+          headerPtrs[i] = columns[i].toNativeUtf8();
+        }
+      }
+      _check(
+        bindings.xlsxwAddTable(
+          _handle,
+          firstRow,
+          firstCol,
+          lastRow,
+          lastCol,
+          cName,
+          headerPtrs,
+          columns?.length ?? 0,
+          headerRow ? 0 : 1,
+          autofilter ? 0 : 1,
+          bandedRows ? 0 : 1,
+          bandedColumns ? 1 : 0,
+          totalRow ? 1 : 0,
+          0, // default built-in table style
+        ),
+      );
+    } finally {
+      if (columns != null) {
+        for (var i = 0; i < columns.length; i++) {
+          malloc.free(headerPtrs[i]);
+        }
+        malloc.free(headerPtrs);
+      }
+      malloc.free(cName);
+    }
+  }
 }

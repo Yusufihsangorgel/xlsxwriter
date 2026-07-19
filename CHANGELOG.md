@@ -1,3 +1,11 @@
+## 0.2.0
+
+- Add `Worksheet.addTable`, which wraps a cell range in an Excel table with
+  banded rows, per-column autofilter, and a name usable in formulas. Pass the
+  column names through `columns`; they are written into the header row. The
+  `autofilter`, `bandedRows`, `bandedColumns` and `totalRow` options toggle the
+  matching table features.
+
 # Changelog
 
 ## 0.1.1

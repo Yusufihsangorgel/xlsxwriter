@@ -96,6 +96,24 @@ XLSXW_EXPORT void xlsxw_format_set_border_color(void *format, int32_t color);
  * free. */
 XLSXW_EXPORT const char *xlsxw_strerror(int32_t error_code);
 
+/* Adds a formatted table over the cell range [first_row, first_col] to
+ * [last_row, last_col]. `name` is the table name (may be NULL for an auto
+ * name). `headers` is an array of `num_columns` column-header strings, written
+ * into the header row and used as the table's column names; pass NULL (with
+ * num_columns 0) to accept libxlsxwriter's default "Column1", "Column2"...
+ * The remaining flags are booleans (0 or 1) that map to the matching
+ * lxw_table_options fields; style_type selects a built-in table style (0 for
+ * the default). Returns 0 on success. */
+XLSXW_EXPORT int32_t xlsxw_add_table(void *worksheet, uint32_t first_row,
+                                     uint32_t first_col, uint32_t last_row,
+                                     uint32_t last_col, const char *name,
+                                     const char *const *headers,
+                                     int32_t num_columns, int32_t no_header_row,
+                                     int32_t no_autofilter,
+                                     int32_t no_banded_rows,
+                                     int32_t banded_columns, int32_t total_row,
+                                     int32_t style_type);
+
 #ifdef __cplusplus
 }
 #endif

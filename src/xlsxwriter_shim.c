@@ -8,6 +8,8 @@
  */
 #include "xlsxwriter_shim.h"
 
+#include <stdlib.h>
+
 #include "xlsxwriter.h"
 
 void *xlsxw_workbook_new(const char *filename) {
@@ -171,4 +173,54 @@ void xlsxw_format_set_border_color(void *format, int32_t color) {
 
 const char *xlsxw_strerror(int32_t error_code) {
   return lxw_strerror((lxw_error)error_code);
+}
+
+int32_t xlsxw_add_table(void *worksheet, uint32_t first_row, uint32_t first_col,
+                        uint32_t last_row, uint32_t last_col, const char *name,
+                        const char *const *headers, int32_t num_columns,
+                        int32_t no_header_row, int32_t no_autofilter,
+                        int32_t no_banded_rows, int32_t banded_columns,
+                        int32_t total_row, int32_t style_type) {
+  lxw_table_options options = {0};
+  if (name != NULL && name[0] != '\0') {
+    options.name = (char *)name;
+  }
+  options.no_header_row = (uint8_t)no_header_row;
+  options.no_autofilter = (uint8_t)no_autofilter;
+  options.no_banded_rows = (uint8_t)no_banded_rows;
+  options.banded_columns = (uint8_t)banded_columns;
+  options.total_row = (uint8_t)total_row;
+  options.style_type = (uint8_t)style_type;
+
+  // libxlsxwriter names columns from the options, not from any header cells
+  // already written, and defaults to "Column1", "Column2", ... So when the
+  // caller supplies header names, build the NULL-terminated columns array it
+  // expects. libxlsxwriter copies each header, so these locals are enough.
+  lxw_table_column *column_structs = NULL;
+  lxw_table_column **column_ptrs = NULL;
+  if (headers != NULL && num_columns > 0) {
+    column_structs =
+        (lxw_table_column *)calloc((size_t)num_columns, sizeof(*column_structs));
+    column_ptrs = (lxw_table_column **)calloc((size_t)num_columns + 1,
+                                              sizeof(*column_ptrs));
+    if (column_structs == NULL || column_ptrs == NULL) {
+      free(column_structs);
+      free(column_ptrs);
+      return (int32_t)LXW_ERROR_MEMORY_MALLOC_FAILED;
+    }
+    for (int32_t i = 0; i < num_columns; i++) {
+      column_structs[i].header = (char *)headers[i];
+      column_ptrs[i] = &column_structs[i];
+    }
+    column_ptrs[num_columns] = NULL;  // terminates the array
+    options.columns = column_ptrs;
+  }
+
+  int32_t result = (int32_t)worksheet_add_table(
+      (lxw_worksheet *)worksheet, (lxw_row_t)first_row, (lxw_col_t)first_col,
+      (lxw_row_t)last_row, (lxw_col_t)last_col, &options);
+
+  free(column_structs);
+  free(column_ptrs);
+  return result;
 }
