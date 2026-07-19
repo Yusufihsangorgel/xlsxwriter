@@ -1,4 +1,6 @@
 import 'dart:ffi';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 
@@ -45,6 +47,43 @@ class Workbook implements Finalizable {
   /// previous row is on disk and can no longer be modified. Data written out
   /// of order is silently dropped by libxlsxwriter.
   Workbook.constantMemory(String path) : this._(path, constantMemory: true);
+
+  /// Builds a workbook and returns its `.xlsx` bytes, leaving no file behind.
+  ///
+  /// Populate the workbook inside [build] exactly as you would one opened with
+  /// [Workbook]; this closes it for you and hands back the bytes. It is the path
+  /// for serving a generated spreadsheet straight from a request handler,
+  /// without a scratch file to name and clean up. Pass [constantMemory] to build
+  /// a large sheet with flat memory (see [Workbook.constantMemory] for the
+  /// ordering trade-off).
+  ///
+  /// ```dart
+  /// final bytes = Workbook.toBytes((workbook) {
+  ///   final sheet = workbook.addWorksheet('Summary');
+  ///   sheet.writeString(0, 0, 'Item');
+  ///   sheet.writeNumber(0, 1, 42);
+  /// });
+  /// // return Response.ok(bytes, headers: {'content-type': xlsxMimeType});
+  /// ```
+  ///
+  /// libxlsxwriter writes to a file, so this stages the workbook in a temporary
+  /// file and reads it back; the file is always removed before returning.
+  static Uint8List toBytes(
+    void Function(Workbook workbook) build, {
+    bool constantMemory = false,
+  }) {
+    final dir = Directory.systemTemp.createTempSync('xlsxwriter');
+    final path = '${dir.path}${Platform.pathSeparator}workbook.xlsx';
+    try {
+      final workbook =
+          constantMemory ? Workbook.constantMemory(path) : Workbook(path);
+      build(workbook);
+      workbook.close();
+      return File(path).readAsBytesSync();
+    } finally {
+      dir.deleteSync(recursive: true);
+    }
+  }
 
   Workbook._(String path, {required bool constantMemory}) {
     final cPath = path.toNativeUtf8();

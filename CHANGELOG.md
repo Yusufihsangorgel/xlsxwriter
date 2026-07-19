@@ -1,3 +1,10 @@
+## 0.3.0
+
+- Add `Workbook.toBytes`: build a workbook and get its `.xlsx` bytes back with no
+  file left on disk, for serving a generated spreadsheet straight from a request
+  handler. It stages a temporary file, reads it back, and removes it. Supports
+  constant-memory mode via `constantMemory: true`.
+
 ## 0.2.0
 
 - Add `Worksheet.addTable`, which wraps a cell range in an Excel table with

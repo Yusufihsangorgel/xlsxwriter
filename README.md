@@ -116,6 +116,30 @@ The trade-off is ordering: cells must be written top-to-bottom, and left-to-righ
 within a row. Once you start a new row the previous one is on disk and can no
 longer be changed. Data written out of order is dropped.
 
+## Bytes for a server response
+
+To serve a generated spreadsheet straight from a request handler, without naming
+and cleaning up a scratch file, use `Workbook.toBytes`. You build the workbook the
+same way; it stages a temporary file, reads it back, and removes it for you:
+
+```dart
+final bytes = Workbook.toBytes((workbook) {
+  final sheet = workbook.addWorksheet('Summary');
+  sheet.writeString(0, 0, 'Item');
+  sheet.writeNumber(0, 1, 42);
+});
+
+// e.g. with shelf:
+// return Response.ok(bytes, headers: {
+//   'content-type':
+//       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+//   'content-disposition': 'attachment; filename="report.xlsx"',
+// });
+```
+
+Pass `constantMemory: true` to build a large sheet with flat memory, with the same
+top-to-bottom ordering rule as above.
+
 ## Benchmark
 
 Write-only, 100,000 rows by 10 columns (one text column, nine numeric), each
