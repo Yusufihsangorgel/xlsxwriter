@@ -1,3 +1,14 @@
+## 0.4.4
+
+- Benchmark against `excel_community`, not just `excel`. The chart and the table
+  compared only against `excel`, which has had no release since August 2024, and
+  claimed "about five times faster". Against the maintained fork the honest
+  figures are 3.2x less memory and 1.7x faster: memory is the real argument and
+  throughput is close enough that it should not decide anything. All four
+  numbers re-measured in one sitting on one machine.
+- Say so in the README, and point readers who need to *read* spreadsheets at
+  `excel_community` rather than the unmaintained `excel`.
+
 ## 0.4.3
 
 - Widen the native-toolchain constraints so the package can be installed in a

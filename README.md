@@ -7,7 +7,8 @@ binding to [libxlsxwriter](https://github.com/jmcnamara/libxlsxwriter) by John
 McNamara, a mature C library, compiled from vendored source at build time.
 
 This package writes spreadsheets. It does not read them. If you need to read or
-edit existing files, use [`excel`](https://pub.dev/packages/excel) or
+edit existing files, use [`excel_community`](https://pub.dev/packages/excel_community)
+(the maintained fork of `excel`) or
 [`spreadsheet_decoder`](https://pub.dev/packages/spreadsheet_decoder). The niche
 here is the export and report-generation path: turning rows of data into an
 `.xlsx` quickly and with low memory, including a constant-memory mode for sheets
@@ -179,17 +180,26 @@ engine measured in its own process for an isolated peak-memory reading.
 Single machine (Apple Silicon, Dart 3.11), so treat these as indicative, not a
 spec:
 
-![Benchmark: xlsxwriter vs excel at 100k rows](doc/benchmark.png)
+![Benchmark: xlsxwriter against excel_community and excel at 100k rows](doc/benchmark.png)
 
 | engine                          |   time | peak memory |
 | ------------------------------- | -----: | ----------: |
-| `xlsxwriter` (default)          |  0.9 s |      391 MiB |
-| `xlsxwriter` (constant memory)  |  0.8 s |      289 MiB |
-| `excel` (pure Dart)             |  4.4 s |     2025 MiB |
+| `xlsxwriter` (constant memory)  | 0.87 s |      191 MiB |
+| `xlsxwriter` (default)          | 1.29 s |      314 MiB |
+| `excel_community` 2.2.0         | 1.47 s |      614 MiB |
+| `excel` 4.0.6                   | 4.63 s |     1778 MiB |
 
-At this size `xlsxwriter` writes the file about five times faster than `excel`
-and uses a fraction of the memory. The gap in memory widens as rows grow: the
-constant-memory mode stays roughly flat while an in-memory writer keeps climbing.
+Compare against `excel_community`, not `excel`. `excel` has had no release since
+August 2024, so beating it by 5x is not the interesting number; the maintained
+fork is what you would otherwise use, and against that the honest figures are
+**3.2x less memory and 1.7x faster**. Memory is the real argument here and it
+widens as rows grow, because constant-memory mode stays roughly flat while an
+in-memory writer keeps climbing. On throughput alone the fork is close enough
+that it should not decide anything.
+
+One caveat in the competitors' favour: the two pure-Dart runs wrote plain values
+with no number formats or dates, so they did slightly less work than the
+`xlsxwriter` run they are compared against.
 Reproduce with `dart run bench/bench.dart` (this package) and see `bench/bench.dart`
 for the workload. Numbers vary by machine and Dart version; do not treat them as
 guaranteed.
