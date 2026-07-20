@@ -2,7 +2,7 @@ name: xlsxwriter
 description: >-
   Native, fast, low-memory Excel .xlsx writer for Dart. An FFI binding to
   libxlsxwriter with a constant-memory mode for large sheets.
-version: 0.4.1
+version: 0.4.2
 repository: https://github.com/Yusufihsangorgel/xlsxwriter
 
 topics:
@@ -14,9 +14,8 @@ topics:
 
 screenshots:
   - description: >-
-      Peak memory and wall time writing 100,000 rows by 10 columns.
-      Constant-memory mode holds 289 MiB against the pure-Dart incumbent's 2025,
-      and finishes in 0.8 s against 4.4.
+      Writing 100,000 rows by 10 columns: constant-memory mode holds 289 MiB aga
+      inst the pure-Dart incumbent's 2025, and takes 0.8 s against 4.4.
     path: doc/benchmark.png
 
 environment:
