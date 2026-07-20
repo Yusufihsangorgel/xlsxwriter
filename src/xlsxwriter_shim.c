@@ -273,3 +273,19 @@ int32_t xlsxw_insert_chart(void *worksheet, uint32_t row, uint32_t col,
                                              (lxw_col_t)col, (lxw_chart *)chart,
                                              &options);
 }
+
+/* Inserts an image from an in-memory buffer at the given cell, scaled and
+ * offset. libxlsxwriter copies the buffer, so the Dart side can free it once
+ * this returns. `data` and `len` are the encoded PNG/JPEG bytes. */
+int32_t xlsxw_insert_image_buffer(void *worksheet, uint32_t row, uint32_t col,
+                                  const unsigned char *data, size_t len,
+                                  double x_scale, double y_scale,
+                                  int32_t x_offset, int32_t y_offset) {
+  lxw_image_options options = {0};
+  options.x_scale = x_scale;
+  options.y_scale = y_scale;
+  options.x_offset = x_offset;
+  options.y_offset = y_offset;
+  return (int32_t)worksheet_insert_image_buffer_opt(
+      (lxw_worksheet *)worksheet, row, (lxw_col_t)col, data, len, &options);
+}

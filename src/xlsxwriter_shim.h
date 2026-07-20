@@ -21,6 +21,7 @@
 #ifndef XLSXWRITER_SHIM_H
 #define XLSXWRITER_SHIM_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 #if defined(_WIN32)
@@ -145,6 +146,11 @@ XLSXW_EXPORT void xlsxw_chart_axis_set_name(void *chart, int32_t axis,
 XLSXW_EXPORT int32_t xlsxw_insert_chart(void *worksheet, uint32_t row,
                                         uint32_t col, void *chart,
                                         double x_scale, double y_scale);
+
+XLSXW_EXPORT int32_t xlsxw_insert_image_buffer(
+    void *worksheet, uint32_t row, uint32_t col, const unsigned char *data,
+    size_t len, double x_scale, double y_scale, int32_t x_offset,
+    int32_t y_offset);
 
 #ifdef __cplusplus
 }

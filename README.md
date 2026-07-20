@@ -145,6 +145,21 @@ and `radar`. A chart can plot several series (call `addSeries` more than once)
 and read data from any sheet in the workbook, since the ranges name their sheet.
 Scale it with `insertChart(row, col, chart, xScale: 2.0, yScale: 1.5)`.
 
+## Images
+
+`insertImage` places a PNG, JPEG, GIF or BMP at a cell, straight from bytes in
+memory, which is the shape a logo or a rendered chart already has, so no
+temporary file is needed:
+
+```dart
+sheet.insertImage(0, 0, File('logo.png').readAsBytesSync());
+sheet.insertImage(4, 2, chartPng, xScale: 0.5, yScale: 0.5, yOffset: 4);
+```
+
+`xScale`/`yScale` resize it (1.0 is native size) and `xOffset`/`yOffset` nudge it
+within the cell in pixels. Bytes that are not an image libxlsxwriter recognises
+throw an `XlsxWriterException`.
+
 ## Constant-memory mode for large sheets
 
 The default workbook holds everything in memory until `close()`. For very large

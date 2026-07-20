@@ -1,3 +1,13 @@
+## 0.6.0
+
+- `Worksheet.insertImage(row, col, bytes, {xScale, yScale, xOffset, yOffset})`
+  places a PNG, JPEG, GIF or BMP at a cell from bytes in memory, the shape a
+  logo or a rendered chart already has, so no temporary file is needed. Backed
+  by libxlsxwriter's `worksheet_insert_image_buffer_opt` through a new shim
+  entry point. Empty bytes are an `ArgumentError`; bytes that are not a
+  recognised image are an `XlsxWriterException`. Verified by embedding a real
+  PNG and confirming the file carries an `xl/media/` part and a drawing.
+
 ## 0.5.0
 
 - `Worksheet.writeRow(row, values, {startCol, format, dateFormat})` writes a

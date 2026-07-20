@@ -372,6 +372,26 @@ external int xlsxwInsertChart(
   double yScale,
 );
 
+/// Inserts an image, decoded from the PNG/JPEG bytes at [data] of length [len],
+/// into [worksheet] at [row], [col], scaled by [xScale]/[yScale] and offset by
+/// [xOffset]/[yOffset] pixels. libxlsxwriter copies the buffer, so the caller
+/// frees it after this returns. Returns 0 on success.
+@Native<
+  Int32 Function(Pointer<Void>, Uint32, Uint32, Pointer<Uint8>, Size, Double,
+      Double, Int32, Int32)
+>(symbol: 'xlsxw_insert_image_buffer')
+external int xlsxwInsertImageBuffer(
+  Pointer<Void> worksheet,
+  int row,
+  int col,
+  Pointer<Uint8> data,
+  int len,
+  double xScale,
+  double yScale,
+  int xOffset,
+  int yOffset,
+);
+
 /// Address of the native `xlsxw_workbook_free`, used by a [NativeFinalizer] to
 /// reclaim a workbook that was garbage-collected without [xlsxwClose]. It frees
 /// memory only and does not write the file.

@@ -400,4 +400,52 @@ class Worksheet {
       bindings.xlsxwInsertChart(_handle, row, col, chart._handle, xScale, yScale),
     );
   }
+
+  /// Inserts the image in [bytes] at the cell [row], [col].
+  ///
+  /// [bytes] are an encoded PNG, JPEG, GIF or BMP, the formats libxlsxwriter
+  /// accepts, the same shape a logo or a chart export already has in memory, so
+  /// no temporary file is needed. [xScale]/[yScale] resize it (1.0 is native
+  /// size) and [xOffset]/[yOffset] nudge it within the cell in pixels.
+  ///
+  /// Throws an [XlsxWriterException] if libxlsxwriter cannot read the image
+  /// (for example the bytes are not a format it recognises).
+  ///
+  /// ```dart
+  /// sheet.insertImage(0, 0, File('logo.png').readAsBytesSync());
+  /// ```
+  void insertImage(
+    int row,
+    int col,
+    Uint8List bytes, {
+    double xScale = 1.0,
+    double yScale = 1.0,
+    int xOffset = 0,
+    int yOffset = 0,
+  }) {
+    _workbook._ensureOpen();
+    _validateCell(row, col);
+    if (bytes.isEmpty) {
+      throw ArgumentError.value(bytes, 'bytes', 'image data must not be empty');
+    }
+    final buffer = malloc<Uint8>(bytes.length);
+    try {
+      buffer.asTypedList(bytes.length).setAll(0, bytes);
+      _check(
+        bindings.xlsxwInsertImageBuffer(
+          _handle,
+          row,
+          col,
+          buffer,
+          bytes.length,
+          xScale,
+          yScale,
+          xOffset,
+          yOffset,
+        ),
+      );
+    } finally {
+      malloc.free(buffer);
+    }
+  }
 }
