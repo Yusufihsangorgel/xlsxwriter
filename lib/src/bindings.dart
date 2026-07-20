@@ -392,6 +392,47 @@ external int xlsxwInsertImageBuffer(
   int yOffset,
 );
 
+/// A cell conditional rule over a range: apply [format] where the value meets
+/// [criteria] (0 gt, 1 lt, 2 eq, 3 ne, 4 ge, 5 le) against [value].
+@Native<
+  Int32 Function(Pointer<Void>, Uint32, Uint32, Uint32, Uint32, Int32, Double,
+      Pointer<Void>)
+>(symbol: 'xlsxw_conditional_cell')
+external int xlsxwConditionalCell(Pointer<Void> worksheet, int r1, int c1,
+    int r2, int c2, int criteria, double value, Pointer<Void> format);
+
+/// A cell rule applying [format] where the value is between [minValue] and
+/// [maxValue].
+@Native<
+  Int32 Function(Pointer<Void>, Uint32, Uint32, Uint32, Uint32, Double, Double,
+      Pointer<Void>)
+>(symbol: 'xlsxw_conditional_cell_between')
+external int xlsxwConditionalCellBetween(Pointer<Void> worksheet, int r1,
+    int c1, int r2, int c2, double minValue, double maxValue,
+    Pointer<Void> format);
+
+/// A two-colour scale over a range (0xRRGGBB colours).
+@Native<Int32 Function(Pointer<Void>, Uint32, Uint32, Uint32, Uint32, Uint32, Uint32)>(
+  symbol: 'xlsxw_conditional_2color',
+)
+external int xlsxwConditional2Color(Pointer<Void> worksheet, int r1, int c1,
+    int r2, int c2, int minColor, int maxColor);
+
+/// A three-colour scale over a range (0xRRGGBB colours).
+@Native<
+  Int32 Function(
+      Pointer<Void>, Uint32, Uint32, Uint32, Uint32, Uint32, Uint32, Uint32)
+>(symbol: 'xlsxw_conditional_3color')
+external int xlsxwConditional3Color(Pointer<Void> worksheet, int r1, int c1,
+    int r2, int c2, int minColor, int midColor, int maxColor);
+
+/// An in-cell data bar over a range (0xRRGGBB bar colour).
+@Native<Int32 Function(Pointer<Void>, Uint32, Uint32, Uint32, Uint32, Uint32)>(
+  symbol: 'xlsxw_conditional_data_bar',
+)
+external int xlsxwConditionalDataBar(
+    Pointer<Void> worksheet, int r1, int c1, int r2, int c2, int barColor);
+
 /// Address of the native `xlsxw_workbook_free`, used by a [NativeFinalizer] to
 /// reclaim a workbook that was garbage-collected without [xlsxwClose]. It frees
 /// memory only and does not write the file.

@@ -169,3 +169,30 @@ enum ChartType {
   /// The shim chart-type code passed across the FFI boundary.
   final int value;
 }
+
+/// The comparison a [Worksheet.conditionalCell] rule applies to each cell's
+/// value.
+enum ConditionalCriteria {
+  /// The cell value is greater than the rule's value.
+  greaterThan(0),
+
+  /// The cell value is less than the rule's value.
+  lessThan(1),
+
+  /// The cell value equals the rule's value.
+  equalTo(2),
+
+  /// The cell value does not equal the rule's value.
+  notEqualTo(3),
+
+  /// The cell value is greater than or equal to the rule's value.
+  greaterThanOrEqualTo(4),
+
+  /// The cell value is less than or equal to the rule's value.
+  lessThanOrEqualTo(5);
+
+  const ConditionalCriteria(this.value);
+
+  /// The shim criteria code passed across the FFI boundary.
+  final int value;
+}

@@ -152,6 +152,28 @@ XLSXW_EXPORT int32_t xlsxw_insert_image_buffer(
     size_t len, double x_scale, double y_scale, int32_t x_offset,
     int32_t y_offset);
 
+XLSXW_EXPORT int32_t xlsxw_conditional_cell(void *worksheet, uint32_t r1,
+                                            uint32_t c1, uint32_t r2,
+                                            uint32_t c2, int32_t criteria,
+                                            double value, void *format);
+
+XLSXW_EXPORT int32_t xlsxw_conditional_cell_between(
+    void *worksheet, uint32_t r1, uint32_t c1, uint32_t r2, uint32_t c2,
+    double min_value, double max_value, void *format);
+
+XLSXW_EXPORT int32_t xlsxw_conditional_2color(void *worksheet, uint32_t r1,
+                                              uint32_t c1, uint32_t r2,
+                                              uint32_t c2, uint32_t min_color,
+                                              uint32_t max_color);
+
+XLSXW_EXPORT int32_t xlsxw_conditional_3color(
+    void *worksheet, uint32_t r1, uint32_t c1, uint32_t r2, uint32_t c2,
+    uint32_t min_color, uint32_t mid_color, uint32_t max_color);
+
+XLSXW_EXPORT int32_t xlsxw_conditional_data_bar(void *worksheet, uint32_t r1,
+                                                uint32_t c1, uint32_t r2,
+                                                uint32_t c2, uint32_t bar_color);
+
 #ifdef __cplusplus
 }
 #endif

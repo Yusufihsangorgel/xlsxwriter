@@ -289,3 +289,82 @@ int32_t xlsxw_insert_image_buffer(void *worksheet, uint32_t row, uint32_t col,
   return (int32_t)worksheet_insert_image_buffer_opt(
       (lxw_worksheet *)worksheet, row, (lxw_col_t)col, data, len, &options);
 }
+
+/* Maps a small Dart-side criteria code to the LXW enum, so the Dart side never
+ * depends on the LXW_CONDITIONAL_CRITERIA_* integer values. */
+static uint8_t xlsxw__criteria(int32_t code) {
+  switch (code) {
+    case 0: return LXW_CONDITIONAL_CRITERIA_GREATER_THAN;
+    case 1: return LXW_CONDITIONAL_CRITERIA_LESS_THAN;
+    case 2: return LXW_CONDITIONAL_CRITERIA_EQUAL_TO;
+    case 3: return LXW_CONDITIONAL_CRITERIA_NOT_EQUAL_TO;
+    case 4: return LXW_CONDITIONAL_CRITERIA_GREATER_THAN_OR_EQUAL_TO;
+    case 5: return LXW_CONDITIONAL_CRITERIA_LESS_THAN_OR_EQUAL_TO;
+    default: return LXW_CONDITIONAL_CRITERIA_GREATER_THAN;
+  }
+}
+
+/* A cell conditional rule over a range: highlight with `format` the cells whose
+ * value meets `criteria` against `value`. */
+int32_t xlsxw_conditional_cell(void *worksheet, uint32_t r1, uint32_t c1,
+                               uint32_t r2, uint32_t c2, int32_t criteria,
+                               double value, void *format) {
+  lxw_conditional_format cf = {0};
+  cf.type = LXW_CONDITIONAL_TYPE_CELL;
+  cf.criteria = xlsxw__criteria(criteria);
+  cf.value = value;
+  cf.format = (lxw_format *)format;
+  return (int32_t)worksheet_conditional_format_range(
+      (lxw_worksheet *)worksheet, r1, (lxw_col_t)c1, r2, (lxw_col_t)c2, &cf);
+}
+
+/* A cell rule that highlights values between `min_value` and `max_value`. */
+int32_t xlsxw_conditional_cell_between(void *worksheet, uint32_t r1, uint32_t c1,
+                                       uint32_t r2, uint32_t c2,
+                                       double min_value, double max_value,
+                                       void *format) {
+  lxw_conditional_format cf = {0};
+  cf.type = LXW_CONDITIONAL_TYPE_CELL;
+  cf.criteria = LXW_CONDITIONAL_CRITERIA_BETWEEN;
+  cf.min_value = min_value;
+  cf.max_value = max_value;
+  cf.format = (lxw_format *)format;
+  return (int32_t)worksheet_conditional_format_range(
+      (lxw_worksheet *)worksheet, r1, (lxw_col_t)c1, r2, (lxw_col_t)c2, &cf);
+}
+
+/* A two-colour scale across the range (0xRRGGBB colours). */
+int32_t xlsxw_conditional_2color(void *worksheet, uint32_t r1, uint32_t c1,
+                                 uint32_t r2, uint32_t c2, uint32_t min_color,
+                                 uint32_t max_color) {
+  lxw_conditional_format cf = {0};
+  cf.type = LXW_CONDITIONAL_2_COLOR_SCALE;
+  cf.min_color = (lxw_color_t)min_color;
+  cf.max_color = (lxw_color_t)max_color;
+  return (int32_t)worksheet_conditional_format_range(
+      (lxw_worksheet *)worksheet, r1, (lxw_col_t)c1, r2, (lxw_col_t)c2, &cf);
+}
+
+/* A three-colour scale across the range (0xRRGGBB colours). */
+int32_t xlsxw_conditional_3color(void *worksheet, uint32_t r1, uint32_t c1,
+                                 uint32_t r2, uint32_t c2, uint32_t min_color,
+                                 uint32_t mid_color, uint32_t max_color) {
+  lxw_conditional_format cf = {0};
+  cf.type = LXW_CONDITIONAL_3_COLOR_SCALE;
+  cf.min_color = (lxw_color_t)min_color;
+  cf.mid_color = (lxw_color_t)mid_color;
+  cf.max_color = (lxw_color_t)max_color;
+  return (int32_t)worksheet_conditional_format_range(
+      (lxw_worksheet *)worksheet, r1, (lxw_col_t)c1, r2, (lxw_col_t)c2, &cf);
+}
+
+/* An in-cell data bar across the range (0xRRGGBB bar colour). */
+int32_t xlsxw_conditional_data_bar(void *worksheet, uint32_t r1, uint32_t c1,
+                                   uint32_t r2, uint32_t c2,
+                                   uint32_t bar_color) {
+  lxw_conditional_format cf = {0};
+  cf.type = LXW_CONDITIONAL_DATA_BAR;
+  cf.bar_color = (lxw_color_t)bar_color;
+  return (int32_t)worksheet_conditional_format_range(
+      (lxw_worksheet *)worksheet, r1, (lxw_col_t)c1, r2, (lxw_col_t)c2, &cf);
+}

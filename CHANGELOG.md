@@ -1,3 +1,16 @@
+## 0.7.0
+
+- Conditional formatting: the report and dashboard set. `conditionalCell` and
+  `conditionalCellBetween` highlight cells in a range by comparison (the
+  `ConditionalCriteria` values, or a min/max between) with a `Format`;
+  `conditionalColorScale` paints a 2- or 3-colour heatmap; `conditionalDataBar`
+  draws in-cell bars proportional to each value. Backed by libxlsxwriter's
+  `worksheet_conditional_format_range` through focused shim entry points, one
+  per mode, so the fat `lxw_conditional_format` struct does not cross the flat
+  ABI. Verified by writing each rule and reading the `conditionalFormatting`
+  block back out of the sheet XML: `cellIs`/`greaterThan`, `between`,
+  `colorScale` (2- and 3-colour), and `dataBar`.
+
 ## 0.6.0
 
 - `Worksheet.insertImage(row, col, bytes, {xScale, yScale, xOffset, yOffset})`

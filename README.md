@@ -160,6 +160,30 @@ sheet.insertImage(4, 2, chartPng, xScale: 0.5, yScale: 0.5, yOffset: 4);
 within the cell in pixels. Bytes that are not an image libxlsxwriter recognises
 throw an `XlsxWriterException`.
 
+## Conditional formatting
+
+The report and dashboard set: highlight cells by value, and colour a range as a
+heatmap or a data bar.
+
+```dart
+// Highlight amounts over 1000 in red.
+final red = workbook.addFormat().backgroundColor(0xFFC7CE);
+sheet.conditionalCell(1, 1, 99, 1,
+    criteria: ConditionalCriteria.greaterThan, value: 1000, format: red);
+
+// A green-to-red heatmap down a column (pass midColor for a 3-colour scale).
+sheet.conditionalColorScale(1, 2, 99, 2,
+    minColor: 0x63BE7B, maxColor: 0xF8696B);
+
+// In-cell data bars proportional to each value.
+sheet.conditionalDataBar(1, 3, 99, 3, barColor: 0x638EC6);
+```
+
+Each takes the range as `(firstRow, firstCol, lastRow, lastCol)`. `conditionalCell`
+covers the comparisons in `ConditionalCriteria` (greater than, less than, equal,
+and so on); `conditionalCellBetween` takes a `min` and `max`. Colours are
+`0xRRGGBB`, the same as `Format`.
+
 ## Constant-memory mode for large sheets
 
 The default workbook holds everything in memory until `close()`. For very large

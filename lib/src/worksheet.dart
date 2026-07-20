@@ -448,4 +448,97 @@ class Worksheet {
       malloc.free(buffer);
     }
   }
+
+  /// Applies [format] to the cells in the range that meet [criteria] against
+  /// [value].
+  ///
+  /// The classic conditional rule: highlight the cells in `B2:B100` that are
+  /// above a threshold. The range runs from ([firstRow], [firstCol]) to
+  /// ([lastRow], [lastCol]) inclusive, and [format] is the highlight (a fill or
+  /// font colour) applied where the rule matches.
+  ///
+  /// ```dart
+  /// final red = workbook.addFormat().backgroundColor(0xFFC7CE);
+  /// sheet.conditionalCell(1, 1, 99, 1,
+  ///     criteria: ConditionalCriteria.greaterThan, value: 1000, format: red);
+  /// ```
+  void conditionalCell(
+    int firstRow,
+    int firstCol,
+    int lastRow,
+    int lastCol, {
+    required ConditionalCriteria criteria,
+    required num value,
+    required Format format,
+  }) {
+    _workbook._ensureOpen();
+    _validateCell(firstRow, firstCol);
+    _validateCell(lastRow, lastCol);
+    _check(
+      bindings.xlsxwConditionalCell(_handle, firstRow, firstCol, lastRow,
+          lastCol, criteria.value, value.toDouble(), format._handle),
+    );
+  }
+
+  /// Applies [format] to the cells in the range whose value is between [min]
+  /// and [max] inclusive. See [conditionalCell] for the range and format.
+  void conditionalCellBetween(
+    int firstRow,
+    int firstCol,
+    int lastRow,
+    int lastCol, {
+    required num min,
+    required num max,
+    required Format format,
+  }) {
+    _workbook._ensureOpen();
+    _validateCell(firstRow, firstCol);
+    _validateCell(lastRow, lastCol);
+    _check(
+      bindings.xlsxwConditionalCellBetween(_handle, firstRow, firstCol, lastRow,
+          lastCol, min.toDouble(), max.toDouble(), format._handle),
+    );
+  }
+
+  /// Colours the range as a two-colour scale, a heatmap from [minColor] at the
+  /// lowest value to [maxColor] at the highest. Colours are `0xRRGGBB`.
+  void conditionalColorScale(
+    int firstRow,
+    int firstCol,
+    int lastRow,
+    int lastCol, {
+    required int minColor,
+    required int maxColor,
+    int? midColor,
+  }) {
+    _workbook._ensureOpen();
+    _validateCell(firstRow, firstCol);
+    _validateCell(lastRow, lastCol);
+    _check(
+      midColor == null
+          ? bindings.xlsxwConditional2Color(
+              _handle, firstRow, firstCol, lastRow, lastCol, minColor, maxColor)
+          : bindings.xlsxwConditional3Color(_handle, firstRow, firstCol,
+              lastRow, lastCol, minColor, midColor, maxColor),
+    );
+  }
+
+  /// Draws an in-cell data bar across the range, proportional to each value,
+  /// filled with [barColor] (`0xRRGGBB`). The dashboard staple for showing
+  /// relative magnitude without a separate chart.
+  void conditionalDataBar(
+    int firstRow,
+    int firstCol,
+    int lastRow,
+    int lastCol, {
+    required int barColor,
+  }) {
+    _workbook._ensureOpen();
+    _validateCell(firstRow, firstCol);
+    _validateCell(lastRow, lastCol);
+    _check(
+      bindings.xlsxwConditionalDataBar(
+          _handle, firstRow, firstCol, lastRow, lastCol, barColor),
+    );
+  }
 }
