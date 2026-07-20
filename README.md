@@ -37,6 +37,23 @@ void main() {
 Rows and columns are 0-based integers, matching libxlsxwriter: `(0, 0)` is cell
 `A1`, `(1, 2)` is `C2`.
 
+## A row at a time
+
+A report is usually a list per row, so `writeRow` takes one and picks the right
+cell type per value: a `String` writes text, an `int` or `double` a number, a
+`bool` a boolean, a `DateTime` a date, and `null` a blank.
+
+```dart
+final date = workbook.addFormat().numberFormat('yyyy-mm-dd');
+sheet.writeRow(0, ['Item', 'Qty', 'Price', 'Added']); // header
+sheet.writeRow(1, ['Widget', 12, 4.99, DateTime.utc(2026, 7, 20)],
+    dateFormat: date);
+```
+
+A `DateTime` needs a `dateFormat` to render as a date rather than a serial, so
+one is required when the row has a date; a value of an unsupported type is an
+`ArgumentError` naming the column, not a silent coercion.
+
 ## Formatting
 
 Create a `Format` with `workbook.addFormat()` and pass it to any write call. The
@@ -203,6 +220,24 @@ with no number formats or dates, so they did slightly less work than the
 Reproduce with `dart run bench/bench.dart` (this package) and see `bench/bench.dart`
 for the workload. Numbers vary by machine and Dart version; do not treat them as
 guaranteed.
+
+That memory argument is the whole reason to reach for constant-memory mode, and
+it is worth seeing on its own. Measured at three sizes, the same 10 columns:
+
+![Peak memory against row count: constant-memory mode stays flat near 191 MiB while the in-memory default climbs to 1433 MiB at a million rows](doc/memory_curve.png)
+
+| rows | default (in memory) | constant memory |
+| ---- | ------------------: | --------------: |
+| 10k  | 202 MiB | 192 MiB |
+| 100k | 314 MiB | 191 MiB |
+| 1M   | 1433 MiB | 191 MiB |
+
+Constant-memory mode holds the same footprint whether the sheet is ten thousand
+rows or a million, because it flushes each row to disk as it goes instead of
+building the whole workbook in memory. That is the mode for an export that might
+not fit in RAM. The default is faster to reach for on small sheets and lets you
+go back and edit cells you have already written; constant-memory gives that up
+for the flat curve.
 
 ## Platforms and requirements
 

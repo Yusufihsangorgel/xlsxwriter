@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="560" viewBox="0 0 1100 560" font-family="Menlo, monospace">
+  <rect width="1100" height="560" fill="#0B1220"/>
+  <text x="48" y="52" font-size="24" font-weight="bold" fill="#E2E8F0">Peak memory as the sheet grows</text>
+  <text x="48" y="80" font-size="14" fill="#94A3B8">10 columns, one process each, Apple Silicon, Dart 3.11. Lower is better.</text>
+
+  <!-- Plot area: x from 120..1000 (log-ish over 10k, 100k, 1M), y from 470 (0) up to 120 (1600 MiB) -->
+  <!-- axes -->
+  <line x1="120" y1="470" x2="1000" y2="470" stroke="#334155" stroke-width="1"/>
+  <line x1="120" y1="120" x2="120" y2="470" stroke="#334155" stroke-width="1"/>
+
+  <!-- y gridlines / labels: 0, 400, 800, 1200, 1600 MiB over 470..120 (350px = 1600) -->
+  <g font-size="12" fill="#64748B">
+    <line x1="120" y1="470" x2="1000" y2="470" stroke="#1E293B"/>
+    <text x="70" y="474">0</text>
+    <line x1="120" y1="383" x2="1000" y2="383" stroke="#1E293B"/>
+    <text x="60" y="387">400</text>
+    <line x1="120" y1="295" x2="1000" y2="295" stroke="#1E293B"/>
+    <text x="60" y="299">800</text>
+    <line x1="120" y1="208" x2="1000" y2="208" stroke="#1E293B"/>
+    <text x="52" y="212">1200</text>
+    <line x1="120" y1="120" x2="1000" y2="120" stroke="#1E293B"/>
+    <text x="52" y="124">1600</text>
+    <text x="20" y="300" transform="rotate(-90 20 300)" fill="#94A3B8">peak MiB</text>
+  </g>
+
+  <!-- x ticks at 10k (x=200), 100k (x=560), 1M (x=920) -->
+  <g font-size="13" fill="#94A3B8" text-anchor="middle">
+    <text x="200" y="494">10k rows</text>
+    <text x="560" y="494">100k rows</text>
+    <text x="920" y="494">1M rows</text>
+  </g>
+
+  <!-- default (in memory): 202, 314, 1433 MiB -> y = 470 - MiB/1600*350 -->
+  <!-- 202 -> 425.8 ; 314 -> 401.3 ; 1433 -> 156.5 -->
+  <polyline points="200,425.8 560,401.3 920,156.5" fill="none" stroke="#475569" stroke-width="3"/>
+  <circle cx="200" cy="425.8" r="5" fill="#475569"/>
+  <circle cx="560" cy="401.3" r="5" fill="#475569"/>
+  <circle cx="920" cy="156.5" r="5" fill="#475569"/>
+  <text x="905" y="146" font-size="13" fill="#94A3B8" text-anchor="end">default 1433</text>
+  <text x="905" y="392" font-size="13" fill="#94A3B8" text-anchor="end">314</text>
+
+  <!-- constant memory: 192, 191, 191 MiB -> ~428, 428.2, 428.2 (flat) -->
+  <polyline points="200,428 560,428.2 920,428.2" fill="none" stroke="#38BDF8" stroke-width="3"/>
+  <circle cx="200" cy="428" r="5" fill="#38BDF8"/>
+  <circle cx="560" cy="428.2" r="5" fill="#38BDF8"/>
+  <circle cx="920" cy="428.2" r="5" fill="#38BDF8"/>
+  <text x="935" y="432" font-size="13" fill="#38BDF8">constant-memory 191</text>
+
+  <text x="48" y="534" font-size="13" fill="#64748B">Constant-memory mode stays flat at ~191 MiB while the in-memory default climbs to 1.4 GB at a million rows.</text>
+</svg>

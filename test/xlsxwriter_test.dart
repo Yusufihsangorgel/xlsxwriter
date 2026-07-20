@@ -516,6 +516,61 @@ void main() {
       expect(exception.toString(), contains(exception.message));
     });
   });
+
+  group('writeRow', () {
+    test('dispatches each value by its runtime type', () {
+      final path = pathFor('writerow.xlsx');
+      final workbook = Workbook(path);
+      final date = workbook.addFormat().numberFormat('yyyy-mm-dd');
+      workbook.addWorksheet().writeRow(
+        0,
+        ['Widget', 12, 4.99, true, null, DateTime.utc(2026, 7, 20)],
+        dateFormat: date,
+      );
+      workbook.close();
+
+      final file = XlsxFile.read(path);
+      final strings = file.sharedStrings;
+      expect(cellValue(file.sheet(1), 'A1', strings), 'Widget');
+      expect(cellValue(file.sheet(1), 'B1', strings), 12);
+      expect(cellValue(file.sheet(1), 'C1', strings), 4.99);
+      expect(cellValue(file.sheet(1), 'D1', strings), true);
+      // E1 is blank: it has no value. A DateTime stores as a number (a serial).
+      expect(cellValue(file.sheet(1), 'E1', strings), isNull);
+      expect(cellValue(file.sheet(1), 'F1', strings), isA<num>());
+    });
+
+    test('honours startCol', () {
+      final path = pathFor('writerow_startcol.xlsx');
+      final workbook = Workbook(path);
+      workbook.addWorksheet().writeRow(0, ['x', 'y'], startCol: 2);
+      workbook.close();
+
+      final file = XlsxFile.read(path);
+      expect(cellValue(file.sheet(1), 'C1', file.sharedStrings), 'x');
+      expect(cellValue(file.sheet(1), 'D1', file.sharedStrings), 'y');
+    });
+
+    test('a DateTime without a dateFormat is rejected', () {
+      final workbook = Workbook(pathFor('writerow_nodate.xlsx'));
+      final sheet = workbook.addWorksheet();
+      expect(
+        () => sheet.writeRow(0, [DateTime.utc(2026, 1, 1)]),
+        throwsArgumentError,
+      );
+      workbook.close();
+    });
+
+    test('an unsupported type is rejected, naming the column', () {
+      final workbook = Workbook(pathFor('writerow_badtype.xlsx'));
+      final sheet = workbook.addWorksheet();
+      expect(
+        () => sheet.writeRow(0, ['ok', Object()]),
+        throwsA(isA<ArgumentError>()),
+      );
+      workbook.close();
+    });
+  });
 }
 
 /// A resolved cell format record together with the file it came from, so a

@@ -149,6 +149,61 @@ class Worksheet {
     _check(bindings.xlsxwWriteBlank(_handle, row, col, _formatHandle(format)));
   }
 
+  /// Writes a whole row of [values] starting at [startCol], dispatching each by
+  /// its runtime type: a `String` writes a string cell, an `int` or `double` a
+  /// number, a `bool` a boolean, a `DateTime` a date, and `null` a blank cell.
+  ///
+  /// This is the shape a report or an export usually has, a list per row, so it
+  /// saves picking the right `write...` per column by hand. [format] applies to
+  /// the string, number, boolean and blank cells. A `DateTime` needs a number
+  /// format to render as a date rather than a raw serial, so [dateFormat] is
+  /// required if [values] contains one; a `DateTime` with no [dateFormat] is a
+  /// [ArgumentError]. A value of any other type is also an [ArgumentError],
+  /// naming the offending column, rather than being silently coerced.
+  ///
+  /// ```dart
+  /// final date = workbook.addFormat().numberFormat('yyyy-mm-dd');
+  /// sheet.writeRow(0, ['Widget', 12, 4.99, DateTime(2026, 7, 20)],
+  ///     dateFormat: date);
+  /// ```
+  void writeRow(
+    int row,
+    List<Object?> values, {
+    int startCol = 0,
+    Format? format,
+    Format? dateFormat,
+  }) {
+    for (var i = 0; i < values.length; i++) {
+      final col = startCol + i;
+      final value = values[i];
+      switch (value) {
+        case null:
+          writeBlank(row, col, format);
+        case final String s:
+          writeString(row, col, s, format);
+        case final bool b:
+          writeBool(row, col, b, format);
+        case final num n:
+          writeNumber(row, col, n, format);
+        case final DateTime d:
+          if (dateFormat == null) {
+            throw ArgumentError.value(
+              value,
+              'values[$i]',
+              'a DateTime needs a dateFormat to render as a date',
+            );
+          }
+          writeDateTime(row, col, d, dateFormat);
+        default:
+          throw ArgumentError.value(
+            value,
+            'values[$i]',
+            'unsupported cell type ${value.runtimeType} in column $col',
+          );
+      }
+    }
+  }
+
   /// Sets the width, and optionally a default [format], for the columns from
   /// [firstCol] to [lastCol] inclusive.
   ///

@@ -1,3 +1,18 @@
+## 0.5.0
+
+- `Worksheet.writeRow(row, values, {startCol, format, dateFormat})` writes a
+  whole row and dispatches each value by its runtime type: String, int/double,
+  bool, DateTime and null map to the right cell type, so a report that is a list
+  per row needs one call instead of picking a `write...` per column. A DateTime
+  needs a `dateFormat` and an unsupported type is an `ArgumentError` naming the
+  column, rather than a silent coercion. Verified by writing a mixed row and
+  reading every cell back with an independent reader.
+- Show the memory argument on its own. The benchmark compared one size against a
+  competitor; the new curve measures peak memory at 10k, 100k and 1M rows and
+  shows constant-memory mode holding ~191 MiB flat while the in-memory default
+  climbs to 1433 MiB at a million rows. That flat curve is the reason the mode
+  exists, and it was asserted in prose before, not shown.
+
 ## 0.4.4
 
 - Benchmark against `excel_community`, not just `excel`. The chart and the table
