@@ -224,3 +224,52 @@ int32_t xlsxw_add_table(void *worksheet, uint32_t first_row, uint32_t first_col,
   free(column_ptrs);
   return result;
 }
+
+/* --- Charts --------------------------------------------------------------- */
+
+void *xlsxw_add_chart(void *workbook, int32_t chart_type) {
+  /* Translate the shim's stable code to libxlsxwriter's enum here, so the Dart
+   * side never depends on the LXW_CHART_* integer values. */
+  uint8_t lxw_type;
+  switch (chart_type) {
+    case 0: lxw_type = LXW_CHART_COLUMN; break;
+    case 1: lxw_type = LXW_CHART_BAR; break;
+    case 2: lxw_type = LXW_CHART_LINE; break;
+    case 3: lxw_type = LXW_CHART_AREA; break;
+    case 4: lxw_type = LXW_CHART_PIE; break;
+    case 5: lxw_type = LXW_CHART_DOUGHNUT; break;
+    case 6: lxw_type = LXW_CHART_SCATTER; break;
+    case 7: lxw_type = LXW_CHART_RADAR; break;
+    default: lxw_type = LXW_CHART_COLUMN; break;
+  }
+  return (void *)workbook_add_chart((lxw_workbook *)workbook, lxw_type);
+}
+
+void *xlsxw_chart_add_series(void *chart, const char *categories,
+                             const char *values) {
+  /* `categories` NULL numbers the points 1..N; libxlsxwriter accepts it. */
+  return (void *)chart_add_series((lxw_chart *)chart, categories, values);
+}
+
+void xlsxw_chart_series_set_name(void *series, const char *name) {
+  chart_series_set_name((lxw_chart_series *)series, name);
+}
+
+void xlsxw_chart_title_set_name(void *chart, const char *name) {
+  chart_title_set_name((lxw_chart *)chart, name);
+}
+
+void xlsxw_chart_axis_set_name(void *chart, int32_t axis, const char *name) {
+  lxw_chart *c = (lxw_chart *)chart;
+  chart_axis_set_name(axis == 0 ? c->x_axis : c->y_axis, name);
+}
+
+int32_t xlsxw_insert_chart(void *worksheet, uint32_t row, uint32_t col,
+                           void *chart, double x_scale, double y_scale) {
+  lxw_chart_options options = {0};
+  options.x_scale = x_scale;
+  options.y_scale = y_scale;
+  return (int32_t)worksheet_insert_chart_opt((lxw_worksheet *)worksheet, row,
+                                             (lxw_col_t)col, (lxw_chart *)chart,
+                                             &options);
+}

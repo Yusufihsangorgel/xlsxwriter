@@ -321,4 +321,28 @@ class Worksheet {
       malloc.free(cName);
     }
   }
+
+  /// Places [chart] on this sheet with its top-left corner at ([row], [col]).
+  ///
+  /// Build the chart first with [Workbook.addChart] and [Chart.addSeries]; a
+  /// chart with no series has nothing to draw. [xScale] and [yScale] scale the
+  /// chart from its natural size (1.0), so `xScale: 2.0` draws it twice as
+  /// wide. The chart's data series reference cells by formula, so the data can
+  /// live on this sheet or another one.
+  ///
+  /// Throws a [RangeError] if the anchor is out of range and an
+  /// [XlsxWriterException] if the native call fails.
+  void insertChart(
+    int row,
+    int col,
+    Chart chart, {
+    double xScale = 1.0,
+    double yScale = 1.0,
+  }) {
+    _workbook._ensureOpen();
+    _validateCell(row, col);
+    _check(
+      bindings.xlsxwInsertChart(_handle, row, col, chart._handle, xScale, yScale),
+    );
+  }
 }

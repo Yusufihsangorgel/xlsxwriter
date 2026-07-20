@@ -10,6 +10,7 @@ import 'exception.dart';
 
 part 'worksheet.dart';
 part 'format.dart';
+part 'chart.dart';
 
 /// An Excel `.xlsx` workbook, backed by libxlsxwriter.
 ///
@@ -144,6 +145,21 @@ class Workbook implements Finalizable {
       throw XlsxWriterException(bindings.lxwErrorMemoryMallocFailed);
     }
     return Format._(this, handle);
+  }
+
+  /// Creates a [Chart] of the given [type], owned by this workbook.
+  ///
+  /// Add data to it with [Chart.addSeries], then place it on a sheet with
+  /// [Worksheet.insertChart]. The `excel` and `spreadsheet_decoder` packages
+  /// can't produce charts at all; this writes a real Excel chart backed by
+  /// libxlsxwriter.
+  Chart addChart(ChartType type) {
+    _ensureOpen();
+    final handle = bindings.xlsxwAddChart(_handle, type.value);
+    if (handle == nullptr) {
+      throw XlsxWriterException(bindings.lxwErrorMemoryMallocFailed);
+    }
+    return Chart._(this, handle);
   }
 
   /// Writes the workbook to disk and frees the native resources.

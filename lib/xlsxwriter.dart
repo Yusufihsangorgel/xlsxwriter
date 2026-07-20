@@ -27,4 +27,4 @@ library;
 
 export 'src/enums.dart';
 export 'src/exception.dart' show XlsxWriterException;
-export 'src/workbook.dart' show Format, Workbook, Worksheet;
+export 'src/workbook.dart' show Chart, Format, Workbook, Worksheet;

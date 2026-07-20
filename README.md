@@ -11,7 +11,8 @@ edit existing files, use [`excel`](https://pub.dev/packages/excel) or
 [`spreadsheet_decoder`](https://pub.dev/packages/spreadsheet_decoder). The niche
 here is the export and report-generation path: turning rows of data into an
 `.xlsx` quickly and with low memory, including a constant-memory mode for sheets
-that do not fit comfortably in RAM.
+that do not fit comfortably in RAM. It also writes native Excel charts, which
+the pure-Dart writers can't.
 
 ## Quick start
 
@@ -94,6 +95,37 @@ sheet.addTable(
 `autofilter`, `bandedRows`, `bandedColumns` and `totalRow` toggle the matching
 table features. Excel writes the default `Column1`, `Column2`... names over the
 header cells when `columns` is omitted, so pass it whenever the header matters.
+
+## Charts
+
+Write a real Excel chart from data already on a sheet. Add the chart, give it one
+or more series that reference cell ranges by formula, and drop it onto a sheet.
+The pure-Dart `excel` and `spreadsheet_decoder` packages can't produce charts at
+all, so this is the reason to reach for a native writer when a report needs one.
+
+```dart
+const items = ['Widgets', 'Gadgets', 'Gizmos'];
+const units = [1250, 340, 55];
+for (var i = 0; i < items.length; i++) {
+  sheet.writeString(i, 0, items[i]);
+  sheet.writeNumber(i, 1, units[i]);
+}
+
+final chart = workbook.addChart(ChartType.column)
+  ..setTitle('Units sold')
+  ..setAxisNames(category: 'Item', value: 'Units')
+  ..addSeries(
+    categories: r'=Sheet1!$A$1:$A$3',
+    values: r'=Sheet1!$B$1:$B$3',
+    name: 'Units',
+  );
+sheet.insertChart(0, 3, chart); // top-left at D1
+```
+
+`ChartType` covers `column`, `bar`, `line`, `area`, `pie`, `doughnut`, `scatter`
+and `radar`. A chart can plot several series (call `addSeries` more than once)
+and read data from any sheet in the workbook, since the ranges name their sheet.
+Scale it with `insertChart(row, col, chart, xScale: 2.0, yScale: 1.5)`.
 
 ## Constant-memory mode for large sheets
 

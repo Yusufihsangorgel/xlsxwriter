@@ -114,6 +114,38 @@ XLSXW_EXPORT int32_t xlsxw_add_table(void *worksheet, uint32_t first_row,
                                      int32_t banded_columns, int32_t total_row,
                                      int32_t style_type);
 
+/* Charts. A chart is owned by the workbook and freed with it; the returned
+ * handles stay valid until the workbook is closed or freed. */
+
+/* Creates a chart of the given type and returns its handle, or NULL on
+ * failure. `chart_type` is a small stable code translated to the matching
+ * libxlsxwriter LXW_CHART_* value inside the shim (see xlsxw_chart_type):
+ * 0 column, 1 bar, 2 line, 3 area, 4 pie, 5 doughnut, 6 scatter, 7 radar. */
+XLSXW_EXPORT void *xlsxw_add_chart(void *workbook, int32_t chart_type);
+
+/* Adds a data series to a chart and returns the series handle. `categories`
+ * and `values` are Excel range formulas such as "=Sheet1!$A$1:$A$5";
+ * `categories` may be NULL to number the points 1..N. Returns NULL on
+ * failure. */
+XLSXW_EXPORT void *xlsxw_chart_add_series(void *chart, const char *categories,
+                                          const char *values);
+
+/* Sets the legend name of a series. */
+XLSXW_EXPORT void xlsxw_chart_series_set_name(void *series, const char *name);
+
+/* Sets the chart title. */
+XLSXW_EXPORT void xlsxw_chart_title_set_name(void *chart, const char *name);
+
+/* Sets an axis title: `axis` 0 is the category (x) axis, 1 the value (y). */
+XLSXW_EXPORT void xlsxw_chart_axis_set_name(void *chart, int32_t axis,
+                                            const char *name);
+
+/* Inserts `chart` into `worksheet` with its top-left at [row, col], scaled by
+ * `x_scale`/`y_scale` (1.0 for natural size). Returns 0 on success. */
+XLSXW_EXPORT int32_t xlsxw_insert_chart(void *worksheet, uint32_t row,
+                                        uint32_t col, void *chart,
+                                        double x_scale, double y_scale);
+
 #ifdef __cplusplus
 }
 #endif

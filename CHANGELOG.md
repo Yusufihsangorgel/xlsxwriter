@@ -1,3 +1,14 @@
+## 0.4.0
+
+- Add charts. `Workbook.addChart(ChartType)` creates a column, bar, line, area,
+  pie, doughnut, scatter, or radar chart; `Chart.addSeries` plots cell ranges,
+  with `setTitle` and `setAxisNames` for labels; `Worksheet.insertChart` places
+  it on a sheet with optional scaling. The pure-Dart `excel` and
+  `spreadsheet_decoder` packages can't write charts, so this is the reason to
+  use a native writer when a report needs one. Charts are wired through the C
+  shim, which is compiled from vendored source, so there is no new binary to
+  install.
+
 ## 0.3.0
 
 - Add `Workbook.toBytes`: build a workbook and get its `.xlsx` bytes back with no

@@ -320,6 +320,58 @@ external int xlsxwAddTable(
   int styleType,
 );
 
+/// Creates a chart of the given shim type code (see [Chart]); returns its
+/// handle, or [nullptr] on failure. The chart is owned by the workbook.
+@Native<Pointer<Void> Function(Pointer<Void>, Int32)>(symbol: 'xlsxw_add_chart')
+external Pointer<Void> xlsxwAddChart(Pointer<Void> workbook, int chartType);
+
+/// Adds a data series to a chart and returns the series handle, or [nullptr]
+/// on failure. [categories] may be [nullptr].
+@Native<Pointer<Void> Function(Pointer<Void>, Pointer<Utf8>, Pointer<Utf8>)>(
+  symbol: 'xlsxw_chart_add_series',
+)
+external Pointer<Void> xlsxwChartAddSeries(
+  Pointer<Void> chart,
+  Pointer<Utf8> categories,
+  Pointer<Utf8> values,
+);
+
+/// Sets the legend name of a series.
+@Native<Void Function(Pointer<Void>, Pointer<Utf8>)>(
+  symbol: 'xlsxw_chart_series_set_name',
+)
+external void xlsxwChartSeriesSetName(Pointer<Void> series, Pointer<Utf8> name);
+
+/// Sets the chart title.
+@Native<Void Function(Pointer<Void>, Pointer<Utf8>)>(
+  symbol: 'xlsxw_chart_title_set_name',
+)
+external void xlsxwChartTitleSetName(Pointer<Void> chart, Pointer<Utf8> name);
+
+/// Sets an axis title: [axis] 0 is the category (x) axis, 1 the value (y).
+@Native<Void Function(Pointer<Void>, Int32, Pointer<Utf8>)>(
+  symbol: 'xlsxw_chart_axis_set_name',
+)
+external void xlsxwChartAxisSetName(
+  Pointer<Void> chart,
+  int axis,
+  Pointer<Utf8> name,
+);
+
+/// Inserts [chart] into [worksheet] at [row], [col], scaled by [xScale]/
+/// [yScale]. Returns 0 on success.
+@Native<Int32 Function(Pointer<Void>, Uint32, Uint32, Pointer<Void>, Double, Double)>(
+  symbol: 'xlsxw_insert_chart',
+)
+external int xlsxwInsertChart(
+  Pointer<Void> worksheet,
+  int row,
+  int col,
+  Pointer<Void> chart,
+  double xScale,
+  double yScale,
+);
+
 /// Address of the native `xlsxw_workbook_free`, used by a [NativeFinalizer] to
 /// reclaim a workbook that was garbage-collected without [xlsxwClose]. It frees
 /// memory only and does not write the file.

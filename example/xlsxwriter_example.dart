@@ -1,5 +1,5 @@
 // A small tour of the xlsxwriter API: formatted headers, several data types,
-// a formula, a date, a merged title, frozen panes, and column widths.
+// a formula, a date, a merged title, frozen panes, column widths, and a chart.
 //
 // Run it with `dart run example/xlsxwriter_example.dart`; it writes
 // `example_report.xlsx` in the current directory.
@@ -52,10 +52,23 @@ void main() {
   sheet.writeString(6, 0, 'Report date');
   sheet.writeDateTime(6, 1, DateTime(2026, 7, 17), dateFormat);
 
-  // Widths, a frozen header, and we are done.
+  // Widths and a frozen header.
   sheet.setColumn(0, 0, 16);
   sheet.setColumn(1, 3, 12);
   sheet.freezePanes(2, 0);
+
+  // A column chart of units sold by item, plotting the data written above.
+  // Ranges reference the sheet by name, so a chart can read data from any
+  // sheet in the workbook.
+  final chart = workbook.addChart(ChartType.column)
+    ..setTitle('Units sold')
+    ..setAxisNames(category: 'Item', value: 'Units')
+    ..addSeries(
+      categories: r'=Sales!$A$3:$A$5',
+      values: r'=Sales!$B$3:$B$5',
+      name: 'Units',
+    );
+  sheet.insertChart(1, 5, chart);
 
   workbook.close();
 }
