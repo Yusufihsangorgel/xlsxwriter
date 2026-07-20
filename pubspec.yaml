@@ -2,7 +2,7 @@ name: xlsxwriter
 description: >-
   Native, fast, low-memory Excel .xlsx writer for Dart. An FFI binding to
   libxlsxwriter with a constant-memory mode for large sheets.
-version: 0.4.2
+version: 0.4.3
 repository: https://github.com/Yusufihsangorgel/xlsxwriter
 
 topics:
@@ -24,8 +24,8 @@ environment:
 dependencies:
   code_assets: ^1.2.1
   ffi: ^2.1.0
-  hooks: ^2.1.0
-  native_toolchain_c: ^0.19.3
+  hooks: '>=2.0.2 <3.0.0'
+  native_toolchain_c: '>=0.19.2 <0.20.0'
 
 dev_dependencies:
   archive: ^4.0.0
