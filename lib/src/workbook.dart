@@ -119,6 +119,7 @@ class Workbook implements Finalizable {
   /// otherwise an [XlsxWriterException] is thrown.
   Worksheet addWorksheet([String? name]) {
     _ensureOpen();
+    if (name != null) _checkNoEmbeddedNul(name, 'name');
     final Pointer<Utf8> cName = name == null ? nullptr : name.toNativeUtf8();
     final Pointer<Void> handle;
     try {
@@ -201,5 +202,18 @@ void _validateCell(int row, int col) {
   }
   if (col < 0) {
     throw ArgumentError.value(col, 'col', 'must be greater than or equal to 0');
+  }
+}
+
+/// Throws an [ArgumentError] if [value] contains a U+0000 code unit.
+///
+/// libxlsxwriter has no pointer+length string API, so every string this
+/// package hands across the FFI boundary is NUL-terminated on the native
+/// side; a U+0000 already in the content would silently truncate the rest
+/// of it there instead of raising an error.
+void _checkNoEmbeddedNul(String value, String name) {
+  if (value.contains('\u0000')) {
+    throw ArgumentError.value(
+        value, name, 'must not contain a U+0000 code unit');
   }
 }

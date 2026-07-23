@@ -38,6 +38,9 @@ class Chart {
     String? name,
   }) {
     _workbook._ensureOpen();
+    _checkNoEmbeddedNul(values, 'values');
+    if (categories != null) _checkNoEmbeddedNul(categories, 'categories');
+    if (name != null) _checkNoEmbeddedNul(name, 'name');
     final cValues = values.toNativeUtf8();
     final cCategories = categories == null ? nullptr : categories.toNativeUtf8();
     try {
@@ -66,6 +69,7 @@ class Chart {
   /// Sets the chart's title, shown above the plot area.
   void setTitle(String title) {
     _workbook._ensureOpen();
+    _checkNoEmbeddedNul(title, 'title');
     final cTitle = title.toNativeUtf8();
     try {
       bindings.xlsxwChartTitleSetName(_handle, cTitle);
@@ -84,6 +88,7 @@ class Chart {
   }
 
   void _setAxisName(int axis, String name) {
+    _checkNoEmbeddedNul(name, 'name');
     final cName = name.toNativeUtf8();
     try {
       bindings.xlsxwChartAxisSetName(_handle, axis, cName);

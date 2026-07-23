@@ -1,3 +1,18 @@
+## 0.7.1
+
+- Fix a truncation bug: every string-taking API (`writeString`, `writeFormula`,
+  `writeUrl`, `mergeRange`, worksheet and table names, format font name and
+  number format, chart title/series/axis names) passed the Dart string to
+  libxlsxwriter as a NUL-terminated C string. A value containing an embedded
+  U+0000 code unit, which is legal Dart content, was silently cut at that
+  byte with no error, since libxlsxwriter's own API has no pointer+length
+  variant to switch to. These now throw `ArgumentError` on an embedded NUL
+  instead of truncating.
+- Declare `platforms: {linux, macos, windows}` in `pubspec.yaml`. The build
+  hook has no Android/iOS handling and has never built or run on them; pub.dev
+  had inferred support for all five platforms from static analysis alone with
+  no declaration to override it.
+
 ## 0.7.0
 
 - Conditional formatting: the report and dashboard set. `conditionalCell` and

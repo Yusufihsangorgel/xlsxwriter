@@ -509,6 +509,42 @@ void main() {
       expect(() => sheet.writeNumber(0, -1, 1), throwsArgumentError);
     });
 
+    test('a value with an embedded NUL throws ArgumentError instead of '
+        'silently truncating', () {
+      final path = pathFor('embeddednul.xlsx');
+      final workbook = Workbook(path);
+      final sheet = workbook.addWorksheet();
+      addTearDown(workbook.close);
+      expect(
+        () => sheet.writeString(0, 0, 'ab\u0000cd'),
+        throwsArgumentError,
+      );
+      expect(
+        () => sheet.writeFormula(0, 0, '=CONCAT("ab\u0000cd")'),
+        throwsArgumentError,
+      );
+      expect(
+        () => sheet.writeUrl(0, 0, 'https://example.com/\u0000'),
+        throwsArgumentError,
+      );
+      expect(
+        () => sheet.mergeRange(1, 0, 1, 1, 'ab\u0000cd'),
+        throwsArgumentError,
+      );
+      expect(
+        () => workbook.addWorksheet('bad\u0000name'),
+        throwsArgumentError,
+      );
+      expect(
+        () => workbook.addFormat().fontName('bad\u0000font'),
+        throwsArgumentError,
+      );
+      expect(
+        () => workbook.addFormat().numberFormat('0.\u000000'),
+        throwsArgumentError,
+      );
+    });
+
     test('XlsxWriterException exposes a code and a human-readable message', () {
       final exception = XlsxWriterException(2);
       expect(exception.code, 2);

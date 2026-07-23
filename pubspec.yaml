@@ -2,7 +2,7 @@ name: xlsxwriter
 description: >-
   Native, fast, low-memory Excel .xlsx writer for Dart. An FFI binding to
   libxlsxwriter with a constant-memory mode for large sheets.
-version: 0.7.0
+version: 0.7.1
 repository: https://github.com/Yusufihsangorgel/xlsxwriter
 
 topics:
@@ -26,6 +26,21 @@ dependencies:
   ffi: ^2.1.0
   hooks: '>=2.0.2 <3.0.0'
   native_toolchain_c: '>=0.19.2 <0.20.0'
+
+# hook/build.dart only ever branches on OS.windows vs. everything else; it has
+# no Android/iOS handling and has never been built or tested on those
+# platforms (see README's "Platforms and requirements" section). Declaring
+# the supported set here overrides pub.dev's auto-detected tags (pana reads
+# this field first, ahead of import-graph analysis), so the site stops
+# claiming android/ios support the package doesn't have. This is the
+# top-level `platforms:` key (added in Dart 2.16), not the legacy
+# `flutter: plugin: platforms:` block — it carries no Flutter SDK constraint,
+# so pure-Dart/CLI consumers are unaffected. Add android/ios here once the
+# hook is actually verified to build and run on them.
+platforms:
+  linux:
+  macos:
+  windows:
 
 dev_dependencies:
   archive: ^4.0.0

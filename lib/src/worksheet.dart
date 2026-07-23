@@ -15,10 +15,13 @@ class Worksheet {
   ///
   /// An empty string writes an empty (but formatted, if [format] is given)
   /// cell. Strings longer than Excel's limit of 32,767 characters throw an
-  /// [XlsxWriterException].
+  /// [XlsxWriterException]. libxlsxwriter has no way to carry a NUL byte
+  /// through, so a [value] containing U+0000 throws an [ArgumentError]
+  /// instead of silently writing a truncated cell.
   void writeString(int row, int col, String value, [Format? format]) {
     _workbook._ensureOpen();
     _validateCell(row, col);
+    _checkNoEmbeddedNul(value, 'value');
     final cValue = value.toNativeUtf8();
     try {
       _check(
@@ -77,6 +80,7 @@ class Worksheet {
   void writeFormula(int row, int col, String formula, [Format? format]) {
     _workbook._ensureOpen();
     _validateCell(row, col);
+    _checkNoEmbeddedNul(formula, 'formula');
     final cFormula = formula.toNativeUtf8();
     try {
       _check(
@@ -128,6 +132,7 @@ class Worksheet {
   void writeUrl(int row, int col, String url, [Format? format]) {
     _workbook._ensureOpen();
     _validateCell(row, col);
+    _checkNoEmbeddedNul(url, 'url');
     final cUrl = url.toNativeUtf8();
     try {
       _check(
@@ -260,6 +265,7 @@ class Worksheet {
     _workbook._ensureOpen();
     _validateCell(firstRow, firstCol);
     _validateCell(lastRow, lastCol);
+    _checkNoEmbeddedNul(value, 'value');
     final cValue = value.toNativeUtf8();
     try {
       _check(
@@ -336,6 +342,12 @@ class Worksheet {
         'columns',
         'must have one name per column in the range ($rangeColumns)',
       );
+    }
+    if (name != null) _checkNoEmbeddedNul(name, 'name');
+    if (columns != null) {
+      for (var i = 0; i < columns.length; i++) {
+        _checkNoEmbeddedNul(columns[i], 'columns[$i]');
+      }
     }
 
     final cName = (name ?? '').toNativeUtf8();

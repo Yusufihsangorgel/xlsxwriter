@@ -45,6 +45,7 @@ class Format {
   /// Sets the font [name], for example `'Calibri'` or `'Courier New'`.
   Format fontName(String name) {
     _workbook._ensureOpen();
+    _checkNoEmbeddedNul(name, 'name');
     final cName = name.toNativeUtf8();
     try {
       bindings.xlsxwFormatSetFontName(_handle, cName);
@@ -80,6 +81,7 @@ class Format {
   /// `'0.00'`, `'#,##0'`, `'0%'`, or a date format such as `'yyyy-mm-dd'`.
   Format numberFormat(String numberFormat) {
     _workbook._ensureOpen();
+    _checkNoEmbeddedNul(numberFormat, 'numberFormat');
     final cValue = numberFormat.toNativeUtf8();
     try {
       bindings.xlsxwFormatSetNumFormat(_handle, cValue);
