@@ -32,17 +32,15 @@ class Chart {
   /// `"=Sheet1!\$B\$2:\$B\$5"`. [categories] is optional; when omitted the
   /// points are numbered 1..N. [name] sets the series' legend label. Pie and
   /// doughnut charts use only the first series added.
-  void addSeries({
-    required String values,
-    String? categories,
-    String? name,
-  }) {
+  void addSeries({required String values, String? categories, String? name}) {
     _workbook._ensureOpen();
     _checkNoEmbeddedNul(values, 'values');
     if (categories != null) _checkNoEmbeddedNul(categories, 'categories');
     if (name != null) _checkNoEmbeddedNul(name, 'name');
     final cValues = values.toNativeUtf8();
-    final cCategories = categories == null ? nullptr : categories.toNativeUtf8();
+    final cCategories = categories == null
+        ? nullptr
+        : categories.toNativeUtf8();
     try {
       final series = bindings.xlsxwChartAddSeries(
         _handle,

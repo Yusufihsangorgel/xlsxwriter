@@ -353,7 +353,9 @@ class Worksheet {
     final cName = (name ?? '').toNativeUtf8();
     final headerPtrs = columns == null
         ? nullptr
-        : malloc.allocate<Pointer<Utf8>>(sizeOf<Pointer<Utf8>>() * columns.length);
+        : malloc.allocate<Pointer<Utf8>>(
+            sizeOf<Pointer<Utf8>>() * columns.length,
+          );
     try {
       if (columns != null) {
         for (var i = 0; i < columns.length; i++) {
@@ -409,7 +411,14 @@ class Worksheet {
     _workbook._ensureOpen();
     _validateCell(row, col);
     _check(
-      bindings.xlsxwInsertChart(_handle, row, col, chart._handle, xScale, yScale),
+      bindings.xlsxwInsertChart(
+        _handle,
+        row,
+        col,
+        chart._handle,
+        xScale,
+        yScale,
+      ),
     );
   }
 
@@ -487,8 +496,16 @@ class Worksheet {
     _validateCell(firstRow, firstCol);
     _validateCell(lastRow, lastCol);
     _check(
-      bindings.xlsxwConditionalCell(_handle, firstRow, firstCol, lastRow,
-          lastCol, criteria.value, value.toDouble(), format._handle),
+      bindings.xlsxwConditionalCell(
+        _handle,
+        firstRow,
+        firstCol,
+        lastRow,
+        lastCol,
+        criteria.value,
+        value.toDouble(),
+        format._handle,
+      ),
     );
   }
 
@@ -507,8 +524,16 @@ class Worksheet {
     _validateCell(firstRow, firstCol);
     _validateCell(lastRow, lastCol);
     _check(
-      bindings.xlsxwConditionalCellBetween(_handle, firstRow, firstCol, lastRow,
-          lastCol, min.toDouble(), max.toDouble(), format._handle),
+      bindings.xlsxwConditionalCellBetween(
+        _handle,
+        firstRow,
+        firstCol,
+        lastRow,
+        lastCol,
+        min.toDouble(),
+        max.toDouble(),
+        format._handle,
+      ),
     );
   }
 
@@ -529,9 +554,24 @@ class Worksheet {
     _check(
       midColor == null
           ? bindings.xlsxwConditional2Color(
-              _handle, firstRow, firstCol, lastRow, lastCol, minColor, maxColor)
-          : bindings.xlsxwConditional3Color(_handle, firstRow, firstCol,
-              lastRow, lastCol, minColor, midColor, maxColor),
+              _handle,
+              firstRow,
+              firstCol,
+              lastRow,
+              lastCol,
+              minColor,
+              maxColor,
+            )
+          : bindings.xlsxwConditional3Color(
+              _handle,
+              firstRow,
+              firstCol,
+              lastRow,
+              lastCol,
+              minColor,
+              midColor,
+              maxColor,
+            ),
     );
   }
 
@@ -550,7 +590,13 @@ class Worksheet {
     _validateCell(lastRow, lastCol);
     _check(
       bindings.xlsxwConditionalDataBar(
-          _handle, firstRow, firstCol, lastRow, lastCol, barColor),
+        _handle,
+        firstRow,
+        firstCol,
+        lastRow,
+        lastCol,
+        barColor,
+      ),
     );
   }
 }

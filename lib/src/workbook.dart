@@ -76,8 +76,9 @@ class Workbook implements Finalizable {
     final dir = Directory.systemTemp.createTempSync('xlsxwriter');
     final path = '${dir.path}${Platform.pathSeparator}workbook.xlsx';
     try {
-      final workbook =
-          constantMemory ? Workbook.constantMemory(path) : Workbook(path);
+      final workbook = constantMemory
+          ? Workbook.constantMemory(path)
+          : Workbook(path);
       build(workbook);
       workbook.close();
       return File(path).readAsBytesSync();
@@ -214,6 +215,9 @@ void _validateCell(int row, int col) {
 void _checkNoEmbeddedNul(String value, String name) {
   if (value.contains('\u0000')) {
     throw ArgumentError.value(
-        value, name, 'must not contain a U+0000 code unit');
+      value,
+      name,
+      'must not contain a U+0000 code unit',
+    );
   }
 }

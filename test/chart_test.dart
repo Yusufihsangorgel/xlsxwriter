@@ -7,7 +7,9 @@ import 'xlsx_reader.dart';
 
 void main() {
   late Directory dir;
-  setUp(() => dir = Directory.systemTemp.createTempSync('xlsxwriter_chart_test'));
+  setUp(
+    () => dir = Directory.systemTemp.createTempSync('xlsxwriter_chart_test'),
+  );
   tearDown(() => dir.deleteSync(recursive: true));
 
   String build(void Function(Workbook wb, Worksheet sheet) fn) {
@@ -97,9 +99,6 @@ void main() {
     wb.addWorksheet('Data');
     final chart = wb.addChart(ChartType.column);
     wb.close();
-    expect(
-      () => chart.addSeries(values: r'=Data!$A$1:$A$2'),
-      throwsStateError,
-    );
+    expect(() => chart.addSeries(values: r'=Data!$A$1:$A$2'), throwsStateError);
   });
 }

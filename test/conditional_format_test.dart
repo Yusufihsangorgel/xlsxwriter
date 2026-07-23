@@ -27,8 +27,15 @@ void main() {
       sheet.writeNumber(r, 0, r * 100);
     }
     final red = workbook.addFormat().backgroundColor(0xFFC7CE);
-    sheet.conditionalCell(0, 0, 4, 0,
-        criteria: ConditionalCriteria.greaterThan, value: 150, format: red);
+    sheet.conditionalCell(
+      0,
+      0,
+      4,
+      0,
+      criteria: ConditionalCriteria.greaterThan,
+      value: 150,
+      format: red,
+    );
     workbook.close();
 
     final xml = sheetXml(path);
@@ -54,15 +61,28 @@ void main() {
   test('conditionalColorScale writes a 2-colour and a 3-colour scale', () {
     final path2 = pathFor('scale2.xlsx');
     var workbook = Workbook(path2);
-    workbook.addWorksheet().conditionalColorScale(0, 0, 9, 0,
-        minColor: 0xF8696B, maxColor: 0x63BE7B);
+    workbook.addWorksheet().conditionalColorScale(
+      0,
+      0,
+      9,
+      0,
+      minColor: 0xF8696B,
+      maxColor: 0x63BE7B,
+    );
     workbook.close();
     expect(sheetXml(path2), contains('colorScale'));
 
     final path3 = pathFor('scale3.xlsx');
     workbook = Workbook(path3);
-    workbook.addWorksheet().conditionalColorScale(0, 0, 9, 0,
-        minColor: 0xF8696B, midColor: 0xFFEB84, maxColor: 0x63BE7B);
+    workbook.addWorksheet().conditionalColorScale(
+      0,
+      0,
+      9,
+      0,
+      minColor: 0xF8696B,
+      midColor: 0xFFEB84,
+      maxColor: 0x63BE7B,
+    );
     workbook.close();
     final xml3 = sheetXml(path3);
     expect(xml3, contains('colorScale'));

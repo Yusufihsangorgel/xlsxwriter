@@ -515,10 +515,7 @@ void main() {
       final workbook = Workbook(path);
       final sheet = workbook.addWorksheet();
       addTearDown(workbook.close);
-      expect(
-        () => sheet.writeString(0, 0, 'ab\u0000cd'),
-        throwsArgumentError,
-      );
+      expect(() => sheet.writeString(0, 0, 'ab\u0000cd'), throwsArgumentError);
       expect(
         () => sheet.writeFormula(0, 0, '=CONCAT("ab\u0000cd")'),
         throwsArgumentError,
@@ -531,10 +528,7 @@ void main() {
         () => sheet.mergeRange(1, 0, 1, 1, 'ab\u0000cd'),
         throwsArgumentError,
       );
-      expect(
-        () => workbook.addWorksheet('bad\u0000name'),
-        throwsArgumentError,
-      );
+      expect(() => workbook.addWorksheet('bad\u0000name'), throwsArgumentError);
       expect(
         () => workbook.addFormat().fontName('bad\u0000font'),
         throwsArgumentError,
@@ -558,11 +552,14 @@ void main() {
       final path = pathFor('writerow.xlsx');
       final workbook = Workbook(path);
       final date = workbook.addFormat().numberFormat('yyyy-mm-dd');
-      workbook.addWorksheet().writeRow(
-        0,
-        ['Widget', 12, 4.99, true, null, DateTime.utc(2026, 7, 20)],
-        dateFormat: date,
-      );
+      workbook.addWorksheet().writeRow(0, [
+        'Widget',
+        12,
+        4.99,
+        true,
+        null,
+        DateTime.utc(2026, 7, 20),
+      ], dateFormat: date);
       workbook.close();
 
       final file = XlsxFile.read(path);
