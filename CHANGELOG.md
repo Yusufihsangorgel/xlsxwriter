@@ -1,3 +1,14 @@
+## 0.7.2
+
+- Rework the README around how constant-memory mode works: what an `.xlsx`
+  actually is, why document-order XML lets you stream one, and what streaming
+  costs. Adds a measured memory-vs-rows chart (constant-memory holds about
+  189 MiB flat from 10k to 1M rows while the default mode reaches 1.4 GiB) and
+  a diagram of the one-row-in-RAM path.
+- Fix the `Workbook.constantMemory` doc comment, which said an out-of-order
+  write is silently dropped. A backward-row write throws `XlsxWriterException`;
+  it is not silent. Column order within the current row does not matter.
+
 ## 0.7.1
 
 - Fix a truncation bug: every string-taking API (`writeString`, `writeFormula`,

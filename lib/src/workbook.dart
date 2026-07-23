@@ -43,10 +43,11 @@ class Workbook implements Finalizable {
   /// row is started, so memory stays roughly flat regardless of sheet size.
   /// This is the mode to use when exporting hundreds of thousands of rows.
   ///
-  /// The trade-off is ordering: cells must be written in strict top-to-bottom,
-  /// and within a row left-to-right, order. Once you move to a new row the
-  /// previous row is on disk and can no longer be modified. Data written out
-  /// of order is silently dropped by libxlsxwriter.
+  /// The trade-off is ordering: rows must be written top to bottom. Once you
+  /// move to a new row the previous row is on disk and can no longer be
+  /// modified, so writing back to a row you have already passed throws an
+  /// [XlsxWriterException]. Column order within the row you are currently
+  /// writing does not matter.
   Workbook.constantMemory(String path) : this._(path, constantMemory: true);
 
   /// Builds a workbook and returns its `.xlsx` bytes, leaving no file behind.

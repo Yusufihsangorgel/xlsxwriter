@@ -1,19 +1,60 @@
 # xlsxwriter
 
-![xlsxwriter banner](doc/banner.png)
+![xlsxwriter banner](https://raw.githubusercontent.com/Yusufihsangorgel/xlsxwriter/main/doc/banner.png)
 
-A native, fast, low-memory Excel `.xlsx` **writer** for Dart. It is an FFI
-binding to [libxlsxwriter](https://github.com/jmcnamara/libxlsxwriter) by John
-McNamara, a mature C library, compiled from vendored source at build time.
+A native, fast, low-memory Excel `.xlsx` writer for Dart. It is an FFI binding
+to [libxlsxwriter](https://github.com/jmcnamara/libxlsxwriter) by John McNamara,
+compiled from vendored C source at build time. It writes spreadsheets; it does
+not read them. The one feature that sets it apart from the pure-Dart writers is
+a constant-memory mode that streams rows to disk, so a sheet of a million rows
+never has to fit in RAM.
 
-This package writes spreadsheets. It does not read them. If you need to read or
-edit existing files, use [`excel_community`](https://pub.dev/packages/excel_community)
-(the maintained fork of `excel`) or
-[`spreadsheet_decoder`](https://pub.dev/packages/spreadsheet_decoder). The niche
-here is the export and report-generation path: turning rows of data into an
-`.xlsx` quickly and with low memory, including a constant-memory mode for sheets
-that do not fit comfortably in RAM. It also writes native Excel charts, which
-the pure-Dart writers can't.
+If you need to read or edit existing files, use
+[`excel`](https://pub.dev/packages/excel) or
+[`spreadsheet_decoder`](https://pub.dev/packages/spreadsheet_decoder). This
+package is for the export and report-generation path: turning rows of data into
+an `.xlsx` quickly and with flat memory, with formats, tables, charts, images,
+and conditional formatting along the way.
+
+## How constant-memory writing works
+
+An `.xlsx` file is a ZIP archive of XML documents. Rename one to `.zip`, unpack
+it, and you find a small tree of parts: `[Content_Types].xml`, `_rels/.rels`,
+`xl/workbook.xml`, `xl/styles.xml`, and one `xl/worksheets/sheetN.xml` per
+sheet. For a large export almost all of the bytes are in one part: the worksheet
+XML, a flat stream of `<row>` elements holding `<c>` cell elements, in strict
+document order, top row first and left column first within each row.
+
+That ordering is what makes streaming possible. The worksheet part is written in
+document order and is never read back while you build it, so the writer never
+needs to revisit a row it has already emitted. A format that is append-only in
+document order is one you can stream.
+
+There are two ways to produce that XML:
+
+- **Default mode** builds the whole workbook in memory first. libxlsxwriter
+  keeps every row in a red-black tree, and every cell in another, all resident
+  until `close()`. Peak memory grows with the total number of cells. A million
+  rows by ten columns is ten million cell objects alive at once, about 1.4 GiB
+  in the benchmark below.
+- **Constant-memory mode** (`Workbook.constantMemory`) keeps exactly one row in
+  memory: a single reused row plus a per-column array for the cells of the row
+  you are writing now. When you move to a higher row number, that row is
+  serialized straight to XML in a temporary file on disk and its cells are
+  freed. At `close()`, the temp file (already the finished sheet XML) is copied
+  into the ZIP and deflated with zlib. Peak memory tracks your widest row, not
+  the sheet, so the curve is flat: about 189 MiB from ten thousand rows to a
+  million.
+
+![Constant-memory mode keeps one row in RAM while earlier rows are already XML in an on-disk temp file, copied into the .xlsx zip at close](https://raw.githubusercontent.com/Yusufihsangorgel/xlsxwriter/main/doc/mechanism.png)
+
+The cost of streaming is random access. Once you advance past a row it is on
+disk and gone: writing back to an earlier row throws an `XlsxWriterException`,
+and features that revisit cells, such as merged ranges, do not work in
+constant-memory mode. Write top to bottom. Column order within the current row
+does not matter, since those cells stay in the per-column array until the row
+flushes. Default mode gives up the flat curve in exchange for writing and
+overwriting cells in any order.
 
 ## Quick start
 
@@ -24,289 +65,218 @@ void main() {
   final workbook = Workbook('report.xlsx');
   final sheet = workbook.addWorksheet('Summary');
 
-  sheet.writeString(0, 0, 'Item');
-  sheet.writeString(0, 1, 'Amount');
-  sheet.writeString(1, 0, 'Widgets');
-  sheet.writeNumber(1, 1, 1250);
+  final header = workbook.addFormat()
+    ..bold()
+    ..backgroundColor(0x4472C4)
+    ..fontColor(0xFFFFFF);
 
-  // close() is what writes the file. Always call it.
-  workbook.close();
+  // writeRow picks the cell type per value: String -> text, int/double ->
+  // number, bool -> boolean, DateTime -> date, null -> blank.
+  sheet.writeRow(0, ['Item', 'Amount'], format: header);
+  sheet.writeRow(1, ['Widgets', 1250]);
+  sheet.writeRow(2, ['Gadgets', 340]);
+
+  workbook.close(); // close() writes the file; always call it
 }
 ```
 
 Rows and columns are 0-based integers, matching libxlsxwriter: `(0, 0)` is cell
-`A1`, `(1, 2)` is `C2`.
+`A1`, `(1, 2)` is `C2`. A `try`/`finally` around `close()` is a good fit; a
+workbook that is garbage-collected without `close()` is freed by a
+`NativeFinalizer` (so no leak) but its file is never written.
 
-## A row at a time
+## Streaming a large export
 
-A report is usually a list per row, so `writeRow` takes one and picks the right
-cell type per value: a `String` writes text, an `int` or `double` a number, a
-`bool` a boolean, a `DateTime` a date, and `null` a blank.
-
-```dart
-final date = workbook.addFormat().numberFormat('yyyy-mm-dd');
-sheet.writeRow(0, ['Item', 'Qty', 'Price', 'Added']); // header
-sheet.writeRow(1, ['Widget', 12, 4.99, DateTime.utc(2026, 7, 20)],
-    dateFormat: date);
-```
-
-A `DateTime` needs a `dateFormat` to render as a date rather than a serial, so
-one is required when the row has a date; a value of an unsupported type is an
-`ArgumentError` naming the column, not a silent coercion.
-
-## Formatting
-
-Create a `Format` with `workbook.addFormat()` and pass it to any write call. The
-setters return the format, so they chain:
-
-```dart
-final header = workbook.addFormat()
-  ..bold()
-  ..fontColor(0xFFFFFF)
-  ..backgroundColor(0x4472C4)
-  ..align(Alignment.center)
-  ..border(Border.thin);
-
-sheet.writeString(0, 0, 'Total', header);
-```
-
-Colors are 24-bit RGB integers, `0xRRGGBB`. The full set of attributes is
-`bold`, `italic`, `underline`, `fontName`, `fontSize`, `fontColor`,
-`backgroundColor`, `numberFormat`, `align`, `verticalAlign`, `textWrap`,
-`border`, and `borderColor`. A single format can be reused for any number of
-cells.
-
-## Dates and numbers
-
-Excel stores dates as numbers, so a date cell needs a format that carries a date
-number format:
-
-```dart
-final dateFormat = workbook.addFormat()..numberFormat('yyyy-mm-dd');
-sheet.writeDateTime(0, 0, DateTime(2026, 7, 17), dateFormat);
-
-final money = workbook.addFormat()..numberFormat(r'$#,##0.00');
-sheet.writeNumber(1, 0, 1999.5, money);
-```
-
-Both integers and doubles go through `writeNumber`; Excel has a single numeric
-type.
-
-## Tables
-
-Wrap a written range in an Excel table to get banded rows, a filter dropdown on
-each column, and a name you can use in formulas, which is what most reports and
-exports want. Pass the column names; they are written into the header row for
-you.
-
-```dart
-sheet.writeString(1, 0, 'Widgets');
-sheet.writeNumber(1, 1, 1250);
-// ... more rows ...
-sheet.addTable(
-  0, 0, 3, 1, // A1:B4
-  name: 'Sales',
-  columns: ['Item', 'Amount'],
-);
-```
-
-`autofilter`, `bandedRows`, `bandedColumns` and `totalRow` toggle the matching
-table features. Excel writes the default `Column1`, `Column2`... names over the
-header cells when `columns` is omitted, so pass it whenever the header matters.
-
-## Charts
-
-Write a real Excel chart from data already on a sheet. Add the chart, give it one
-or more series that reference cell ranges by formula, and drop it onto a sheet.
-The pure-Dart `excel` and `spreadsheet_decoder` packages can't produce charts at
-all, so this is the reason to reach for a native writer when a report needs one.
-
-```dart
-const items = ['Widgets', 'Gadgets', 'Gizmos'];
-const units = [1250, 340, 55];
-for (var i = 0; i < items.length; i++) {
-  sheet.writeString(i, 0, items[i]);
-  sheet.writeNumber(i, 1, units[i]);
-}
-
-final chart = workbook.addChart(ChartType.column)
-  ..setTitle('Units sold')
-  ..setAxisNames(category: 'Item', value: 'Units')
-  ..addSeries(
-    categories: r'=Sheet1!$A$1:$A$3',
-    values: r'=Sheet1!$B$1:$B$3',
-    name: 'Units',
-  );
-sheet.insertChart(0, 3, chart); // top-left at D1
-```
-
-`ChartType` covers `column`, `bar`, `line`, `area`, `pie`, `doughnut`, `scatter`
-and `radar`. A chart can plot several series (call `addSeries` more than once)
-and read data from any sheet in the workbook, since the ranges name their sheet.
-Scale it with `insertChart(row, col, chart, xScale: 2.0, yScale: 1.5)`.
-
-## Images
-
-`insertImage` places a PNG, JPEG, GIF or BMP at a cell, straight from bytes in
-memory, which is the shape a logo or a rendered chart already has, so no
-temporary file is needed:
-
-```dart
-sheet.insertImage(0, 0, File('logo.png').readAsBytesSync());
-sheet.insertImage(4, 2, chartPng, xScale: 0.5, yScale: 0.5, yOffset: 4);
-```
-
-`xScale`/`yScale` resize it (1.0 is native size) and `xOffset`/`yOffset` nudge it
-within the cell in pixels. Bytes that are not an image libxlsxwriter recognises
-throw an `XlsxWriterException`.
-
-## Conditional formatting
-
-The report and dashboard set: highlight cells by value, and colour a range as a
-heatmap or a data bar.
-
-```dart
-// Highlight amounts over 1000 in red.
-final red = workbook.addFormat().backgroundColor(0xFFC7CE);
-sheet.conditionalCell(1, 1, 99, 1,
-    criteria: ConditionalCriteria.greaterThan, value: 1000, format: red);
-
-// A green-to-red heatmap down a column (pass midColor for a 3-colour scale).
-sheet.conditionalColorScale(1, 2, 99, 2,
-    minColor: 0x63BE7B, maxColor: 0xF8696B);
-
-// In-cell data bars proportional to each value.
-sheet.conditionalDataBar(1, 3, 99, 3, barColor: 0x638EC6);
-```
-
-Each takes the range as `(firstRow, firstCol, lastRow, lastCol)`. `conditionalCell`
-covers the comparisons in `ConditionalCriteria` (greater than, less than, equal,
-and so on); `conditionalCellBetween` takes a `min` and `max`. Colours are
-`0xRRGGBB`, the same as `Format`.
-
-## Constant-memory mode for large sheets
-
-The default workbook holds everything in memory until `close()`. For very large
-exports, open the workbook in constant-memory mode. Each row is flushed to a
-temporary file as the next row begins, so memory stays roughly flat no matter
-how many rows you write:
+For an export that might not fit in RAM, open the workbook in constant-memory
+mode. Rows flush to disk as you go:
 
 ```dart
 final workbook = Workbook.constantMemory('big.xlsx');
-final sheet = workbook.addWorksheet();
-for (var row = 0; row < 1000000; row++) {
-  sheet.writeString(row, 0, 'row $row');
-  sheet.writeNumber(row, 1, row * 1.5);
+final sheet = workbook.addWorksheet('Export');
+
+sheet.writeRow(0, ['id', 'label', 'amount']);
+for (var row = 1; row <= 1000000; row++) {
+  sheet.writeRow(row, ['SKU-$row', 'Item $row', row * 1.5]);
 }
 workbook.close();
 ```
 
-The trade-off is ordering: cells must be written top-to-bottom, and left-to-right
-within a row. Once you start a new row the previous one is on disk and can no
-longer be changed. Data written out of order is dropped.
+Write rows top to bottom. Writing back to a row you have already passed throws
+`XlsxWriterException`.
 
-## Bytes for a server response
+## Benchmark
 
-To serve a generated spreadsheet straight from a request handler, without naming
-and cleaning up a scratch file, use `Workbook.toBytes`. You build the workbook the
-same way; it stages a temporary file, reads it back, and removes it for you:
+Write-only, N rows by 10 columns (one text column, nine numeric). Each engine is
+measured in its own process so the peak-memory reading is isolated. Apple
+Silicon, Dart 3.11; treat the figures as indicative, not a spec.
+
+![Peak memory vs row count: constant-memory mode holds about 189 MiB flat from 10k to 1M rows, while the in-memory default climbs to 1.4 GiB and excel sits above 1.9 GiB at 100k](https://raw.githubusercontent.com/Yusufihsangorgel/xlsxwriter/main/doc/benchmark.png)
+
+At 100,000 rows:
+
+| engine | time | peak memory |
+| --- | ---: | ---: |
+| `xlsxwriter` (constant memory) | 0.92 s | 189 MiB |
+| `xlsxwriter` (default) | 0.94 s | 314 MiB |
+| `excel` 4.0.6 (pure Dart) | 4.05 s | 1917 MiB |
+
+Against `excel`, the pure-Dart writer most people reach for, constant-memory
+mode uses about ten times less memory and runs about four times faster at
+100,000 rows. Memory is the real argument, and it widens as rows grow: the
+constant-memory line stays flat while an in-memory writer keeps climbing. The
+`excel` figure was measured in a separate project, because `excel` and this
+package's dev dependency `archive` need incompatible major versions of
+`archive`, which is also why `bench/bench.dart` measures only the two
+`xlsxwriter` modes.
+
+Reproduce this package's two modes with `dart run bench/bench.dart 100000 10`
+(see `bench/bench.dart` for the workload).
+
+## What you can write
+
+A short tour; see the API docs for the full set.
+
+**Values, a row at a time.** `writeRow` takes a `List<Object?>` and dispatches
+each value by runtime type. A `DateTime` needs a `dateFormat` to render as a
+date rather than a serial number:
+
+```dart
+final date = workbook.addFormat()..numberFormat('yyyy-mm-dd');
+sheet.writeRow(0, ['Item', 'Qty', 'Price', 'Added']);
+sheet.writeRow(1, ['Widget', 12, 4.99, DateTime.utc(2026, 7, 20)],
+    dateFormat: date);
+```
+
+Or write cells one at a time: `writeString`, `writeNumber`, `writeBool`,
+`writeFormula`, `writeDateTime`, `writeUrl`, `writeBlank`.
+
+**Formats.** `workbook.addFormat()` returns a `Format` whose setters chain and
+can be reused across any number of cells:
+
+```dart
+final money = workbook.addFormat()..numberFormat(r'$#,##0.00');
+sheet.writeNumber(1, 3, 1999.5, money);
+```
+
+The attributes are `bold`, `italic`, `underline`, `fontName`, `fontSize`,
+`fontColor`, `backgroundColor`, `numberFormat`, `align`, `verticalAlign`,
+`textWrap`, `border`, and `borderColor`. Colors are 24-bit RGB, `0xRRGGBB`.
+
+**Tables.** Wrap a range in an Excel table for banded rows, a per-column filter,
+and a name you can use in formulas:
+
+```dart
+sheet.addTable(0, 0, 3, 1, name: 'Sales', columns: ['Item', 'Amount']);
+```
+
+**Charts.** Write a real Excel chart from data on a sheet. The pure-Dart writers
+cannot produce charts, so this is a reason to reach for a native writer:
+
+```dart
+final chart = workbook.addChart(ChartType.column)
+  ..setTitle('Units sold')
+  ..setAxisNames(category: 'Item', value: 'Units')
+  ..addSeries(
+    categories: r'=Summary!$A$2:$A$4',
+    values: r'=Summary!$B$2:$B$4',
+    name: 'Units',
+  );
+sheet.insertChart(0, 3, chart);
+```
+
+`ChartType` covers `column`, `bar`, `line`, `area`, `pie`, `doughnut`,
+`scatter`, and `radar`.
+
+**Images.** `insertImage` places a PNG, JPEG, GIF, or BMP at a cell straight
+from bytes in memory (a logo, or a chart you rendered), so no temporary file is
+needed:
+
+```dart
+import 'dart:io';
+// ...
+sheet.insertImage(0, 0, File('logo.png').readAsBytesSync());
+```
+
+**Conditional formatting.** Highlight by value, or paint a range as a heatmap or
+data bars:
+
+```dart
+final red = workbook.addFormat()..backgroundColor(0xFFC7CE);
+sheet.conditionalCell(1, 1, 99, 1,
+    criteria: ConditionalCriteria.greaterThan, value: 1000, format: red);
+
+sheet.conditionalColorScale(1, 2, 99, 2,
+    minColor: 0x63BE7B, maxColor: 0xF8696B);
+
+sheet.conditionalDataBar(1, 3, 99, 3, barColor: 0x638EC6);
+```
+
+**Bytes for a server response.** To serve a generated spreadsheet from a request
+handler with no scratch file to name and clean up, use `Workbook.toBytes`:
 
 ```dart
 final bytes = Workbook.toBytes((workbook) {
   final sheet = workbook.addWorksheet('Summary');
-  sheet.writeString(0, 0, 'Item');
-  sheet.writeNumber(0, 1, 42);
+  sheet.writeRow(0, ['Item', 'Amount']);
+  sheet.writeRow(1, ['Widgets', 1250]);
 });
-
-// e.g. with shelf:
 // return Response.ok(bytes, headers: {
 //   'content-type':
 //       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-//   'content-disposition': 'attachment; filename="report.xlsx"',
 // });
 ```
 
-Pass `constantMemory: true` to build a large sheet with flat memory, with the same
-top-to-bottom ordering rule as above.
+Pass `constantMemory: true` to build a large sheet with flat memory, with the
+same top-to-bottom ordering rule.
 
-## Benchmark
+## What it does not do
 
-Write-only, 100,000 rows by 10 columns (one text column, nine numeric), each
-engine measured in its own process for an isolated peak-memory reading.
-Single machine (Apple Silicon, Dart 3.11), so treat these as indicative, not a
-spec:
-
-![Benchmark: xlsxwriter against excel_community and excel at 100k rows](doc/benchmark.png)
-
-| engine                          |   time | peak memory |
-| ------------------------------- | -----: | ----------: |
-| `xlsxwriter` (constant memory)  | 0.87 s |      191 MiB |
-| `xlsxwriter` (default)          | 1.29 s |      314 MiB |
-| `excel_community` 2.2.0         | 1.47 s |      614 MiB |
-| `excel` 4.0.6                   | 4.63 s |     1778 MiB |
-
-Compare against `excel_community`, not `excel`. `excel` has had no release since
-August 2024, so beating it by 5x is not the interesting number; the maintained
-fork is what you would otherwise use, and against that the honest figures are
-**3.2x less memory and 1.7x faster**. Memory is the real argument here and it
-widens as rows grow, because constant-memory mode stays roughly flat while an
-in-memory writer keeps climbing. On throughput alone the fork is close enough
-that it should not decide anything.
-
-One caveat in the competitors' favour: the two pure-Dart runs wrote plain values
-with no number formats or dates, so they did slightly less work than the
-`xlsxwriter` run they are compared against.
-Reproduce with `dart run bench/bench.dart` (this package) and see `bench/bench.dart`
-for the workload. Numbers vary by machine and Dart version; do not treat them as
-guaranteed.
-
-That memory argument is the whole reason to reach for constant-memory mode, and
-it is worth seeing on its own. Measured at three sizes, the same 10 columns:
-
-![Peak memory against row count: constant-memory mode stays flat near 191 MiB while the in-memory default climbs to 1433 MiB at a million rows](doc/memory_curve.png)
-
-| rows | default (in memory) | constant memory |
-| ---- | ------------------: | --------------: |
-| 10k  | 202 MiB | 192 MiB |
-| 100k | 314 MiB | 191 MiB |
-| 1M   | 1433 MiB | 191 MiB |
-
-Constant-memory mode holds the same footprint whether the sheet is ten thousand
-rows or a million, because it flushes each row to disk as it goes instead of
-building the whole workbook in memory. That is the mode for an export that might
-not fit in RAM. The default is faster to reach for on small sheets and lets you
-go back and edit cells you have already written; constant-memory gives that up
-for the flat curve.
+- **No reading.** It writes files only. To read or edit an existing `.xlsx`, use
+  `excel` or `spreadsheet_decoder`.
+- **Constant-memory mode is write-forward only.** Rows must be written top to
+  bottom. Writing back to an earlier row throws `XlsxWriterException`, and merged
+  ranges do not work in this mode (they need to revisit cells). Use the default
+  `Workbook(...)` when you need to write out of order or use merges.
+- **No NUL bytes in strings.** libxlsxwriter has no pointer+length string API, so
+  every string crosses the boundary NUL-terminated. A string containing a U+0000
+  code unit throws `ArgumentError` rather than silently truncating.
+- **Excel's own limits apply.** Strings over 32,767 characters and URLs over
+  2,079 characters throw `XlsxWriterException`.
 
 ## Platforms and requirements
 
-- Dart 3.10 or newer. The native library is built by a Dart build hook the
-  first time you run or test the package.
-- A C toolchain on the build machine (the standard compiler on each platform):
-  Clang or GCC on macOS and Linux, MSVC on Windows. No system libraries are
-  needed; both libxlsxwriter and zlib are vendored and compiled from source, so
-  the package is self-contained on macOS, Linux, and Windows.
-- Flutter support will follow once build hooks (native assets) are stable for
-  Flutter; today build hooks target the Dart standalone runtime.
+- Dart 3.10 or newer, standalone (CLI and server). The native library is built
+  by a Dart build hook the first time you run or test the package.
+- Linux, macOS, and Windows. `pubspec.yaml` declares exactly these three; the
+  build hook has no Android or iOS handling and has not been verified on them.
+- A C toolchain on the build machine: Clang or GCC on macOS and Linux, MSVC on
+  Windows. No system libraries are needed. libxlsxwriter and zlib are vendored
+  and compiled from source, so the package is self-contained.
+- Flutter is not supported yet. Build hooks target the Dart standalone runtime
+  today; Flutter support depends on native assets stabilizing for Flutter.
 
-## How it works
+CI builds and tests on Ubuntu, macOS, and Windows on every push
+(`.github/workflows/ci.yaml`): `dart format`, `dart analyze --fatal-infos`, and
+`dart test`, which writes files and reads them back with an independent XML
+reader to check the output.
 
-![Architecture: Dart API to FFI shim to native libxlsxwriter to xlsx file](doc/architecture.png)
+## Install
 
-The build hook (`hook/build.dart`) compiles the vendored libxlsxwriter sources,
-a vendored copy of zlib, and a small C shim into one dynamic library using
-`package:native_toolchain_c`. The Dart API binds the shim with `dart:ffi`. The
-shim exists mostly to give every entry point a stable, exported C ABI (which
-also makes symbol lookup work under MSVC on Windows).
+```
+dart pub add xlsxwriter
+```
+
+The first build compiles the vendored C, which takes a few seconds; later builds
+are cached.
 
 ## Credits and license
 
-This package is a binding. The engine that does the real work is
+The engine that does the real work is
 [libxlsxwriter](https://github.com/jmcnamara/libxlsxwriter) by **John McNamara**,
-licensed under the BSD 2-Clause license. Please credit that project for the
-`.xlsx` writing itself.
+under the BSD 2-Clause license. Please credit that project for the `.xlsx`
+writing itself.
 
-The Dart binding code is licensed under the MIT license (see `LICENSE`). The
-vendored C sources keep their own licenses: libxlsxwriter (BSD 2-Clause), zlib
-(zlib license), and the small permissive libraries libxlsxwriter bundles
-(minizip, md5, dtoa, tmpfileplus). Details are in `src/third_party/README.md`.
+The Dart binding is under the MIT license (see `LICENSE`). Vendored C keeps its
+own licenses: libxlsxwriter (BSD 2-Clause), zlib (zlib license), and the small
+libraries libxlsxwriter bundles (minizip, md5, dtoa, tmpfileplus). See
+`THIRD_PARTY_NOTICES.md` and `src/third_party/README.md`.
