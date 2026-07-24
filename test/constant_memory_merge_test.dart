@@ -29,16 +29,45 @@ void main() {
     final workbook = Workbook.constantMemory(path);
     final sheet = workbook.addWorksheet('s')..writeRow(5, ['x']);
 
-    expect(
-      () => sheet.mergeRange(0, 0, 0, 3, 'back'),
-      throwsA(isA<XlsxWriterException>()),
-    );
+    expect(() => sheet.mergeRange(0, 0, 0, 3, 'back'), throwsArgumentError);
 
     try {
       workbook.close();
     } on XlsxWriterException {
       // Closing after the rejected merge is not what this test pins.
     }
+  });
+
+  test('a merge straddling the current row throws instead of vanishing', () {
+    // The dangerous case: the range starts before the current row but ends
+    // after it. libxlsxwriter drops such a merge and reports nothing, so the
+    // sheet comes out missing it. The guard has to catch this too, not just a
+    // wholly backward range.
+    final path = '${dir.path}/straddle.xlsx';
+    final workbook = Workbook.constantMemory(path);
+    final sheet = workbook.addWorksheet('s')..writeRow(5, ['x']);
+
+    expect(() => sheet.mergeRange(3, 0, 6, 3, 'straddle'), throwsArgumentError);
+
+    try {
+      workbook.close();
+    } on XlsxWriterException {
+      // Not what this test pins.
+    }
+  });
+
+  test('a merge at or ahead of the current row still works', () {
+    final path = '${dir.path}/forward.xlsx';
+    final workbook = Workbook.constantMemory(path);
+    final sheet = workbook.addWorksheet('s')..writeRow(5, ['x']);
+
+    // Row 5 has not been flushed yet (nothing later has been written), so a
+    // merge starting there, or beyond it, is legitimate.
+    expect(() => sheet.mergeRange(5, 1, 5, 3, 'same row'), returnsNormally);
+    expect(() => sheet.mergeRange(7, 0, 8, 3, 'ahead'), returnsNormally);
+
+    workbook.close();
+    expect(File(path).existsSync(), isTrue);
   });
 }
 

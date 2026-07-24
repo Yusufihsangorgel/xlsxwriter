@@ -1,3 +1,30 @@
+## 1.0.0
+
+The API is stable. One thing had to change before freezing, because it was
+silent data loss.
+
+- **A `mergeRange` that reaches back into flushed rows now throws.** In
+  constant-memory mode libxlsxwriter drops such a merge and reports nothing, so
+  the sheet came out quietly missing it — 0.8.1 could only document that. The
+  worksheet now tracks the highest row written and refuses the merge with an
+  `ArgumentError` naming that row, before the native call. This covers the
+  straddling case (a range starting before the current row and ending after it),
+  which is the one that vanished; a wholly backward range already failed, but as
+  a native `XlsxWriterException`, and now fails the same way as every other
+  programmer error in this package. Merges at or ahead of the current row are
+  unaffected, including one starting on the current row, which is not yet
+  flushed.
+
+  Breaking only in the exception type for a merge that was already failing.
+
+Also verified by execution and pinned as tests: using a worksheet or workbook
+after `close()` throws instead of touching freed memory, closing twice is safe,
+600 workbooks in four batches leave RSS flat, and negative coordinates, NaN,
+infinities and embedded NULs are all rejected before reaching native code.
+
+`native_toolchain_c` is pre-1.0 but is a build-time dependency and does not
+reach the public API frozen here.
+
 ## 0.9.1
 
 - Add `example/README.md` for pub.dev's Example tab (it was empty). It describes

@@ -50,12 +50,12 @@ There are two ways to produce that XML:
 
 The cost of streaming is random access. Once you advance past a row it is on
 disk and gone: writing a cell back on an earlier row throws an
-`XlsxWriterException`. `mergeRange` works in constant-memory mode as long as
-the whole range sits at or ahead of the current row; a merge whose first row
-has already been flushed is not written, and libxlsxwriter does not report it,
-so keep merges ahead of where you are writing. Write top to bottom. Column
-order within the current row does not matter, since those cells stay in the
-per-column array until the row flushes. Default mode gives up the flat curve in exchange for writing and
+`XlsxWriterException`. `mergeRange` works as long as the whole range sits at or
+ahead of the current row; one that reaches back into flushed rows throws an
+`ArgumentError` naming the row it would have needed. (libxlsxwriter itself
+drops such a merge silently, which is why this package checks first.) Write top
+to bottom. Column order within the current row does not matter, since those
+cells stay in the per-column array until the row flushes. Default mode gives up the flat curve in exchange for writing and
 overwriting cells in any order.
 
 ## Quick start
@@ -238,8 +238,8 @@ same top-to-bottom ordering rule.
 - **Constant-memory mode is write-forward only.** Rows must be written top to
   bottom, and writing a cell back on an earlier row throws
   `XlsxWriterException`. A `mergeRange` has to sit entirely at or ahead of the
-  current row too; one whose first row is already flushed is silently not
-  written. Use the default `Workbook(...)` when you need to write out of order.
+  current row too, and one that reaches back throws `ArgumentError`. Use the
+  default `Workbook(...)` when you need to write out of order.
 - **No NUL bytes in strings.** libxlsxwriter has no pointer+length string API, so
   every string crosses the boundary NUL-terminated. A string containing a U+0000
   code unit throws `ArgumentError` rather than silently truncating.

@@ -11,6 +11,17 @@ final class Worksheet {
   final Workbook _workbook;
   final Pointer<Void> _handle;
 
+  /// The highest row index written so far, or -1 before the first write.
+  ///
+  /// In constant-memory mode libxlsxwriter flushes a row once a later one is
+  /// written, so this is the boundary before which the sheet is already on
+  /// disk. Only [mergeRange] needs it, to refuse a merge that reaches back.
+  int _maxRowWritten = -1;
+
+  void _noteRow(int row) {
+    if (row > _maxRowWritten) _maxRowWritten = row;
+  }
+
   /// Writes the string [value] to the cell at [row], [col].
   ///
   /// An empty string writes an empty (but formatted, if [format] is given)
@@ -21,6 +32,7 @@ final class Worksheet {
   void writeString(int row, int col, String value, [Format? format]) {
     _workbook._ensureOpen();
     _validateCell(row, col);
+    _noteRow(row);
     _checkNoEmbeddedNul(value, 'value');
     final cValue = value.toNativeUtf8();
     try {
@@ -46,6 +58,7 @@ final class Worksheet {
   void writeNumber(int row, int col, num value, [Format? format]) {
     _workbook._ensureOpen();
     _validateCell(row, col);
+    _noteRow(row);
     final d = value.toDouble();
     if (!d.isFinite) {
       // libxlsxwriter would write <v>NAN</v> / <v>INF</v>, which are not valid
@@ -65,6 +78,7 @@ final class Worksheet {
   void writeBool(int row, int col, bool value, [Format? format]) {
     _workbook._ensureOpen();
     _validateCell(row, col);
+    _noteRow(row);
     _check(
       bindings.xlsxwWriteBoolean(
         _handle,
@@ -84,6 +98,7 @@ final class Worksheet {
   void writeFormula(int row, int col, String formula, [Format? format]) {
     _workbook._ensureOpen();
     _validateCell(row, col);
+    _noteRow(row);
     _checkNoEmbeddedNul(formula, 'formula');
     final cFormula = formula.toNativeUtf8();
     try {
@@ -110,6 +125,7 @@ final class Worksheet {
   void writeDateTime(int row, int col, DateTime value, Format format) {
     _workbook._ensureOpen();
     _validateCell(row, col);
+    _noteRow(row);
     final seconds = value.second + value.millisecond / 1000.0;
     _check(
       bindings.xlsxwWriteDatetime(
@@ -136,6 +152,7 @@ final class Worksheet {
   void writeUrl(int row, int col, String url, [Format? format]) {
     _workbook._ensureOpen();
     _validateCell(row, col);
+    _noteRow(row);
     _checkNoEmbeddedNul(url, 'url');
     final cUrl = url.toNativeUtf8();
     try {
@@ -155,6 +172,7 @@ final class Worksheet {
   void writeBlank(int row, int col, [Format? format]) {
     _workbook._ensureOpen();
     _validateCell(row, col);
+    _noteRow(row);
     _check(bindings.xlsxwWriteBlank(_handle, row, col, _formatHandle(format)));
   }
 
@@ -269,7 +287,20 @@ final class Worksheet {
     _workbook._ensureOpen();
     _validateCell(firstRow, firstCol);
     _validateCell(lastRow, lastCol);
+    if (_workbook._constantMemory && firstRow < _maxRowWritten) {
+      // Those rows are already on disk, so libxlsxwriter drops the merge and
+      // reports nothing. Refuse it here rather than let the sheet come out
+      // silently missing a merge.
+      throw ArgumentError.value(
+        firstRow,
+        'firstRow',
+        'a merge in constant-memory mode must start at or after the highest '
+            'row written so far ($_maxRowWritten); earlier rows have been '
+            'flushed to disk and the merge would be silently dropped',
+      );
+    }
     _checkNoEmbeddedNul(value, 'value');
+    _noteRow(lastRow);
     final cValue = value.toNativeUtf8();
     try {
       _check(

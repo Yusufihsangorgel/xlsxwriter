@@ -88,7 +88,8 @@ final class Workbook implements Finalizable {
     }
   }
 
-  Workbook._(String path, {required bool constantMemory}) {
+  Workbook._(String path, {required bool constantMemory})
+    : _constantMemory = constantMemory {
     final cPath = path.toNativeUtf8();
     try {
       _handle = constantMemory
@@ -102,6 +103,10 @@ final class Workbook implements Finalizable {
     }
     _finalizer.attach(this, _handle, detach: this);
   }
+
+  /// Whether rows are flushed to disk as the sheet is written, which makes
+  /// writing back to an earlier row an error. See [Workbook.constantMemory].
+  final bool _constantMemory;
 
   static final NativeFinalizer _finalizer = NativeFinalizer(
     bindings.xlsxwWorkbookFreeFunction,
