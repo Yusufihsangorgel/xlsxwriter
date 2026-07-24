@@ -15,7 +15,7 @@ part of 'workbook.dart';
 /// Colors are 24-bit RGB integers, `0xRRGGBB` (for example `0xFF0000` is red).
 /// A single format may be applied to any number of cells. A format is valid
 /// only until its workbook is closed.
-class Format {
+final class Format {
   Format._(this._workbook, this._handle);
 
   final Workbook _workbook;

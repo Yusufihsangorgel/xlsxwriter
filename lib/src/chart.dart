@@ -20,7 +20,7 @@ part of 'workbook.dart';
 ///
 /// Series ranges are Excel range formulas that reference the sheet holding the
 /// data, so they include the sheet name, as in the example above.
-class Chart {
+final class Chart {
   Chart._(this._workbook, this._handle);
 
   final Workbook _workbook;

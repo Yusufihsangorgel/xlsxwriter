@@ -5,7 +5,7 @@ part of 'workbook.dart';
 /// All positions are 0-based: row `0`, column `0` is cell `A1`. A worksheet is
 /// valid only until its workbook is closed; using it afterwards throws a
 /// [StateError].
-class Worksheet {
+final class Worksheet {
   Worksheet._(this._workbook, this._handle);
 
   final Workbook _workbook;

@@ -25,6 +25,13 @@
 /// ```
 library;
 
-export 'src/enums.dart';
+export 'src/enums.dart'
+    show
+        Alignment,
+        Border,
+        ChartType,
+        ConditionalCriteria,
+        Underline,
+        VerticalAlignment;
 export 'src/exception.dart' show XlsxWriterException;
 export 'src/workbook.dart' show Chart, Format, Workbook, Worksheet;

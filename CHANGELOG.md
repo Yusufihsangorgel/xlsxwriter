@@ -1,3 +1,25 @@
+## 0.8.0
+
+Settles the class-modifier and export questions ahead of a 1.0.0 freeze, and
+corrects a limitation the README claimed but the code does not have.
+
+- Mark `Workbook`, `Worksheet`, `Format`, `Chart` and `XlsxWriterException` as
+  `final`. They are concrete handles over the libxlsxwriter objects, nothing
+  in the package, its tests, examples or benchmarks subtypes any of them, and
+  the package has added a feature per minor release. Sealing keeps those
+  additions non-breaking; adding `final` after 1.0.0 would take a major
+  version, while removing it later would not.
+- Name the enum exports explicitly rather than re-exporting `src/enums.dart`
+  whole, so a future symbol in that file cannot join the API silently. The
+  exported set is unchanged.
+- Correct the merged-range limitation. The README said merged ranges "do not
+  work in constant-memory mode". They do: `mergeRange` in that mode writes a
+  correct `mergeCell` as long as the range is at or ahead of the current row,
+  and throws only when it reaches back into rows already flushed to disk —
+  which is the same write-forward rule that already governs everything else in
+  that mode, not a separate limitation. Both places in the README now say
+  that, and two tests pin the behaviour in each direction.
+
 ## 0.7.2
 
 - Rework the README around how constant-memory mode works: what an `.xlsx`

@@ -9,7 +9,7 @@ import 'bindings.dart' as bindings;
 /// [code] is the underlying `lxw_error` value and [message] is
 /// libxlsxwriter's human-readable description of it, as returned by
 /// `lxw_strerror`.
-class XlsxWriterException implements Exception {
+final class XlsxWriterException implements Exception {
   /// Creates an exception for the given libxlsxwriter [code].
   XlsxWriterException(this.code) : message = _messageFor(code);
 

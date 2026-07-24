@@ -30,7 +30,7 @@ part 'chart.dart';
 /// [close] is what writes the file. A workbook that is garbage-collected
 /// without [close] is freed by a [NativeFinalizer] so no memory leaks, but the
 /// file is not written. Always call [close] (a `try`/`finally` is a good fit).
-class Workbook implements Finalizable {
+final class Workbook implements Finalizable {
   /// Opens a workbook that writes to [path] on [close].
   ///
   /// The whole workbook is held in memory until [close]. For very large sheets
