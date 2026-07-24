@@ -1,3 +1,16 @@
+## 0.8.1
+
+- Reject non-finite numbers. `writeNumber` (and `writeRow`) let `double.nan`,
+  `double.infinity` and `-double.infinity` through to libxlsxwriter, which
+  wrote `<v>NAN</v>` / `<v>INF</v>` into the cell — tokens that are not valid
+  in an xlsx numeric value, so Excel refused to open the file. They now throw
+  an `ArgumentError` at the call, before a corrupt file can be produced.
+- Correct the constant-memory merge description. 0.8.0 said a `mergeRange` that
+  reaches back into flushed rows throws; a range that straddles the current row
+  (first row already flushed, last row ahead) does not throw — libxlsxwriter
+  silently does not write it. The README now says a merge has to sit entirely
+  at or ahead of the current row, which is the accurate rule.
+
 ## 0.8.0
 
 Settles the class-modifier and export questions ahead of a 1.0.0 freeze, and

@@ -8,6 +8,7 @@ import 'package:xlsxwriter/xlsxwriter.dart';
 /// or ahead of the current row is written, one reaching back into flushed
 /// rows throws. These pin that contract.
 void main() {
+  _nonFiniteTests();
   late Directory dir;
   setUp(() => dir = Directory.systemTemp.createTempSync('xlsx_cm_merge'));
   tearDown(() => dir.deleteSync(recursive: true));
@@ -38,5 +39,47 @@ void main() {
     } on XlsxWriterException {
       // Closing after the rejected merge is not what this test pins.
     }
+  });
+}
+
+// Excel has no NaN or Infinity; libxlsxwriter would emit <v>NAN</v>, which
+// makes the file invalid. writeNumber must reject non-finite values.
+void _nonFiniteTests() {
+  group('non-finite numbers', () {
+    late Directory dir;
+    setUp(() => dir = Directory.systemTemp.createTempSync('xlsx_nonfinite'));
+    tearDown(() => dir.deleteSync(recursive: true));
+
+    test('writeNumber rejects NaN and infinities', () {
+      final workbook = Workbook('${dir.path}/nf.xlsx');
+      final sheet = workbook.addWorksheet('s');
+      for (final v in <double>[
+        double.nan,
+        double.infinity,
+        double.negativeInfinity,
+      ]) {
+        expect(
+          () => sheet.writeNumber(0, 0, v),
+          throwsA(isA<ArgumentError>()),
+          reason: '$v must be rejected',
+        );
+      }
+      sheet.writeNumber(0, 0, 3.14);
+      workbook.close();
+    });
+
+    test('writeRow rejects a non-finite number in a row', () {
+      final workbook = Workbook('${dir.path}/nfrow.xlsx');
+      final sheet = workbook.addWorksheet('s');
+      expect(
+        () => sheet.writeRow(0, ['ok', double.infinity]),
+        throwsA(isA<ArgumentError>()),
+      );
+      try {
+        workbook.close();
+      } on XlsxWriterException {
+        // closing after the rejected write is not what this pins
+      }
+    });
   });
 }

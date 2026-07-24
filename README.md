@@ -49,12 +49,13 @@ There are two ways to produce that XML:
 ![Constant-memory mode keeps one row in RAM while earlier rows are already XML in an on-disk temp file, copied into the .xlsx zip at close](https://raw.githubusercontent.com/Yusufihsangorgel/xlsxwriter/main/doc/mechanism.png)
 
 The cost of streaming is random access. Once you advance past a row it is on
-disk and gone: writing back to an earlier row throws an `XlsxWriterException`.
-That one rule covers merges too — `mergeRange` works in constant-memory mode
-as long as the range is at or ahead of the current row, and throws if it
-reaches back into rows already flushed. Write top to bottom. Column order within the current row
-does not matter, since those cells stay in the per-column array until the row
-flushes. Default mode gives up the flat curve in exchange for writing and
+disk and gone: writing a cell back on an earlier row throws an
+`XlsxWriterException`. `mergeRange` works in constant-memory mode as long as
+the whole range sits at or ahead of the current row; a merge whose first row
+has already been flushed is not written, and libxlsxwriter does not report it,
+so keep merges ahead of where you are writing. Write top to bottom. Column
+order within the current row does not matter, since those cells stay in the
+per-column array until the row flushes. Default mode gives up the flat curve in exchange for writing and
 overwriting cells in any order.
 
 ## Quick start
@@ -235,10 +236,10 @@ same top-to-bottom ordering rule.
 - **No reading.** It writes files only. To read or edit an existing `.xlsx`, use
   `excel` or `spreadsheet_decoder`.
 - **Constant-memory mode is write-forward only.** Rows must be written top to
-  bottom, and writing back to an earlier row throws `XlsxWriterException`. This
-  applies to `mergeRange` as well: merging a range at or ahead of the current
-  row works, merging back into flushed rows throws. Use the default
-  `Workbook(...)` when you need to write out of order.
+  bottom, and writing a cell back on an earlier row throws
+  `XlsxWriterException`. A `mergeRange` has to sit entirely at or ahead of the
+  current row too; one whose first row is already flushed is silently not
+  written. Use the default `Workbook(...)` when you need to write out of order.
 - **No NUL bytes in strings.** libxlsxwriter has no pointer+length string API, so
   every string crosses the boundary NUL-terminated. A string containing a U+0000
   code unit throws `ArgumentError` rather than silently truncating.

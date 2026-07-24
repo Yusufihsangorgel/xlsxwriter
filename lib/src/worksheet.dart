@@ -46,12 +46,22 @@ final class Worksheet {
   void writeNumber(int row, int col, num value, [Format? format]) {
     _workbook._ensureOpen();
     _validateCell(row, col);
+    final d = value.toDouble();
+    if (!d.isFinite) {
+      // libxlsxwriter would write <v>NAN</v> / <v>INF</v>, which are not valid
+      // in an xlsx numeric cell and make Excel refuse the file.
+      throw ArgumentError.value(
+        value,
+        'value',
+        'must be finite; Excel has no NaN or Infinity',
+      );
+    }
     _check(
       bindings.xlsxwWriteNumber(
         _handle,
         row,
         col,
-        value.toDouble(),
+        d,
         _formatHandle(format),
       ),
     );
