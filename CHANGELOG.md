@@ -1,3 +1,10 @@
+## 0.9.1
+
+- Add `example/README.md` for pub.dev's Example tab (it was empty). It describes
+  what `xlsxwriter_example.dart` writes into `example_report.xlsx` — a merged
+  title, formatted columns, a live `SUM` formula, a date column, frozen panes,
+  and a chart — and notes the 0.9.0 enum renames. Docs only.
+
 ## 0.9.0
 
 - **Renamed two enums that shadowed Flutter's own types.** `Alignment` is now
