@@ -15,7 +15,7 @@ void main() {
     ..fontSize(14)
     ..fontColor(0xFFFFFF)
     ..backgroundColor(0x4472C4)
-    ..align(Alignment.center)
+    ..align(HorizontalAlignment.center)
     ..verticalAlign(VerticalAlignment.center);
   sheet.mergeRange(0, 0, 0, 3, 'Quarterly Sales', title);
   sheet.setRow(0, 24);
@@ -23,7 +23,7 @@ void main() {
   // Column headers.
   final header = workbook.addFormat()
     ..bold()
-    ..border(Border.thin)
+    ..border(CellBorder.thin)
     ..backgroundColor(0xD9E1F2);
   const headings = ['Item', 'Units', 'Unit Price', 'Total'];
   for (var col = 0; col < headings.length; col++) {

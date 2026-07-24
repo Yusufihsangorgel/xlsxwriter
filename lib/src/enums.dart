@@ -1,7 +1,7 @@
 /// Horizontal cell alignment, applied with [Format.align].
 ///
 /// Values mirror libxlsxwriter's `lxw_format_alignments` horizontal members.
-enum Alignment {
+enum HorizontalAlignment {
   /// Excel's default alignment for the cell's data type.
   none(0),
 
@@ -26,7 +26,7 @@ enum Alignment {
   /// Distributed.
   distributed(7);
 
-  const Alignment(this.value);
+  const HorizontalAlignment(this.value);
 
   /// The libxlsxwriter enum value passed across the FFI boundary.
   final int value;
@@ -85,7 +85,7 @@ enum Underline {
 /// Cell border style, applied with [Format.border].
 ///
 /// Values mirror libxlsxwriter's `lxw_format_borders`.
-enum Border {
+enum CellBorder {
   /// No border.
   none(0),
 
@@ -128,7 +128,7 @@ enum Border {
   /// Slant dash-dot border.
   slantDashDot(13);
 
-  const Border(this.value);
+  const CellBorder(this.value);
 
   /// The libxlsxwriter enum value passed across the FFI boundary.
   final int value;

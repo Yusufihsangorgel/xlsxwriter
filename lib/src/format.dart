@@ -9,7 +9,7 @@ part of 'workbook.dart';
 ///   ..bold()
 ///   ..fontColor(0xFFFFFF)
 ///   ..backgroundColor(0x4472C4)
-///   ..align(Alignment.center);
+///   ..align(HorizontalAlignment.center);
 /// ```
 ///
 /// Colors are 24-bit RGB integers, `0xRRGGBB` (for example `0xFF0000` is red).
@@ -92,7 +92,7 @@ final class Format {
   }
 
   /// Sets the horizontal [alignment].
-  Format align(Alignment alignment) {
+  Format align(HorizontalAlignment alignment) {
     _workbook._ensureOpen();
     bindings.xlsxwFormatSetAlign(_handle, alignment.value);
     return this;
@@ -114,7 +114,7 @@ final class Format {
 
   /// Draws a border on all four sides of the cell with [style], a thin border
   /// by default.
-  Format border([Border style = Border.thin]) {
+  Format border([CellBorder style = CellBorder.thin]) {
     _workbook._ensureOpen();
     bindings.xlsxwFormatSetBorder(_handle, style.value);
     return this;

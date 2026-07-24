@@ -1,3 +1,20 @@
+## 0.9.0
+
+- **Renamed two enums that shadowed Flutter's own types.** `Alignment` is now
+  `HorizontalAlignment` (symmetric with the existing `VerticalAlignment`) and
+  `Border` is now `CellBorder`. Both old names collide with
+  `package:flutter/material.dart`, and the collision broke the *caller's*
+  Flutter code, not ours: importing this package plainly next to material made
+  `Alignment.center` and `Border.all()` ambiguous, so a Flutter app exporting a
+  spreadsheet had to hide our names or prefix the import. Verified in a real
+  Flutter project before and after — `ambiguous_import` on both names before,
+  a clean analysis with every exported name in use after. `BorderStyle` was not
+  chosen as the replacement because Flutter has one of those too.
+
+  To migrate, rename at the call site: `Alignment.center` becomes
+  `HorizontalAlignment.center`, `Border.thin` becomes `CellBorder.thin`. The
+  values and their meanings are unchanged.
+
 ## 0.8.1
 
 - Reject non-finite numbers. `writeNumber` (and `writeRow`) let `double.nan`,

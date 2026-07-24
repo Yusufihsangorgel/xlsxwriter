@@ -57,13 +57,7 @@ final class Worksheet {
       );
     }
     _check(
-      bindings.xlsxwWriteNumber(
-        _handle,
-        row,
-        col,
-        d,
-        _formatHandle(format),
-      ),
+      bindings.xlsxwWriteNumber(_handle, row, col, d, _formatHandle(format)),
     );
   }
 

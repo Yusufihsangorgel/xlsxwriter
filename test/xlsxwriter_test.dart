@@ -365,7 +365,7 @@ void main() {
     });
 
     test('align sets horizontal alignment', () {
-      final p = probe('align.xlsx', (f) => f.align(Alignment.center));
+      final p = probe('align.xlsx', (f) => f.align(HorizontalAlignment.center));
       expect(
         p.xf.findElements('alignment').first.getAttribute('horizontal'),
         'center',
@@ -406,7 +406,7 @@ void main() {
     test('borderColor sets a colored border', () {
       final p = probe(
         'bordercolor.xlsx',
-        (f) => f.border(Border.medium).borderColor(0x00FF00),
+        (f) => f.border(CellBorder.medium).borderColor(0x00FF00),
       );
       final border = borderFor(p.file.styles, p.xf);
       final left = border.findElements('left').first;

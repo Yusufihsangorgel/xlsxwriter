@@ -27,8 +27,8 @@ library;
 
 export 'src/enums.dart'
     show
-        Alignment,
-        Border,
+        HorizontalAlignment,
+        CellBorder,
         ChartType,
         ConditionalCriteria,
         Underline,
