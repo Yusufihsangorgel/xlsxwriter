@@ -603,6 +603,16 @@ void main() {
       );
       workbook.close();
     });
+
+    test('close reports a write failure instead of swallowing it', () {
+      // close() is the only call that writes the file. If its return code goes
+      // unchecked the export produces no file and no error, which is the worst
+      // possible shape for a failure here.
+      final workbook = Workbook(pathFor('no/such/directory/out.xlsx'));
+      workbook.addWorksheet().writeString(0, 0, 'x');
+
+      expect(workbook.close, throwsA(isA<XlsxWriterException>()));
+    });
   });
 }
 
