@@ -203,12 +203,39 @@ void _check(int code) {
 Pointer<Void> _formatHandle(Format? format) =>
     format == null ? nullptr : format._handle;
 
+/// The largest value the `Uint32` row and column parameters can carry.
+///
+/// libxlsxwriter rejects anything past Excel's own limits, so a row of two
+/// million already fails with an [XlsxWriterException]. It never sees a value
+/// this large, though: the FFI signature truncates to 32 bits first, so
+/// `2^32 + 3` arrives as `3` and writes to the fourth row without complaint.
+/// A row index computed from an offset, a sum, or an id is exactly the kind
+/// that overflows, and the corruption is silent — the file is valid, the data
+/// is in the wrong cell.
+const int _maxCellIndex = 0xFFFFFFFF;
+
 void _validateCell(int row, int col) {
   if (row < 0) {
     throw ArgumentError.value(row, 'row', 'must be greater than or equal to 0');
   }
   if (col < 0) {
     throw ArgumentError.value(col, 'col', 'must be greater than or equal to 0');
+  }
+  if (row > _maxCellIndex) {
+    throw ArgumentError.value(
+      row,
+      'row',
+      'is too large to pass to libxlsxwriter, which would wrap it to '
+          '${row & _maxCellIndex} and write to the wrong row',
+    );
+  }
+  if (col > _maxCellIndex) {
+    throw ArgumentError.value(
+      col,
+      'col',
+      'is too large to pass to libxlsxwriter, which would wrap it to '
+          '${col & _maxCellIndex} and write to the wrong column',
+    );
   }
 }
 

@@ -509,6 +509,25 @@ void main() {
       expect(() => sheet.writeNumber(0, -1, 1), throwsArgumentError);
     });
 
+    test('a row or column past 32 bits throws instead of wrapping', () {
+      // The FFI parameters are Uint32, so an index this large used to be
+      // truncated before libxlsxwriter could range-check it: 2^32 + 3 arrived
+      // as 3 and the value landed in the fourth row with no error at all.
+      final path = pathFor('wraparound.xlsx');
+      final workbook = Workbook(path);
+      final sheet = workbook.addWorksheet();
+      addTearDown(workbook.close);
+      expect(() => sheet.writeString(0x100000003, 0, 'x'), throwsArgumentError);
+      expect(() => sheet.writeNumber(0, 0x100000007, 1), throwsArgumentError);
+
+      // An index Excel cannot hold but that still fits in 32 bits keeps
+      // failing the way it always has, from the native range check.
+      expect(
+        () => sheet.writeString(2000000, 0, 'x'),
+        throwsA(isA<XlsxWriterException>()),
+      );
+    });
+
     test('a value with an embedded NUL throws ArgumentError instead of '
         'silently truncating', () {
       final path = pathFor('embeddednul.xlsx');

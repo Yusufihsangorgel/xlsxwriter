@@ -1,3 +1,18 @@
+## 1.0.1
+
+- **Reject a row or column past 32 bits instead of writing to the wrong
+  cell.** The FFI parameters are `Uint32`, and validation only checked for
+  negatives, so an index of `2^32 + 3` was truncated to `3` before
+  libxlsxwriter could range-check it: the value landed in the fourth row, the
+  file was valid, and nothing reported a problem. An index computed from an
+  offset, a running sum, or an id is exactly the kind that gets that large,
+  and silent corruption is worse than a slow failure.
+
+  Such an index now throws an [ArgumentError] naming the row it would have
+  wrapped to. Indices that exceed Excel's own limits but still fit in 32 bits
+  are unchanged: they keep failing with [XlsxWriterException] from the native
+  range check, as before.
+
 ## 1.0.0
 
 The API is stable. One thing had to change before freezing, because it was
