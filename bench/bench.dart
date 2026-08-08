@@ -8,6 +8,14 @@
 // subprocess (pass `--engine=default` or `--engine=constant-memory` to run just
 // one); the top-level invocation spawns each and prints a table.
 //
+// `maxRss` being a whole-process peak matters more than it sounds. On this
+// machine a Dart VM that has loaded this package sits around 188 MiB before it
+// writes a single cell, so a run that reports a 189 MiB peak has not measured
+// the writer at all — it has measured the runtime hosting it. Every mode
+// therefore samples the same counter once before the first write and reports
+// both: the raw peak, and the part the export is actually responsible for.
+// Reporting only the raw peak is how a writer gets blamed for its host.
+//
 // The comparison against the pure-Dart `excel` package quoted in the README was
 // measured separately, because `excel` and this package's test dependency
 // `archive` require incompatible major versions and cannot share one pubspec.
@@ -40,11 +48,18 @@ void main(List<String> args) {
     'xlsxwriter benchmark: $rows rows x $cols cols (write-only)\n',
   );
   stdout.writeln(
-    '${'mode'.padRight(24)}${'time'.padLeft(12)}${'peak RSS'.padLeft(14)}',
+    '${'mode'.padRight(22)}${'time'.padLeft(10)}${'peak RSS'.padLeft(13)}'
+    '${'baseline'.padLeft(13)}${'the sheet'.padLeft(13)}',
   );
-  stdout.writeln('-' * 50);
+  stdout.writeln('-' * 71);
   _spawn('default (in memory)', 'default', rows, cols);
   _spawn('constant memory', 'constant-memory', rows, cols);
+  stdout.writeln(
+    '\n"peak RSS" is ProcessInfo.maxRss, the highest the whole process reached.\n'
+    '"baseline" is that same counter sampled before the first write, so it is\n'
+    'the Dart VM\'s own footprint with this package loaded. "the sheet" is the\n'
+    'difference: the only column that is about the writer.',
+  );
 }
 
 void _spawn(String label, String engine, int rows, int cols) {
@@ -60,27 +75,34 @@ void _spawn(String label, String engine, int rows, int cols) {
     stderr.writeln((result.stderr as String).trim());
     return;
   }
-  // The child emits a "RESULT <millis> <peakRssBytes>" marker; find it amid any
-  // toolchain output (such as the "Running build hooks..." notice, which is
-  // printed without a trailing newline).
+  // The child emits a "RESULT <millis> <peakRssBytes> <baselineRssBytes>"
+  // marker; find it amid any toolchain output (such as the "Running build
+  // hooks..." notice, which is printed without a trailing newline).
   final match = RegExp(
-    r'RESULT (\d+) (\d+)',
+    r'RESULT (\d+) (\d+) (\d+)',
   ).firstMatch(result.stdout as String);
   if (match == null) {
-    stdout.writeln('${label.padRight(24)}${'no result'.padLeft(12)}');
+    stdout.writeln('${label.padRight(22)}${'no result'.padLeft(10)}');
     return;
   }
   final millis = int.parse(match.group(1)!);
   final peakRss = int.parse(match.group(2)!);
+  final baselineRss = int.parse(match.group(3)!);
   stdout.writeln(
-    '${label.padRight(24)}'
-    '${'${millis}ms'.padLeft(12)}'
-    '${_mib(peakRss).padLeft(14)}',
+    '${label.padRight(22)}'
+    '${'${millis}ms'.padLeft(10)}'
+    '${_mib(peakRss).padLeft(13)}'
+    '${_mib(baselineRss).padLeft(13)}'
+    '${_mib(peakRss - baselineRss).padLeft(13)}',
   );
 }
 
 void _run(int rows, int cols, {required bool constantMemory}) {
   final path = _tempPath();
+  // Sampled before the first write and after the package is loaded, so it
+  // records how high the VM had already climbed on its own. maxRss only ever
+  // goes up, so the difference at the end belongs to the export.
+  final baselineRss = ProcessInfo.maxRss;
   final stopwatch = Stopwatch()..start();
   final workbook = constantMemory
       ? Workbook.constantMemory(path)
@@ -97,9 +119,12 @@ void _run(int rows, int cols, {required bool constantMemory}) {
   }
   workbook.close();
   stopwatch.stop();
+  // Read the peak after close(), which is where the sheet XML is deflated into
+  // the zip: the last chance for memory to spike.
+  final peakRss = ProcessInfo.maxRss;
   // A marker line the driver can find amid any toolchain output.
   stdout.writeln(
-    'RESULT ${stopwatch.elapsedMilliseconds} ${ProcessInfo.maxRss}',
+    'RESULT ${stopwatch.elapsedMilliseconds} $peakRss $baselineRss',
   );
   final file = File(path);
   if (file.existsSync()) file.deleteSync();

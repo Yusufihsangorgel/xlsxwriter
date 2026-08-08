@@ -14,8 +14,9 @@ topics:
 
 screenshots:
   - description: >-
-      Peak memory vs rows: constant-memory mode holds about 189 MiB flat from
-      10k to 1M rows while the in-memory default climbs to 1.4 GiB.
+      What the export itself costs, once the process baseline is subtracted:
+      constant-memory mode stays on zero from 10k to 1M rows while the
+      in-memory default climbs to 1244 MiB.
     path: doc/benchmark.png
   - description: >-
       How constant-memory mode works: one row in RAM, earlier rows already XML

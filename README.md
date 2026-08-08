@@ -35,16 +35,17 @@ There are two ways to produce that XML:
 - **Default mode** builds the whole workbook in memory first. libxlsxwriter
   keeps every row in a red-black tree, and every cell in another, all resident
   until `close()`. Peak memory grows with the total number of cells. A million
-  rows by ten columns is ten million cell objects alive at once, about 1.4 GiB
-  in the benchmark below.
+  rows by ten columns is ten million cell objects alive at once, about 1.2 GiB
+  in the chart below.
 - **Constant-memory mode** (`Workbook.constantMemory`) keeps exactly one row in
   memory: a single reused row plus a per-column array for the cells of the row
   you are writing now. When you move to a higher row number, that row is
   serialized straight to XML in a temporary file on disk and its cells are
   freed. At `close()`, the temp file (already the finished sheet XML) is copied
   into the ZIP and deflated with zlib. Peak memory tracks your widest row, not
-  the sheet, so the curve is flat: about 189 MiB from ten thousand rows to a
-  million.
+  the sheet, so the curve is flat — and flat at nothing: from ten thousand rows
+  to a million, writing the sheet never raised this process's peak by as much
+  as a megabyte.
 
 ![Constant-memory mode keeps one row in RAM while earlier rows are already XML in an on-disk temp file, copied into the .xlsx zip at close](https://raw.githubusercontent.com/Yusufihsangorgel/xlsxwriter/main/doc/mechanism.png)
 
@@ -106,33 +107,64 @@ workbook.close();
 Write rows top to bottom. Writing back to a row you have already passed throws
 `XlsxWriterException`.
 
+`example/xlsxwriter_example.dart` is that loop as a program you can run:
+it streams 200,000 rows, reports how much the export raised the process's peak
+memory (sampling `ProcessInfo.maxRss` before and after, so the Dart VM's own
+footprint is not counted as the writer's), and demonstrates both ordering
+errors. Pass `--mode=default` to build the same sheet in memory and compare, or
+`--rows=1000000` to check that the constant-memory figure does not move.
+
 ## Benchmark
 
 Write-only, N rows by 10 columns (one text column, nine numeric). Each engine is
 measured in its own process so the peak-memory reading is isolated. Apple
-Silicon, Dart 3.11; treat the figures as indicative, not a spec.
+Silicon, macOS 26.3, Dart 3.11.0; treat the figures as indicative, not a spec.
 
-![Peak memory vs row count: constant-memory mode holds about 189 MiB flat from 10k to 1M rows, while the in-memory default climbs to 1.4 GiB and excel sits above 1.9 GiB at 100k](https://raw.githubusercontent.com/Yusufihsangorgel/xlsxwriter/main/doc/benchmark.png)
+![What the export itself costs: peak memory minus the baseline each process started from. Constant-memory mode stays on zero from 10k to 1M rows, the in-memory default climbs to 1244 MiB at 1M rows, and excel 4.0.6 spends 1665 MiB at 100k](https://raw.githubusercontent.com/Yusufihsangorgel/xlsxwriter/main/doc/benchmark.png)
 
-At 100,000 rows:
+`ProcessInfo.maxRss` is the peak for the whole process, and a Dart VM with this
+package loaded already sits near 188 MiB before it writes a single cell. So
+each run samples that counter once before the first write and reports the
+difference too. The last column is the only one that is about the writer:
 
-| engine | time | peak memory |
-| --- | ---: | ---: |
-| `xlsxwriter` (constant memory) | 0.92 s | 189 MiB |
-| `xlsxwriter` (default) | 0.94 s | 314 MiB |
-| `excel` 4.0.6 (pure Dart) | 4.05 s | 1917 MiB |
+| engine | time | peak RSS | baseline | the sheet |
+| --- | ---: | ---: | ---: | ---: |
+| `xlsxwriter` (constant memory) | 0.79 s | 188.7 MiB | 188.4 MiB | 0.2 MiB |
+| `xlsxwriter` (default) | 0.89 s | 312.5 MiB | 188.3 MiB | 124.3 MiB |
+| `excel` 4.0.6 (pure Dart) | 4.12 s | 1927.0 MiB | 263.0 MiB | 1664.5 MiB |
 
-Against `excel`, the pure-Dart writer most people reach for, constant-memory
-mode uses about ten times less memory and runs about four times faster at
-100,000 rows. Memory is the real argument, and it widens as rows grow: the
-constant-memory line stays flat while an in-memory writer keeps climbing. The
-`excel` figure was measured in a separate project, because `excel` and this
-package's dev dependency `archive` need incompatible major versions of
-`archive`, which is also why `bench/bench.dart` measures only the two
-`xlsxwriter` modes.
+At 100,000 rows: medians of five runs for the two `xlsxwriter` modes, three for
+`excel`. Each column is its own median, so the last one is the median of the
+per-run differences rather than the difference of the two columns beside it.
 
-Reproduce this package's two modes with `dart run bench/bench.dart 100000 10`
-(see `bench/bench.dart` for the workload).
+Constant-memory mode's cost is not small, it is absent. Across runs at ten
+thousand, a hundred thousand and a million rows the export moved the process
+peak by between 0.0 and 0.4 MiB, which is the noise floor of a whole-process
+measurement. Default mode's cost is real and linear in cells — 12, 124 and
+1244 MiB at those three sizes — and `excel`, the pure-Dart writer most people
+reach for, spends 1.6 GiB to produce the same hundred thousand rows and takes
+about five times as long.
+
+Dividing the raw peaks instead gives "about ten times less memory". That
+sentence is true and it is the wrong number, because it understates: almost all
+of this package's 188.7 MiB peak was already there before the first cell, so
+the ratio mostly compares two runtimes. Measured on what the export actually
+added, `excel` costs 13x what default mode does — 1664.5 MiB against 124.3 —
+and against constant memory there is no ratio worth quoting, because the
+denominator is the noise floor.
+
+The `excel` row comes from a throwaway package running the same workload with
+the same before-and-after sampling, because `excel` and this package's dev
+dependency `archive` need incompatible major versions of `archive` and cannot
+share one pubspec. Its baseline sits 75 MiB higher for the same reason: it is a
+different process, with `archive` and an in-memory cell model loaded before it
+starts. That is also why `bench/bench.dart` measures only the two `xlsxwriter`
+modes.
+
+Reproduce those two with `dart run bench/bench.dart 100000 10` (see
+`bench/bench.dart` for the workload). The chart above is redrawn by
+`dart run tool/benchmark_chart.dart`, which holds the measured figures as
+constants, so moving the chart means re-running the benchmark first.
 
 ## What you can write
 
@@ -255,6 +287,14 @@ same top-to-bottom ordering rule.
 - A C toolchain on the build machine: Clang or GCC on macOS and Linux, MSVC on
   Windows. No system libraries are needed. libxlsxwriter and zlib are vendored
   and compiled from source, so the package is self-contained.
+- **To ship a compiled executable, use `dart build cli`, not
+  `dart compile exe`.** The native library reaches your program as a code asset
+  produced by a build hook, and `dart compile` does not run build hooks: in a
+  package that depends on this one it stops with *"'dart compile' does not
+  support build hooks, use 'dart build' instead."* `dart build cli` emits a
+  bundle with your executable in `bin/` and the library beside it in `lib/`
+  (`libxlsxwriter.dylib` on macOS) — ship the bundle, not the bare binary. The
+  command is still marked preview in Dart 3.11.
 - Flutter is not supported yet. Build hooks target the Dart standalone runtime
   today; Flutter support depends on native assets stabilizing for Flutter.
 

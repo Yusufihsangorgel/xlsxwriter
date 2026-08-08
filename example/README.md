@@ -1,37 +1,141 @@
-# xlsxwriter example
+# xlsxwriter examples
 
-`xlsxwriter_example.dart` writes a small but complete report to
-`example_report.xlsx`, touching most of the API in one file: a bold, colored
-title merged across the table, formatted headers, number and currency columns,
-a total as a live `SUM` formula, a date column with a date format, column widths
-and a frozen header row, and a column chart plotting the data written above.
+Two programs, for the two things people write spreadsheets for.
 
-```dart
-final workbook = Workbook('example_report.xlsx');
-final sheet = workbook.addWorksheet('Sales');
+| file | what it is for |
+| --- | --- |
+| [`xlsxwriter_example.dart`](xlsxwriter_example.dart) | An export too big to hold in memory. Streams rows to disk and measures what that costs. |
+| [`formatted_report.dart`](formatted_report.dart) | A presentation report: merged title, styled headers, currency and date formats, a live formula, frozen panes, and a chart. |
 
-final title = workbook.addFormat()
-  ..bold()
-  ..fontColor(0xFFFFFF)
-  ..backgroundColor(0x4472C4)
-  ..align(HorizontalAlignment.center);
-sheet.mergeRange(0, 0, 0, 3, 'Quarterly Sales', title);
+Both write into a temporary directory, so running them leaves nothing behind in
+the directory you happened to be in.
 
-sheet.writeRow(1, ['Item', 'Units', 'Price', 'Date'], format: header);
-sheet.writeFormula(6, 1, '=SUM(B3:B5)');   // a live total
-sheet.freezePanes(2, 0);                    // keep the header visible
+Run them with `dart run`. Compiling one from this repository with
+`dart compile exe` exits 0 and then produces a binary that dies on its first
+call with exit 255, because `dart compile` does not run build hooks and the
+native library never makes it into the snapshot (elided in the middle):
 
-workbook.close();                           // flushes the .xlsx to disk
+```
+Unhandled exception:
+Invalid argument(s): Couldn't resolve native function
+'xlsxw_workbook_new_constant_memory' in 'package:xlsxwriter/src/bindings.dart'
+: ... No available native assets.
 ```
 
-Run it:
+`dart build cli` is the command that carries the library along; see "Platforms
+and requirements" in the main README.
+
+## Streaming a large export
 
 ```
 dart run example/xlsxwriter_example.dart
 ```
 
-It writes `example_report.xlsx` in the current directory — open it in Excel,
-Numbers, or LibreOffice. There is no console output; the file is the result.
+The interesting part is one constructor. `Workbook.constantMemory` keeps a
+single row in memory — the row you are writing now. Moving to a higher row
+number serializes the previous row straight to XML in a temporary file and
+frees its cells, so peak memory tracks your widest row rather than the size of
+the sheet. Everything after that line is the export you would have written
+anyway:
+
+```dart
+import 'package:xlsxwriter/xlsxwriter.dart';
+
+void main() {
+  final workbook = Workbook.constantMemory('orders.xlsx');
+  try {
+    final sheet = workbook.addWorksheet('Orders');
+    sheet.writeRow(0, const ['Order', 'Customer', 'Units']);
+
+    // Top to bottom, one row at a time. Nothing accumulates.
+    for (var row = 1; row <= 1000000; row++) {
+      sheet.writeRow(row, ['SO-$row', 'Customer ${row % 5000}', row % 97 + 1]);
+    }
+  } finally {
+    workbook.close(); // close() is the call that writes the file
+  }
+}
+```
+
+### What it prints
+
+Peak memory is read from `ProcessInfo.maxRss`, which is a whole-process peak
+rather than a workbook measurement. The example samples it once before the
+first write and once at the end, so the difference is the part the export is
+actually responsible for — otherwise the writer gets billed for the Dart VM it
+is hosted in. On an Apple Silicon laptop, Dart 3.11:
+
+```
+  mode        constant memory (Workbook.constantMemory)
+  workload    200,000 rows x 5 columns
+  wrote       5.8 MiB in 1.16s
+
+  peak RSS    188.9 MiB   highest this process reached
+  before      188.9 MiB   already reached before the first write
+  the sheet     0.0 MiB   how much writing it raised the peak
+```
+
+The last line is the claim. Streaming 200,000 rows never pushed the process
+past where the VM had already been, and `--rows=1000000` does not move it
+either. The same export built in memory does:
+
+```
+dart run example/xlsxwriter_example.dart --mode=default
+```
+
+```
+  peak RSS    330.2 MiB   highest this process reached
+  before      188.8 MiB   already reached before the first write
+  the sheet   141.4 MiB   how much writing it raised the peak
+```
+
+Because `maxRss` is a whole-process peak, the two modes have to be separate
+runs — in one process whichever peaked higher would hide the other.
+[`bench/bench.dart`](../bench/bench.dart) automates both runs and prints them
+side by side, with the same baseline column; it is where the two `xlsxwriter`
+rows in the main README's benchmark table come from. (The `excel` row there is
+measured separately, for a dependency reason the main README explains.)
+
+Other flags: `--rows=N` to pick your own size, `--keep` to leave the `.xlsx`
+behind and print its path so you can open it.
+
+### The one rule it adds
+
+Streaming costs you random access, and the example demonstrates the two ways
+you will hit that rather than just describing them. The second message is one
+long line; it is wrapped here to fit:
+
+```
+  writeString(0, 2, ...)      -> Worksheet row or column index out of range.
+  mergeRange(0, 0, 0, 4, ...) -> a merge in constant-memory mode must start at
+                                 or after the highest row written so far (1);
+                                 earlier rows have been flushed to disk and the
+                                 merge would be silently dropped
+```
+
+Write top to bottom. Once you advance past a row it is XML on disk and its
+cells are freed, so writing back to it throws `XlsxWriterException` — and note
+that libxlsxwriter reports that as *"index out of range"*, which is misleading:
+the index is fine, the row is gone. A `mergeRange` that reaches back is caught
+by this package instead, with a message naming the row, because libxlsxwriter
+would otherwise drop the merge and report nothing.
+
+Column order *within* the row you are on does not matter, in either mode. Use
+the default `Workbook(...)` when you genuinely need to write out of order.
+
+## A formatted report
+
+```
+dart run example/formatted_report.dart
+```
+
+Merged and colored title, styled header row, currency and date number formats,
+a live `=B3*C3` formula, column widths, frozen panes, and a column chart. This
+one uses the default `Workbook(...)`, which holds the workbook in memory and in
+exchange lets you write cells in any order — the right trade for a report of
+this size.
+
+Charts are worth calling out: the pure-Dart writers cannot produce them at all.
 
 Note the enum names: `HorizontalAlignment` and `CellBorder` (renamed from
 `Alignment`/`Border` in 0.9.0 so they don't clash with Flutter's own types when
