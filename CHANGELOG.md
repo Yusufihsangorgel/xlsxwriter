@@ -1,3 +1,27 @@
+## 1.0.2
+
+- Stop billing the writer for the VM hosting it. `ProcessInfo.maxRss` is a
+  whole-process peak, and a Dart VM with this package loaded sits near 188 MiB
+  before the first cell is written, which is where the README's old "constant
+  memory holds about 189 MiB flat" figure came from. The benchmark now samples
+  that counter once before the first write and reports the difference in its
+  own column. Measured that way at 100,000 rows, the constant-memory export
+  raises the process peak by 0.2 MiB, default mode by 124.3 MiB, and `excel`
+  4.0.6, in its separate harness, by 1664.5 MiB. The chart plots the
+  subtracted figures. Docs, bench and chart only: nothing in `lib/` changed.
+- `example/xlsxwriter_example.dart` is now the streaming export as a runnable
+  measurement: it writes 200,000 rows, samples `maxRss` before and after,
+  reports what the export added, and triggers the two write-backwards errors
+  on purpose so their exact messages are on screen rather than paraphrased.
+  `--mode=default`, `--rows=N` and `--keep` vary the run. The old API tour,
+  merged title through chart, moved to `example/formatted_report.dart`.
+- Both examples write into a temp directory instead of the directory you
+  happened to run them from.
+- The README now says how to ship a compiled binary: `dart compile exe` does
+  not run build hooks and refuses with an error pointing at `dart build`, and
+  `dart build cli` (still preview in Dart 3.11) emits a bundle with the native
+  library beside the executable. Ship the bundle.
+
 ## 1.0.1
 
 - **Reject a row or column past 32 bits instead of writing to the wrong
