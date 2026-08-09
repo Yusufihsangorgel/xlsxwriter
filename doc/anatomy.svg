@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="750" viewBox="0 0 800 750">
+  <rect width="800.0" height="750.0" fill="#FAF6F0"/>
+  <text x="400.0" y="42.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="18.0" font-weight="bold" fill="#1A1A1A" text-anchor="middle">One part of the .xlsx grows. The other eight do not.</text>
+  <text x="400.0" y="66.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="normal" fill="#6B6B6B" text-anchor="middle">the same export written at 1,000 and 100,000 rows, every part measured uncompressed</text>
+  <rect x="289.0" y="88.0" width="14" height="12" rx="2" fill="#DCEAF6" stroke="#1F77B4" stroke-width="1"/>
+  <text x="309.0" y="98.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="12.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">1,000 rows</text>
+  <rect x="417.0" y="88.0" width="14" height="12" rx="2" fill="#1F77B4" stroke="#1F77B4" stroke-width="1"/>
+  <text x="437.0" y="98.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="12.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">100,000 rows</text>
+  <line x1="268.0" y1="118.0" x2="268.0" y2="622.0" stroke="#E4DCD0" stroke-width="1"/>
+  <text x="268.0" y="644.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="11.0" font-weight="normal" fill="#6B6B6B" text-anchor="middle">100 B</text>
+  <line x1="351.7" y1="118.0" x2="351.7" y2="622.0" stroke="#E4DCD0" stroke-width="1"/>
+  <text x="351.7" y="644.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="11.0" font-weight="normal" fill="#6B6B6B" text-anchor="middle">1 kB</text>
+  <line x1="435.3" y1="118.0" x2="435.3" y2="622.0" stroke="#E4DCD0" stroke-width="1"/>
+  <text x="435.3" y="644.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="11.0" font-weight="normal" fill="#6B6B6B" text-anchor="middle">10 kB</text>
+  <line x1="519.0" y1="118.0" x2="519.0" y2="622.0" stroke="#E4DCD0" stroke-width="1"/>
+  <text x="519.0" y="644.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="11.0" font-weight="normal" fill="#6B6B6B" text-anchor="middle">100 kB</text>
+  <line x1="602.7" y1="118.0" x2="602.7" y2="622.0" stroke="#E4DCD0" stroke-width="1"/>
+  <text x="602.7" y="644.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="11.0" font-weight="normal" fill="#6B6B6B" text-anchor="middle">1 MB</text>
+  <line x1="686.3" y1="118.0" x2="686.3" y2="622.0" stroke="#E4DCD0" stroke-width="1"/>
+  <text x="686.3" y="644.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="11.0" font-weight="normal" fill="#6B6B6B" text-anchor="middle">10 MB</text>
+  <line x1="770.0" y1="118.0" x2="770.0" y2="622.0" stroke="#E4DCD0" stroke-width="1"/>
+  <text x="770.0" y="644.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="11.0" font-weight="normal" fill="#6B6B6B" text-anchor="middle">100 MB</text>
+  <text x="254.0" y="150.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="12.0" font-weight="normal" fill="#1A1A1A" text-anchor="end">xl/worksheets/sheet1.xml</text>
+  <rect x="268.0" y="130.0" width="266.5" height="12" rx="2" fill="#DCEAF6" stroke="#1F77B4" stroke-width="1"/>
+  <rect x="268.0" y="146.0" width="436.9" height="12" rx="2" fill="#E4610F" stroke="#E4610F" stroke-width="1"/>
+  <text x="544.5" y="140.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="12.0" font-weight="normal" fill="#1F77B4" text-anchor="start">153 kB</text>
+  <text x="694.9" y="156.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="12.0" font-weight="normal" fill="#FAF6F0" text-anchor="end">16.7 MB</text>
+  <text x="770.0" y="156.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="12.0" font-weight="bold" fill="#E4610F" text-anchor="end">108.7x</text>
+  <text x="254.0" y="206.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="12.0" font-weight="normal" fill="#1A1A1A" text-anchor="end">xl/theme/theme1.xml</text>
+  <rect x="268.0" y="186.0" width="154.3" height="12" rx="2" fill="#DCEAF6" stroke="#1F77B4" stroke-width="1"/>
+  <rect x="268.0" y="202.0" width="154.3" height="12" rx="2" fill="#1F77B4" stroke="#1F77B4" stroke-width="1"/>
+  <text x="432.3" y="204.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="14.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">6,995 B</text>
+  <text x="254.0" y="262.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="12.0" font-weight="normal" fill="#1A1A1A" text-anchor="end">[Content_Types].xml</text>
+  <rect x="268.0" y="242.0" width="84.8" height="12" rx="2" fill="#DCEAF6" stroke="#1F77B4" stroke-width="1"/>
+  <rect x="268.0" y="258.0" width="84.8" height="12" rx="2" fill="#1F77B4" stroke="#1F77B4" stroke-width="1"/>
+  <text x="362.8" y="260.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="14.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">1,031 B</text>
+  <text x="254.0" y="318.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="12.0" font-weight="normal" fill="#1A1A1A" text-anchor="end">xl/styles.xml</text>
+  <rect x="268.0" y="298.0" width="78.5" height="12" rx="2" fill="#DCEAF6" stroke="#1F77B4" stroke-width="1"/>
+  <rect x="268.0" y="314.0" width="78.5" height="12" rx="2" fill="#1F77B4" stroke="#1F77B4" stroke-width="1"/>
+  <text x="356.5" y="316.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="14.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">867 B</text>
+  <text x="254.0" y="374.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="12.0" font-weight="normal" fill="#1A1A1A" text-anchor="end">docProps/app.xml</text>
+  <rect x="268.0" y="354.0" width="74.8" height="12" rx="2" fill="#DCEAF6" stroke="#1F77B4" stroke-width="1"/>
+  <rect x="268.0" y="370.0" width="74.8" height="12" rx="2" fill="#1F77B4" stroke="#1F77B4" stroke-width="1"/>
+  <text x="352.8" y="372.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="14.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">784 B</text>
+  <text x="254.0" y="430.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="12.0" font-weight="normal" fill="#1A1A1A" text-anchor="end">docProps/core.xml</text>
+  <rect x="268.0" y="410.0" width="64.6" height="12" rx="2" fill="#DCEAF6" stroke="#1F77B4" stroke-width="1"/>
+  <rect x="268.0" y="426.0" width="64.6" height="12" rx="2" fill="#1F77B4" stroke="#1F77B4" stroke-width="1"/>
+  <text x="342.6" y="428.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="14.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">592 B</text>
+  <text x="254.0" y="486.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="12.0" font-weight="normal" fill="#1A1A1A" text-anchor="end">_rels/.rels</text>
+  <rect x="268.0" y="466.0" width="64.3" height="12" rx="2" fill="#DCEAF6" stroke="#1F77B4" stroke-width="1"/>
+  <rect x="268.0" y="482.0" width="64.3" height="12" rx="2" fill="#1F77B4" stroke="#1F77B4" stroke-width="1"/>
+  <text x="342.3" y="484.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="14.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">587 B</text>
+  <text x="254.0" y="542.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="12.0" font-weight="normal" fill="#1A1A1A" text-anchor="end">xl/_rels/workbook.xml.rels</text>
+  <rect x="268.0" y="522.0" width="62.3" height="12" rx="2" fill="#DCEAF6" stroke="#1F77B4" stroke-width="1"/>
+  <rect x="268.0" y="538.0" width="62.3" height="12" rx="2" fill="#1F77B4" stroke="#1F77B4" stroke-width="1"/>
+  <text x="340.3" y="540.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="14.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">556 B</text>
+  <text x="254.0" y="598.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="12.0" font-weight="normal" fill="#1A1A1A" text-anchor="end">xl/workbook.xml</text>
+  <rect x="268.0" y="578.0" width="61.9" height="12" rx="2" fill="#DCEAF6" stroke="#1F77B4" stroke-width="1"/>
+  <rect x="268.0" y="594.0" width="61.9" height="12" rx="2" fill="#1F77B4" stroke="#1F77B4" stroke-width="1"/>
+  <text x="339.9" y="596.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="14.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">550 B</text>
+  <path d="M 527.0 184.0 L 519.0 184.0 L 519.0 618.0 L 527.0 618.0" fill="none" stroke="#4A4A4A" stroke-width="1.6"/>
+  <text x="537.0" y="396.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="bold" fill="#1A1A1A" text-anchor="start">byte for byte the same</text>
+  <text x="537.0" y="414.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="12.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">in both files: 11,962 B in total</text>
+  <text x="519.0" y="666.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="12.0" font-weight="normal" fill="#6B6B6B" text-anchor="middle">uncompressed size of the part, log scale</text>
+  <rect x="40" y="686" width="720" height="46" rx="8" fill="#FBE7D8" stroke="#E4610F" stroke-width="1.2"/>
+  <text x="400.0" y="706.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="normal" fill="#1A1A1A" text-anchor="middle">At 100,000 rows the worksheet holds 99.93% of the uncompressed bytes.</text>
+  <text x="400.0" y="724.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="normal" fill="#6B6B6B" text-anchor="middle">It is also the one part written in document order, which is what constant-memory mode streams to a temp file.</text>
+</svg>

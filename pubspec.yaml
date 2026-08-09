@@ -13,9 +13,14 @@ topics:
   - export
 
 # Descriptions are capped at 160 characters by pub.dev, and the thumbnail on
-# the package card is a 190x190 fit rather than a crop, which is why both
+# the package card is a 190x190 fit rather than a crop, which is why all three
 # images are close to square (see tool/benchmark_chart.dart).
 screenshots:
+  - description: >-
+      Every part of the written .xlsx measured at 1,000 and 100,000 rows: eight
+      parts are byte-identical, and the worksheet grows 108.7x to 99.93% of the
+      bytes.
+    path: doc/anatomy.png
   - description: >-
       What the export itself costs, baseline subtracted: constant memory stays
       on zero from 10k to 1M rows, the in-memory default climbs to 1243.6 MiB.

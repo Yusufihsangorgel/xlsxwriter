@@ -96,6 +96,16 @@ elements holding `<c>` cell elements, in strict document order, top row first.
 Nothing reads that part back while you build it. A format that is append-only in
 document order is one you can stream.
 
+![Nine bars, one per part of the .xlsx, on a log scale. Eight parts have identical lengths in a 1,000-row and a 100,000-row export, and the worksheet part grows 108.7x, from 153 kB to 16.7 MB.](https://raw.githubusercontent.com/Yusufihsangorgel/xlsxwriter/main/doc/anatomy.png)
+
+Writing the same export at a thousand rows and at a hundred thousand bears that
+out. Eight of the nine parts come out byte for byte identical: 11,962 bytes of
+theme, styles, document properties and relationships that a hundredfold more
+data leaves untouched. The worksheet carries all of the growth and ends up
+holding 99.93% of the uncompressed bytes. `dart run tool/anatomy_figure.dart`
+writes both files, reads their ZIP directories and redraws the chart, and it
+refuses to draw anything if a part other than the worksheet has moved.
+
 Constant-memory mode keeps exactly one row: a single reused row, plus a
 per-column array for the cells of the row you are on. Moving to a higher row
 number serializes the previous row straight to XML in a temporary file and frees
