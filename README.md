@@ -30,6 +30,35 @@ dart run bench/bench.dart 1000000 10
 
 ![What the export itself costs. Constant memory stays flat on zero from 10k to 1M rows; the in-memory default climbs to 1243.6 MiB.](https://raw.githubusercontent.com/Yusufihsangorgel/xlsxwriter/main/doc/benchmark.png)
 
+## Why this instead of what you already have
+
+**Instead of `excel`.** It is the pure-Dart writer most people reach for.
+`sheet.dart:16` holds `Map<int, Map<int, Data>> _sheetData`, one `Data` object
+per cell for the life of the sheet, each with its own `CellStyle?`,
+`CellValue?`, and a back-reference to the `Sheet` (`data_model.dart:5-7`).
+`save_file.dart:45` then constructs an `XmlElement` per cell. That is the
+source-level reason for the figure above: nothing reaches disk until `save()`
+returns the finished bytes.
+
+**Instead of syncfusion_flutter_xlsio.** It is the other real `.xlsx` writer on
+pub.dev, and it is not open source. Its LICENSE requires a commercial license
+or the Community License, which is limited to organizations under one million
+USD in annual revenue with fewer than five developers. Its save path is also
+whole-file: `saveAsStream()`, `saveSync()`, and `save()` each return the
+completed workbook as bytes (`workbook.dart:6221`, `6238`, `6250` in 34.2.2).
+
+## Reach for it when
+
+- The row count comes from user input, so you cannot bound memory in advance.
+- A long-running server or CLI has to write reports while it handles other
+  work.
+- The sheet needs formats, tables, charts, or conditional formatting rather
+  than only values.
+
+Skip it inside a Flutter app, on the web, or on mobile. The pubspec declares
+Linux, macOS, and Windows only, because the C library is compiled through
+Dart's build hooks and those target the standalone runtime today.
+
 The engine underneath is
 [libxlsxwriter](https://github.com/jmcnamara/libxlsxwriter) by John McNamara,
 compiled from vendored C at build time. This package writes spreadsheets and
