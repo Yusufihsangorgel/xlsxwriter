@@ -8,31 +8,6 @@ write it and holds one row at a time, whatever the sheet grows to.
 ![The benchmark running: a hundred thousand rows written twice, once holding the
 sheet in memory and once in constant memory, with peak RSS for each](https://raw.githubusercontent.com/Yusufihsangorgel/xlsxwriter/main/doc/demo.gif)
 
-```dart
-import 'package:xlsxwriter/xlsxwriter.dart';
-
-void main() {
-  final workbook = Workbook.constantMemory('big.xlsx');
-  final sheet = workbook.addWorksheet('Export');
-
-  sheet.writeRow(0, ['id', 'label', 'amount']);
-  for (var row = 1; row <= 1000000; row++) {
-    sheet.writeRow(row, ['SKU-$row', 'Item $row', row * 1.5]);
-  }
-  workbook.close(); // close() writes the file; always call it
-}
-```
-
-On the machine below, that loop raised the process's peak memory by 0.3 MiB.
-`bench/bench.dart` writes the same sheet in both modes at whatever size you
-give it, each mode in its own process:
-
-```
-dart run bench/bench.dart 1000000 10
-```
-
-![What the export itself costs. Constant memory stays flat on zero from 10k to 1M rows; the in-memory default climbs to 1243.6 MiB.](https://raw.githubusercontent.com/Yusufihsangorgel/xlsxwriter/main/doc/benchmark.png)
-
 ## Why this instead of what you already have
 
 **Instead of `excel`.** It is the pure-Dart writer most people reach for.
@@ -71,6 +46,31 @@ does not read them. To read or edit an existing file, reach for
 What is covered here is the export and report-generation path: rows of data into
 an `.xlsx`, with formats, tables, charts, images, and conditional formatting
 along the way.
+
+```dart
+import 'package:xlsxwriter/xlsxwriter.dart';
+
+void main() {
+  final workbook = Workbook.constantMemory('big.xlsx');
+  final sheet = workbook.addWorksheet('Export');
+
+  sheet.writeRow(0, ['id', 'label', 'amount']);
+  for (var row = 1; row <= 1000000; row++) {
+    sheet.writeRow(row, ['SKU-$row', 'Item $row', row * 1.5]);
+  }
+  workbook.close(); // close() writes the file; always call it
+}
+```
+
+On the machine below, that loop raised the process's peak memory by 0.3 MiB.
+`bench/bench.dart` writes the same sheet in both modes at whatever size you
+give it, each mode in its own process:
+
+```
+dart run bench/bench.dart 1000000 10
+```
+
+![What the export itself costs. Constant memory stays flat on zero from 10k to 1M rows; the in-memory default climbs to 1243.6 MiB.](https://raw.githubusercontent.com/Yusufihsangorgel/xlsxwriter/main/doc/benchmark.png)
 
 ## What it costs
 
