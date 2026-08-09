@@ -5,6 +5,9 @@ an object before it serializes anything: `excel` 4.0.6 spends 1.6 GiB on that
 export. This package's constant-memory mode streams each row to disk as you
 write it and holds one row at a time, whatever the sheet grows to.
 
+![The benchmark running: a hundred thousand rows written twice, once holding the
+sheet in memory and once in constant memory, with peak RSS for each](https://raw.githubusercontent.com/Yusufihsangorgel/xlsxwriter/main/doc/demo.gif)
+
 ```dart
 import 'package:xlsxwriter/xlsxwriter.dart';
 
