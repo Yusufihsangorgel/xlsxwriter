@@ -1,3 +1,12 @@
+## 1.0.3
+
+- The "How it works" section shows where the bytes go. `tool/anatomy_figure.dart`
+  writes the same export at 1,000 and 100,000 rows and reads the ZIP central
+  directory of both: eight parts come out byte-identical, and the ninth,
+  `xl/worksheets/sheet1.xml`, grows 108.7x and holds 99.93% of the uncompressed
+  bytes at 100k. The generator refuses to write the figure if that part stops
+  being the one that grows. Docs and tooling only.
+
 ## 1.0.2
 
 - Stop billing the writer for the VM hosting it. `ProcessInfo.maxRss` is a
