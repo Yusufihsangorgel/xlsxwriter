@@ -12,15 +12,17 @@ topics:
   - ffi
   - export
 
+# Descriptions are capped at 160 characters by pub.dev, and the thumbnail on
+# the package card is a 190x190 fit rather than a crop, which is why both
+# images are close to square (see tool/benchmark_chart.dart).
 screenshots:
   - description: >-
-      What the export itself costs, once the process baseline is subtracted:
-      constant-memory mode stays on zero from 10k to 1M rows while the
-      in-memory default climbs to 1244 MiB.
+      What the export itself costs, baseline subtracted: constant memory stays
+      on zero from 10k to 1M rows, the in-memory default climbs to 1243.6 MiB.
     path: doc/benchmark.png
   - description: >-
-      How constant-memory mode works: one row in RAM, earlier rows already XML
-      on a temp file, copied into the .xlsx zip at close.
+      How constant-memory mode works: one row in RAM, the rows behind it
+      already XML in a temp file, copied into the .xlsx zip at close.
     path: doc/mechanism.png
 
 environment:

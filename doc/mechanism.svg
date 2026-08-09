@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="664" viewBox="0 0 680 664">
+  <defs>
+    <marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4A4A4A"/></marker>
+    <marker id="headRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#C62828"/></marker>
+  </defs>
+  <rect width="680.0" height="664.0" fill="#FAF6F0"/>
+  <text x="340.0" y="40.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="18.0" font-weight="bold" fill="#1A1A1A" text-anchor="middle">Constant-memory mode: one row in RAM, the rest already on disk</text>
+  <text x="340.0" y="64.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="normal" fill="#6B6B6B" text-anchor="middle">Both modes emit the same worksheet XML. They differ in how much of it they hold at once.</text>
+  <rect x="78.0" y="92.0" width="340.0" height="114.0" rx="8" fill="none" stroke="#4A4A4A" stroke-width="2"/>
+  <text x="248.0" y="116.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="15.0" font-weight="bold" fill="#1A1A1A" text-anchor="middle">your loop</text>
+  <text x="100.0" y="144.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="14.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">writeRow(0, ...)</text>
+  <text x="100.0" y="166.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="14.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">writeRow(1, ...)</text>
+  <text x="100.0" y="188.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="14.0" font-weight="normal" fill="#1F77B4" text-anchor="start">writeRow(2, ...)  &lt;- now</text>
+  <rect x="78.0" y="238.0" width="340.0" height="130.0" rx="8" fill="none" stroke="#1F77B4" stroke-width="2"/>
+  <text x="248.0" y="262.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="15.0" font-weight="bold" fill="#1F77B4" text-anchor="middle">in RAM</text>
+  <rect x="108.0" y="280" width="280" height="70" rx="6" fill="#DCEAF6" stroke="#1F77B4" stroke-width="1.6"/>
+  <text x="248.0" y="304.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="14.0" font-weight="bold" fill="#1F77B4" text-anchor="middle">active row buffer: row 2 only</text>
+  <text x="248.0" y="330.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="15.0" font-weight="normal" fill="#1F77B4" text-anchor="middle">[A3] [B3] [C3]</text>
+  <rect x="78.0" y="400.0" width="340.0" height="120.0" rx="8" fill="none" stroke="#2E7D32" stroke-width="2"/>
+  <text x="248.0" y="424.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="15.0" font-weight="bold" fill="#2E7D32" text-anchor="middle">temp file on disk</text>
+  <text x="108.0" y="452.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="14.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">&lt;row r="1"&gt;...&lt;/row&gt;</text>
+  <text x="108.0" y="474.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="14.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">&lt;row r="2"&gt;...&lt;/row&gt;</text>
+  <text x="108.0" y="496.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="12.0" font-weight="normal" fill="#2E7D32" text-anchor="start">(rows 0 and 1: flushed, cells freed)</text>
+  <rect x="78.0" y="552.0" width="340.0" height="58.0" rx="8" fill="#FBE7D8" stroke="#E4610F" stroke-width="2"/>
+  <text x="248.0" y="577.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="16.0" font-weight="bold" fill="#E4610F" text-anchor="middle">report.xlsx</text>
+  <text x="248.0" y="598.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="normal" fill="#E4610F" text-anchor="middle">a ZIP of those XML parts</text>
+  <line x1="248.0" y1="206.0" x2="248.0" y2="234.0" stroke="#4A4A4A" stroke-width="2" marker-end="url(#head)"/>
+  <text x="262.0" y="227.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="12.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">writeRow</text>
+  <line x1="248.0" y1="368.0" x2="248.0" y2="396.0" stroke="#4A4A4A" stroke-width="2" marker-end="url(#head)"/>
+  <text x="262.0" y="389.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="12.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">on row change: flush, then free the cells</text>
+  <line x1="248.0" y1="520.0" x2="248.0" y2="548.0" stroke="#4A4A4A" stroke-width="2" marker-end="url(#head)"/>
+  <text x="262.0" y="541.0" font-family="'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="12.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">close()</text>
+  <path d="M 78.0 460 L 46.0 460 L 46.0 150 L 74.0 150" fill="none" stroke="#C62828" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#headRed)"/>
+  <line x1="37.0" y1="296" x2="55.0" y2="314" stroke="#C62828" stroke-width="3.4" stroke-linecap="round"/>
+  <line x1="37.0" y1="314" x2="55.0" y2="296" stroke="#C62828" stroke-width="3.4" stroke-linecap="round"/>
+  <text x="438.0" y="122.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">Write top to bottom. Column</text>
+  <text x="438.0" y="140.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">order within the row</text>
+  <text x="438.0" y="158.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">you are on is free.</text>
+  <text x="438.0" y="280.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">Default mode keeps every</text>
+  <text x="438.0" y="298.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">row here instead: a 1M</text>
+  <text x="438.0" y="316.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">by 10 sheet is 10M live</text>
+  <text x="438.0" y="334.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">cell objects, 1243.6 MiB.</text>
+  <text x="438.0" y="444.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">Finished worksheet XML,</text>
+  <text x="438.0" y="462.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">append-only. Nothing</text>
+  <text x="438.0" y="480.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">here is read back until</text>
+  <text x="438.0" y="498.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">close() copies it.</text>
+  <text x="438.0" y="572.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">Deflated into the zip</text>
+  <text x="438.0" y="590.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="normal" fill="#6B6B6B" text-anchor="start">with the other parts.</text>
+  <text x="340.0" y="644.0" font-family="Georgia, 'Times New Roman', Times, serif" font-size="13.0" font-weight="normal" fill="#C62828" text-anchor="middle">The dashed arrow is the one call that is gone: writing a cell back on a flushed row throws XlsxWriterException.</text>
+</svg>

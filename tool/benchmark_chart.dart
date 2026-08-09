@@ -4,7 +4,14 @@
 //
 // The SVG is written unconditionally. The PNG is rasterized with
 // `rsvg-convert` if it is on PATH (`brew install librsvg`); otherwise the
-// command to run is printed and the SVG is left for you to convert.
+// command to run is printed and the SVG is left for you to convert. A second
+// optional pass quantizes the PNG with ImageMagick, which cuts the file to
+// roughly a third on flat-colour artwork like this; without it the PNG is
+// still correct, just larger.
+//
+// The canvas is deliberately close to square. pub.dev renders a `screenshots:`
+// entry as a 190x190 thumbnail and fits rather than crops, so a wide chart
+// arrives on the package card as a thin unreadable strip.
 //
 // The numbers below are not computed here. They are transcribed from runs of
 // `bench/bench.dart`, so the chart cannot drift away from the benchmark by
@@ -44,20 +51,24 @@ const _excelBaseline = 263;
 
 const _title = 'What the export itself costs';
 const _subtitle =
-    'peak RSS minus the same counter sampled before the first write '
-    '— N rows by 10 columns';
+    'peak RSS minus the same counter sampled before the first write';
 
-// Canvas. Rendered at 2x so the PNG lands at 1920x1128, the size pub.dev has
-// been serving for this screenshot.
-const _width = 960.0;
-const _height = 564.0;
+// Canvas. Rendered at 2x, so the PNG lands at 1400x1300: near enough to square
+// that pub.dev's 190x190 thumbnail stays legible.
+const _width = 700.0;
+const _height = 650.0;
 const _scale = 2;
 
+/// A rasterized chart this size lands around 170 KB straight out of
+/// `rsvg-convert` and around 45 KB once quantized. Anything much past this is
+/// a sign the artwork picked up a gradient or a photo.
+const _pngBudgetBytes = 80 * 1024;
+
 // Plot area.
-const _plotLeft = 118.0;
-const _plotRight = 742.0;
-const _plotTop = 132.0;
-const _plotBottom = 452.0;
+const _plotLeft = 108.0;
+const _plotRight = 662.0;
+const _plotTop = 152.0;
+const _plotBottom = 520.0;
 const _yMax = 1800.0;
 const _yTickStep = 300.0;
 
@@ -75,8 +86,6 @@ const _red = '#C62828';
 const _serif = "Georgia, 'Times New Roman', Times, serif";
 
 void main() {
-  final svg = _buildSvg();
-  final svgFile = File('doc/benchmark.svg');
   if (!Directory('doc').existsSync()) {
     stderr.writeln(
       'run this from the package root: doc/ not found in '
@@ -84,34 +93,57 @@ void main() {
     );
     exit(1);
   }
-  svgFile.writeAsStringSync(svg);
+
+  final svgFile = File('doc/benchmark.svg')..writeAsStringSync(_buildSvg());
   stdout.writeln('wrote ${svgFile.path}');
 
+  const png = 'doc/benchmark.png';
   final rsvg = _which('rsvg-convert');
   if (rsvg == null) {
     stdout.writeln(
       'rsvg-convert not found; install it (brew install librsvg) or run:\n'
-      '  rsvg-convert -z $_scale doc/benchmark.svg -o doc/benchmark.png',
+      '  rsvg-convert -z $_scale doc/benchmark.svg -o $png',
     );
     return;
   }
-  final result = Process.runSync(rsvg, [
-    '-z',
-    '$_scale',
-    'doc/benchmark.svg',
-    '-o',
-    'doc/benchmark.png',
-  ]);
-  if (result.exitCode != 0) {
-    stderr
-      ..writeln('rsvg-convert failed with exit code ${result.exitCode}')
-      ..writeln((result.stderr as String).trim());
-    exit(result.exitCode);
-  }
+  _run(rsvg, ['-z', '$_scale', 'doc/benchmark.svg', '-o', png]);
+  var bytes = File(png).lengthSync();
   stdout.writeln(
-    'wrote doc/benchmark.png '
-    '(${_width.round() * _scale}x${_height.round() * _scale})',
+    'wrote $png (${_width.round() * _scale}x${_height.round() * _scale}, '
+    '${_kib(bytes)})',
   );
+
+  // Every colour in this chart is flat, so a palette costs nothing visible and
+  // saves about two thirds of the file. Keep the result only if it is smaller.
+  final magick = _which('magick') ?? _which('convert');
+  if (magick == null) {
+    stdout.writeln(
+      'ImageMagick not found; the PNG is uncompressed truecolour. Install it\n'
+      '(brew install imagemagick) and re-run to quantize, or run:\n'
+      '  magick $png -strip -colors 64 PNG8:$png',
+    );
+  } else {
+    final quantized = '$png.quantized';
+    _run(magick, [png, '-strip', '-colors', '64', 'PNG8:$quantized']);
+    final quantizedBytes = File(quantized).lengthSync();
+    if (quantizedBytes < bytes) {
+      File(quantized).renameSync(png);
+      stdout.writeln(
+        'quantized to 64 colours: ${_kib(bytes)} -> ${_kib(quantizedBytes)}',
+      );
+      bytes = quantizedBytes;
+    } else {
+      File(quantized).deleteSync();
+      stdout.writeln('quantizing did not help; kept the truecolour PNG');
+    }
+  }
+
+  if (bytes > _pngBudgetBytes) {
+    stderr.writeln(
+      'WARNING: $png is ${_kib(bytes)}, over the ${_kib(_pngBudgetBytes)} '
+      'budget. It ships inside the published archive.',
+    );
+  }
 }
 
 String _buildSvg() {
@@ -123,13 +155,23 @@ String _buildSvg() {
     )
     ..writeln('  <rect width="$_width" height="$_height" fill="$_paper"/>')
     ..writeln(
-      _text(_width / 2, 52, _title, size: 27, weight: 'bold', anchor: 'middle'),
+      _text(_width / 2, 58, _title, size: 28, weight: 'bold', anchor: 'middle'),
     )
     ..writeln(
       _text(
         _width / 2,
-        82,
+        86,
         _subtitle,
+        size: 15,
+        fill: _muted,
+        anchor: 'middle',
+      ),
+    )
+    ..writeln(
+      _text(
+        _width / 2,
+        108,
+        'N rows by 10 columns, each engine in its own process',
         size: 15,
         fill: _muted,
         anchor: 'middle',
@@ -157,13 +199,13 @@ String _buildSvg() {
   }
   b.writeln(
     _text(
-      30,
+      26,
       (_plotTop + _plotBottom) / 2,
       'MiB the export added to peak RSS',
       size: 14,
       fill: _muted,
       anchor: 'middle',
-      transform: 'rotate(-90 30 ${_f((_plotTop + _plotBottom) / 2)})',
+      transform: 'rotate(-90 26 ${_f((_plotTop + _plotBottom) / 2)})',
     ),
   );
 
@@ -183,7 +225,7 @@ String _buildSvg() {
   b.writeln(
     _text(
       (_plotLeft + _plotRight) / 2,
-      _plotBottom + 62,
+      _plotBottom + 58,
       'rows written (log scale)',
       size: 14,
       fill: _muted,
@@ -213,7 +255,7 @@ String _buildSvg() {
       _text(
         excelX + 16,
         excelY + 14,
-        '${_int(_excelAttributable)} MiB at 100k rows',
+        '$_excelAttributable MiB at 100k rows',
         size: 14,
         fill: _red,
       ),
@@ -230,57 +272,78 @@ String _buildSvg() {
       ..writeln(_dot(_x(i), _y(_measurements[i].constantMemory), _blue));
   }
 
+  // End labels sit above their series and are right-anchored inside the plot,
+  // which keeps a square canvas from needing a gutter it cannot spare.
   final last = _measurements.last;
   b
     ..writeln(
       _text(
-        _x(2) + 14,
-        _y(last.defaultMode) - 4,
+        _plotRight - 7,
+        _y(last.defaultMode) - 30,
         'default (in memory)',
         size: 15,
         weight: 'bold',
         fill: _orange,
+        anchor: 'end',
       ),
     )
     ..writeln(
       _text(
-        _x(2) + 14,
-        _y(last.defaultMode) + 16,
-        '${_int(last.defaultMode)} MiB',
+        _plotRight - 7,
+        _y(last.defaultMode) - 10,
+        '${last.defaultMode} MiB at 1M rows',
         size: 14,
         fill: _orange,
+        anchor: 'end',
       ),
     )
     ..writeln(
       _text(
-        _x(2) + 14,
-        _y(0) - 16,
+        _plotRight - 7,
+        _y(0) - 34,
         'constant memory',
         size: 15,
         weight: 'bold',
         fill: _blue,
+        anchor: 'end',
       ),
     )
     ..writeln(
-      _text(_x(2) + 14, _y(0) + 4, '0.0–0.4 MiB', size: 14, fill: _blue),
+      _text(
+        _plotRight - 7,
+        _y(0) - 14,
+        '0.1 to 0.3 MiB, at every size',
+        size: 14,
+        fill: _blue,
+        anchor: 'end',
+      ),
     )
     // Placed in the empty upper-left quadrant rather than beside the blue
     // line: down there it would sit underneath the orange one.
     ..writeln(
       _text(
-        _plotLeft + 10,
-        250,
+        _plotLeft + 12,
+        262,
         'The blue line is the axis.',
-        size: 17,
+        size: 18,
         weight: 'bold',
         fill: _blue,
       ),
     )
     ..writeln(
       _text(
-        _plotLeft + 10,
-        274,
-        'Streaming never raised the process peak, at any size.',
+        _plotLeft + 12,
+        288,
+        'Streaming never raised the process peak,',
+        size: 15,
+        fill: _blue,
+      ),
+    )
+    ..writeln(
+      _text(
+        _plotLeft + 12,
+        308,
+        'at any of the three sizes.',
         size: 15,
         fill: _blue,
       ),
@@ -290,10 +353,10 @@ String _buildSvg() {
     ..writeln(
       _text(
         _width / 2,
-        _height - 34,
+        _height - 42,
         'Apple Silicon, Dart 3.11. Baseline before the first write: '
         '$_xlsxwriterBaseline MiB for xlsxwriter, $_excelBaseline MiB for '
-        'excel — add it back to get raw peak RSS.',
+        'excel;',
         size: 13,
         fill: _muted,
         anchor: 'middle',
@@ -302,7 +365,18 @@ String _buildSvg() {
     ..writeln(
       _text(
         _width / 2,
-        _height - 14,
+        _height - 24,
+        'add it back to get raw peak RSS. The excel figure comes from a '
+        'separate harness; the README says why.',
+        size: 13,
+        fill: _muted,
+        anchor: 'middle',
+      ),
+    )
+    ..writeln(
+      _text(
+        _width / 2,
+        _height - 6,
         'Reproduce the two xlsxwriter modes with: '
         'dart run bench/bench.dart 1000000 10',
         size: 13,
@@ -352,8 +426,20 @@ String _f(double v) => v.toStringAsFixed(1);
 
 String _int(double v) => v.round().toString();
 
+String _kib(int bytes) => '${(bytes / 1024).toStringAsFixed(1)} KiB';
+
 String _escape(String s) =>
     s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
+void _run(String executable, List<String> arguments) {
+  final result = Process.runSync(executable, arguments);
+  if (result.exitCode != 0) {
+    stderr
+      ..writeln('$executable failed with exit code ${result.exitCode}')
+      ..writeln((result.stderr as String).trim());
+    exit(result.exitCode);
+  }
+}
 
 String? _which(String command) {
   final result = Process.runSync('which', [command]);

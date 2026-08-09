@@ -7,8 +7,8 @@ Two programs, for the two things people write spreadsheets for.
 | [`xlsxwriter_example.dart`](xlsxwriter_example.dart) | An export too big to hold in memory. Streams rows to disk and measures what that costs. |
 | [`formatted_report.dart`](formatted_report.dart) | A presentation report: merged title, styled headers, currency and date formats, a live formula, frozen panes, and a chart. |
 
-Both write into a temporary directory, so running them leaves nothing behind in
-the directory you happened to be in.
+Both write into a temporary directory and leave nothing behind in the directory
+you happened to be in.
 
 Run them with `dart run`. Compiling one from this repository with
 `dart compile exe` exits 0 and then produces a binary that dies on its first
@@ -32,11 +32,11 @@ dart run example/xlsxwriter_example.dart
 ```
 
 The interesting part is one constructor. `Workbook.constantMemory` keeps a
-single row in memory — the row you are writing now. Moving to a higher row
+single row in memory: the row you are writing now. Moving to a higher row
 number serializes the previous row straight to XML in a temporary file and
-frees its cells, so peak memory tracks your widest row rather than the size of
-the sheet. Everything after that line is the export you would have written
-anyway:
+frees its cells. Peak memory then tracks the width of a row instead of the
+height of the sheet. Everything after that line is the export you would have
+written anyway:
 
 ```dart
 import 'package:xlsxwriter/xlsxwriter.dart';
@@ -61,9 +61,9 @@ void main() {
 
 Peak memory is read from `ProcessInfo.maxRss`, which is a whole-process peak
 rather than a workbook measurement. The example samples it once before the
-first write and once at the end, so the difference is the part the export is
-actually responsible for — otherwise the writer gets billed for the Dart VM it
-is hosted in. On an Apple Silicon laptop, Dart 3.11:
+first write and once at the end. The difference is the part the export is
+actually responsible for; without that subtraction the writer gets billed for
+the Dart VM hosting it. On an Apple Silicon laptop, Dart 3.11:
 
 ```
   mode        constant memory (Workbook.constantMemory)
@@ -90,7 +90,7 @@ dart run example/xlsxwriter_example.dart --mode=default
 ```
 
 Because `maxRss` is a whole-process peak, the two modes have to be separate
-runs — in one process whichever peaked higher would hide the other.
+runs; in one process whichever peaked higher would hide the other.
 [`bench/bench.dart`](../bench/bench.dart) automates both runs and prints them
 side by side, with the same baseline column; it is where the two `xlsxwriter`
 rows in the main README's benchmark table come from. (The `excel` row there is
@@ -114,9 +114,9 @@ long line; it is wrapped here to fit:
 ```
 
 Write top to bottom. Once you advance past a row it is XML on disk and its
-cells are freed, so writing back to it throws `XlsxWriterException` — and note
-that libxlsxwriter reports that as *"index out of range"*, which is misleading:
-the index is fine, the row is gone. A `mergeRange` that reaches back is caught
+cells are freed. Writing back to it throws `XlsxWriterException`, and
+libxlsxwriter words that as *"index out of range"*, which is misleading: the
+index is fine, the row is gone. A `mergeRange` that reaches back is caught
 by this package instead, with a message naming the row, because libxlsxwriter
 would otherwise drop the merge and report nothing.
 
@@ -132,8 +132,8 @@ dart run example/formatted_report.dart
 Merged and colored title, styled header row, currency and date number formats,
 a live `=B3*C3` formula, column widths, frozen panes, and a column chart. This
 one uses the default `Workbook(...)`, which holds the workbook in memory and in
-exchange lets you write cells in any order — the right trade for a report of
-this size.
+exchange lets you write cells in any order. That is the right trade for a
+report of this size.
 
 Charts are worth calling out: the pure-Dart writers cannot produce them at all.
 
