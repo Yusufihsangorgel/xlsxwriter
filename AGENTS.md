@@ -34,6 +34,21 @@ void main() {
 `Workbook.toBytes((workbook) { ... })` closes for you and returns a `Uint8List`;
 pass `constantMemory: true` for the same row-order rule.
 
+## Public API
+
+- `Workbook`: default and `constantMemory` constructors, `toBytes`,
+  `addWorksheet`, `addFormat`, `defineName`, `addChart`, `isClosed`, `close`.
+- `Worksheet`: typed cell writes and `writeRow`; row/column sizing; merges;
+  tables; autofilter and frozen panes; charts and images; cell, between,
+  colour-scale, and data-bar conditional formats.
+- `Format`: mutable, chainable font, fill, number-format, alignment, wrapping,
+  and border setters. Colors are `0xRRGGBB`.
+- `Chart`: series, title, axis names, legend, and built-in styles 1 through 48.
+  Series cell ranges are Excel formulas such as `r'=Data!$B$2:$B$5'`.
+- Exported enums are `HorizontalAlignment`, `VerticalAlignment`, `Underline`,
+  `CellBorder`, `ChartType`, `ChartLegendPosition`, and
+  `ConditionalCriteria`. Do not use the pre-0.9 names `Alignment` or `Border`.
+
 ## Contracts
 
 **Close.** Only `Workbook.close` writes the file. `Worksheet`, `Format`, and
@@ -41,7 +56,14 @@ pass `constantMemory: true` for the same row-order rule.
 idempotent. Using any of them afterwards throws `StateError`:
 `Workbook has been closed.` A workbook garbage-collected without `close()` is
 freed by a `NativeFinalizer`; the file is never written. The parent directory
-of the path must already exist.
+of the path must already exist. If `close()` throws, the native workbook has
+still been freed and `isClosed` is true; do not retry it.
+
+**Ownership.** A worksheet, format, or chart is a native handle owned by the
+workbook that created it. Do not pass a `Format` or `Chart` to a different
+workbook: the Dart layer does not cross-check owners. Format setters mutate and
+return the same shared format, so finish configuring a format before reusing it
+across cells.
 
 **Constant memory (`Workbook.constantMemory`).** A row is flushed when a later
 row is written. After that, these are illegal:
@@ -54,7 +76,11 @@ row is written. After that, these are illegal:
   `ArgumentError` on `firstRow`. libxlsxwriter would drop the merge silently.
 
 Column order within the current row does not matter. A merge that starts at or
-after the current row is legal. Use `Workbook(path)` for random access.
+after the current row is legal. `addTable` is not supported at all in
+constant-memory mode and throws `XlsxWriterException(11): Feature is not
+currently supported in this configuration.` Autofilter, frozen panes, defined
+names, conditional formats, images, and charts are separate features and are
+available. Use `Workbook(path)` for random access or tables.
 
 **Indices.** 0-based: `(0, 0)` is `A1`. Excel limits: rows `0..1048575`, columns
 `0..16383` (`LXW_ROW_MAX` / `LXW_COL_MAX`). `_validateCell` rejects negatives
@@ -63,7 +89,20 @@ and write the wrong cell.
 
 **`writeRow`.** `Worksheet.writeRow` dispatches by runtime type: `String`,
 `int`/`double`, `bool`, `DateTime`, `null`. A `DateTime` requires `dateFormat:`.
-Any other type is `ArgumentError`.
+Any other type is `ArgumentError`. It writes left to right as it dispatches; if
+a later value is invalid, earlier cells in that call have already been written.
+Validate heterogeneous input before calling it when partial writes matter.
+
+**Tables.** `addTable` is for the in-memory constructor. If `columns` is null,
+libxlsxwriter writes `Column1`, `Column2`, ... into the header row, replacing
+existing header cells. Pass exactly one column name per range column when the
+header matters. `headerRow: false` makes the whole range data and suppresses
+the table autofilter regardless of the `autofilter` argument.
+
+**Formulas and dates.** Formula strings and defined-name targets use Excel
+syntax and normally start with `=`. Chart series ranges are formulas including
+the sheet name. Dates are Excel numbers: `writeDateTime` requires a `Format`,
+and `writeRow` requires `dateFormat` if it contains a `DateTime`.
 
 ## Mistakes
 
@@ -73,6 +112,9 @@ Any other type is `ArgumentError`.
 - Write backwards in constant-memory mode.
   `XlsxWriterException(24): Worksheet row or column index out of range.`
   Write top to bottom, or use `Workbook(path)`.
+- Add a table in constant-memory mode.
+  `XlsxWriterException(11): Feature is not currently supported in this configuration.`
+  Use `Workbook(path)`, or use `autofilter` without a table wrapper.
 - `mergeRange` into a flushed row.
   `Invalid argument (firstRow): a merge in constant-memory mode must start at or after the highest row written so far (1); earlier rows have been flushed to disk and the merge would be silently dropped: 0`
   Merge at or ahead of the current row.
@@ -90,6 +132,10 @@ Any other type is `ArgumentError`.
 - Invalid or duplicate sheet name.
   `XlsxWriterException(13): Function parameter validation error.`
   Names: 31 characters or fewer, unique, none of `[ ] : * ? / \`.
+- Omit `columns` after writing custom table headers. libxlsxwriter overwrites
+  them with `Column1`, `Column2`, ... . Pass the header names to `addTable`.
+- Reuse a `Format` or `Chart` from another workbook. Handles are native and
+  workbook-owned; create the object from the workbook that will use it.
 - Parent directory of the path does not exist.
   `XlsxWriterException(2): Error creating output xlsx file. Usually a permissions error.`
   Create the directory first; `close()` is what creates the file.
@@ -115,6 +161,8 @@ Dart `^3.10.0`. Needs a C toolchain (Clang or GCC; MSVC on Windows). The first
 `dart test` or `dart run` builds the native library; later builds are cached.
 
 ```
-dart test
+dart pub get
+dart format .
 dart analyze --fatal-infos
+dart test
 ```

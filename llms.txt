@@ -4,6 +4,7 @@ Native, fast, low-memory Excel .xlsx writer for Dart. An FFI binding to libxlsxw
 
 pub.dev: https://pub.dev/packages/xlsxwriter
 source: https://github.com/Yusufihsangorgel/xlsxwriter
+version: 1.4.0
 
 ## Before you call it
 
@@ -11,8 +12,68 @@ AGENTS.md in the repository root is written for you. It carries the contracts th
 
 It also says when NOT to reach for this package. Read that part before adding the dependency.
 
+This is a synchronous, write-only package. It creates new `.xlsx` files or bytes; it cannot read or edit an existing workbook. It supports standalone Dart on Linux, macOS, and Windows. Flutter, web, Android, and iOS are unsupported. A C toolchain is required at build time.
+
+## Shortest correct use
+
+```dart
+import 'package:xlsxwriter/xlsxwriter.dart';
+
+void main() {
+  final workbook = Workbook.constantMemory('orders.xlsx');
+  try {
+    final sheet = workbook.addWorksheet('Orders');
+    sheet.writeRow(0, const ['Order', 'Units']);
+    for (var row = 1; row <= 200000; row++) {
+      sheet.writeRow(row, ['SO-$row', row % 97 + 1]);
+    }
+  } finally {
+    workbook.close();
+  }
+}
+```
+
+`close()` is the call that writes the file. It is synchronous and idempotent. A finalizer frees an abandoned native workbook but does not write its file. `Workbook.toBytes((workbook) { ... })` closes for the caller and returns `Uint8List`.
+
+Use `Workbook(path)` for a report that needs random-access or tables. Use `Workbook.constantMemory(path)` or `Workbook.toBytes(..., constantMemory: true)` for a large, top-to-bottom export. In constant-memory mode:
+
+- advancing to a later row flushes earlier rows; writing or setting a flushed row throws `XlsxWriterException(24)` even though its message says the index is out of range;
+- a merge must start at or after the highest row written, or `mergeRange` throws `ArgumentError` before libxlsxwriter can silently drop it;
+- `addTable` is unsupported and throws `XlsxWriterException(11)`; use the default constructor for tables, or `autofilter` if a table wrapper is unnecessary;
+- column order within the current row does not matter.
+
+Worksheets, formats, and charts are owned by the workbook that created them. Do not mix their native handles across workbooks, and do not use them after closing the owner. A `Format` is mutable and shared: finish configuring it before applying it widely.
+
+## API map
+
+- `Workbook`: `addWorksheet`, `addFormat`, `defineName`, `addChart`, `toBytes`, `isClosed`, `close`.
+- Cell values: `writeString`, `writeNumber`, `writeBool`, `writeFormula`, `writeDateTime`, `writeUrl`, `writeBlank`, `writeRow`.
+- Layout/reporting: `setColumn`, `setColumnWidth`, `setRow`, `mergeRange`, `autofilter`, `freezePanes`, `addTable`.
+- Objects: `insertImage`, `insertChart`; chart series/title/axes/legend/styles; four conditional-format entry points.
+- `writeRow` accepts only `String`, `num`, `bool`, `DateTime`, and null. A `DateTime` requires `dateFormat`. Dispatch is left-to-right, so an invalid later value can leave earlier cells written.
+- Coordinates are zero-based. Valid Excel cell indices are rows `0..1048575` and columns `0..16383`.
+- Strings cannot contain U+0000; cell values passed to `writeNumber` or `writeRow` must be finite; sheet names must be valid and unique. Table `columns`, when supplied, must have exactly one name per range column. When omitted, generated `ColumnN` names overwrite the header cells.
+- Formula strings, defined-name targets, and chart ranges use Excel syntax. Formula/range strings normally start with `=`; chart ranges include a sheet name.
+
 ## Layout
 
-- `lib/` — public API
-- `example/` — runnable examples
-- `test/` — the suite; `dart test` (or `flutter test`) runs it
+- `lib/xlsxwriter.dart` — the only public import and explicit export list
+- `lib/src/` — implementation and FFI; do not import it from consumers
+- `example/xlsxwriter_example.dart` — constant-memory export and ordering errors
+- `example/formatted_report.dart` — formats, formulas, panes, filter, name, chart
+- `example/chart_report.dart` — chart types, legends, labels, and percentages
+- `test/` — output is read back from the xlsx ZIP/XML by an independent reader
+- `hook/build.dart` and `src/` — native build hook, shim, and vendored C sources
+
+## Verify
+
+Run in this order:
+
+```
+dart pub get
+dart format .
+dart analyze --fatal-infos
+dart test
+```
+
+For a shipped executable use `dart build cli` and distribute its bundle. `dart compile exe` does not run build hooks and does not package the native asset.
