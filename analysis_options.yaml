@@ -1,1 +1,8 @@
 include: package:lints/recommended.yaml
+
+analyzer:
+  exclude:
+    # Isolated harnesses with their own pubspecs. excel 4.0.6 needs archive ^3
+    # and cannot be a dependency of this package, so the analyzer here cannot
+    # resolve those imports.
+    - 'bench/competitors/**'

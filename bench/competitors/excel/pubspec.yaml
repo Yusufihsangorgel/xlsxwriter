@@ -1,0 +1,9 @@
+name: excel_bench
+description: Isolated write-path harness for the unmaintained `excel` package.
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  excel: 4.0.6
