@@ -104,7 +104,8 @@ Any other type is `ArgumentError`.
 - `lib/xlsxwriter.dart` — public API (`Workbook`, `Worksheet`, `Format`,
   `Chart`, `XlsxWriterException`, enums).
 - `lib/src/` — implementation; FFI in `bindings.dart`.
-- `example/` — `xlsxwriter_example.dart` (stream), `formatted_report.dart`.
+- `example/` — `xlsxwriter_example.dart` (stream), `formatted_report.dart`,
+  `chart_report.dart`.
 - `test/` — `dart test`; written files are checked with `xlsx_reader.dart`.
 - `hook/build.dart` — compiles `src/xlsxwriter_shim.c` with vendored
   libxlsxwriter and zlib into one dylib, asset `src/bindings.dart`.

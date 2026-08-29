@@ -358,10 +358,40 @@ external void xlsxwChartAxisSetName(
   Pointer<Utf8> name,
 );
 
+/// Places the legend: [position] is the shim code (0 none, 1 right, 2 left,
+/// 3 top, 4 bottom, 5 top-right).
+@Native<Void Function(Pointer<Void>, Int32)>(
+  symbol: 'xlsxw_chart_legend_set_position',
+)
+external void xlsxwChartLegendSetPosition(Pointer<Void> chart, int position);
+
+/// Sets one of Excel's 48 built-in chart styles (1-48).
+@Native<Void Function(Pointer<Void>, Int32)>(symbol: 'xlsxw_chart_set_style')
+external void xlsxwChartSetStyle(Pointer<Void> chart, int styleId);
+
+/// Turns on default (value) data labels for a series.
+@Native<Void Function(Pointer<Void>)>(symbol: 'xlsxw_chart_series_set_labels')
+external void xlsxwChartSeriesSetLabels(Pointer<Void> series);
+
+/// Turns on percentage data labels for a series (pie/doughnut).
+@Native<Void Function(Pointer<Void>)>(
+  symbol: 'xlsxw_chart_series_set_labels_percentage',
+)
+external void xlsxwChartSeriesSetLabelsPercentage(Pointer<Void> series);
+
 /// Inserts [chart] into [worksheet] at [row], [col], scaled by [xScale]/
-/// [yScale]. Returns 0 on success.
+/// [yScale] and offset by [xOffset]/[yOffset] pixels. Returns 0 on success.
 @Native<
-  Int32 Function(Pointer<Void>, Uint32, Uint32, Pointer<Void>, Double, Double)
+  Int32 Function(
+    Pointer<Void>,
+    Uint32,
+    Uint32,
+    Pointer<Void>,
+    Double,
+    Double,
+    Int32,
+    Int32,
+  )
 >(symbol: 'xlsxw_insert_chart')
 external int xlsxwInsertChart(
   Pointer<Void> worksheet,
@@ -370,6 +400,8 @@ external int xlsxwInsertChart(
   Pointer<Void> chart,
   double xScale,
   double yScale,
+  int xOffset,
+  int yOffset,
 );
 
 /// Inserts an image, decoded from the PNG/JPEG bytes at [data] of length [len],

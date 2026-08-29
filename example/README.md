@@ -1,11 +1,12 @@
 # xlsxwriter examples
 
-Two programs, for the two things people write spreadsheets for.
+Three programs, for the things people write spreadsheets for.
 
 | file | what it is for |
 | --- | --- |
 | [`xlsxwriter_example.dart`](xlsxwriter_example.dart) | An export too big to hold in memory. Streams rows to disk and measures what that costs. |
 | [`formatted_report.dart`](formatted_report.dart) | A presentation report: merged title, styled headers, currency and date formats, a live formula, frozen panes, and a chart. |
+| [`chart_report.dart`](chart_report.dart) | A small sales sheet with a column chart and a pie: titles, axis names, series names, a moved legend, and pie percentages. |
 
 Both write into a temporary directory and leave nothing behind in the directory
 you happened to be in.
@@ -140,3 +141,14 @@ Charts are worth calling out: the pure-Dart writers cannot produce them at all.
 Note the enum names: `HorizontalAlignment` and `CellBorder` (renamed from
 `Alignment`/`Border` in 0.9.0 so they don't clash with Flutter's own types when
 you write a spreadsheet from a Flutter app).
+
+## A chart report
+
+```
+dart run example/chart_report.dart
+```
+
+A three-region sales table, a column chart with a title, axis names, named
+series and the legend at the bottom, and a pie of the yearly mix with
+percentages on the slices. Same in-memory `Workbook(...)` as the formatted
+report.

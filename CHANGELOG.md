@@ -1,3 +1,16 @@
+## 1.2.0
+
+- Charts: the rest of the report set. Stacked column, bar and line types;
+  `Chart.setLegend` to move or hide the legend; `Chart.setStyle` for Excel's
+  1-48 chart styles; data labels (and pie percentages) on `addSeries`;
+  `insertChart` now takes the same `xOffset`/`yOffset` nudge as `insertImage`.
+  0.4.0 could draw a titled chart; a report still needed stacked series, a
+  legend that was not stuck on the right, and labels on a pie. Verified by
+  writing each and reading the chart XML back out of the xlsx zip: `barChart`
+  with `grouping` stacked, `legendPos`, `c:style`, `dLbls`/`showPercent`.
+  `example/chart_report.dart` is a small sales sheet with a column chart and a
+  pie.
+
 ## 1.1.2
 
 - The section on why to reach for this rather than the alternative now sits

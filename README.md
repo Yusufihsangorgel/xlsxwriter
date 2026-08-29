@@ -249,6 +249,7 @@ cannot produce charts at all:
 final chart = workbook.addChart(ChartType.column)
   ..setTitle('Units sold')
   ..setAxisNames(category: 'Item', value: 'Units')
+  ..setLegend(ChartLegendPosition.bottom)
   ..addSeries(
     categories: r'=Summary!$A$2:$A$4',
     values: r'=Summary!$B$2:$B$4',
@@ -258,7 +259,9 @@ sheet.insertChart(0, 3, chart);
 ```
 
 `ChartType` covers `column`, `bar`, `line`, `area`, `pie`, `doughnut`,
-`scatter`, and `radar`.
+`scatter`, `radar`, and stacked `columnStacked` / `barStacked` / `lineStacked`.
+`setLegend` moves or hides the legend, `setStyle` picks one of Excel's 1-48
+styles, and `addSeries(labelsPercentage: true)` puts percentages on a pie.
 
 **Images.** `insertImage` places a PNG, JPEG, GIF, or BMP at a cell straight
 from bytes in memory, with no temporary file to name and clean up. A logo, or a

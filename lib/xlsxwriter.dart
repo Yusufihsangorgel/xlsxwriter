@@ -29,6 +29,7 @@ export 'src/enums.dart'
     show
         HorizontalAlignment,
         CellBorder,
+        ChartLegendPosition,
         ChartType,
         ConditionalCriteria,
         Underline,

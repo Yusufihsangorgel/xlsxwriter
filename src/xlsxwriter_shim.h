@@ -121,7 +121,8 @@ XLSXW_EXPORT int32_t xlsxw_add_table(void *worksheet, uint32_t first_row,
 /* Creates a chart of the given type and returns its handle, or NULL on
  * failure. `chart_type` is a small stable code translated to the matching
  * libxlsxwriter LXW_CHART_* value inside the shim (see xlsxw_chart_type):
- * 0 column, 1 bar, 2 line, 3 area, 4 pie, 5 doughnut, 6 scatter, 7 radar. */
+ * 0 column, 1 bar, 2 line, 3 area, 4 pie, 5 doughnut, 6 scatter, 7 radar,
+ * 8 column stacked, 9 bar stacked, 10 line stacked. */
 XLSXW_EXPORT void *xlsxw_add_chart(void *workbook, int32_t chart_type);
 
 /* Adds a data series to a chart and returns the series handle. `categories`
@@ -141,11 +142,27 @@ XLSXW_EXPORT void xlsxw_chart_title_set_name(void *chart, const char *name);
 XLSXW_EXPORT void xlsxw_chart_axis_set_name(void *chart, int32_t axis,
                                             const char *name);
 
+/* Places the legend: `position` is a small stable code translated inside the
+ * shim: 0 none, 1 right, 2 left, 3 top, 4 bottom, 5 top-right. */
+XLSXW_EXPORT void xlsxw_chart_legend_set_position(void *chart,
+                                                  int32_t position);
+
+/* Sets one of Excel's 48 built-in chart styles (1-48; default 2). */
+XLSXW_EXPORT void xlsxw_chart_set_style(void *chart, int32_t style_id);
+
+/* Turns on default (value) data labels for a series. */
+XLSXW_EXPORT void xlsxw_chart_series_set_labels(void *series);
+
+/* Turns on percentage data labels for a series (pie/doughnut). */
+XLSXW_EXPORT void xlsxw_chart_series_set_labels_percentage(void *series);
+
 /* Inserts `chart` into `worksheet` with its top-left at [row, col], scaled by
- * `x_scale`/`y_scale` (1.0 for natural size). Returns 0 on success. */
+ * `x_scale`/`y_scale` (1.0 for natural size) and offset by `x_offset`/
+ * `y_offset` pixels. Returns 0 on success. */
 XLSXW_EXPORT int32_t xlsxw_insert_chart(void *worksheet, uint32_t row,
                                         uint32_t col, void *chart,
-                                        double x_scale, double y_scale);
+                                        double x_scale, double y_scale,
+                                        int32_t x_offset, int32_t y_offset);
 
 XLSXW_EXPORT int32_t xlsxw_insert_image_buffer(
     void *worksheet, uint32_t row, uint32_t col, const unsigned char *data,

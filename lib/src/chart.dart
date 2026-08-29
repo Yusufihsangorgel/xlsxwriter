@@ -32,7 +32,16 @@ final class Chart {
   /// `"=Sheet1!\$B\$2:\$B\$5"`. [categories] is optional; when omitted the
   /// points are numbered 1..N. [name] sets the series' legend label. Pie and
   /// doughnut charts use only the first series added.
-  void addSeries({required String values, String? categories, String? name}) {
+  ///
+  /// [labels] writes the point values on the chart. [labelsPercentage] writes
+  /// percentages instead (or as well); it is the usual choice for a pie.
+  void addSeries({
+    required String values,
+    String? categories,
+    String? name,
+    bool labels = false,
+    bool labelsPercentage = false,
+  }) {
     _workbook._ensureOpen();
     _checkNoEmbeddedNul(values, 'values');
     if (categories != null) _checkNoEmbeddedNul(categories, 'categories');
@@ -57,6 +66,12 @@ final class Chart {
         } finally {
           malloc.free(cName);
         }
+      }
+      if (labels) {
+        bindings.xlsxwChartSeriesSetLabels(series);
+      }
+      if (labelsPercentage) {
+        bindings.xlsxwChartSeriesSetLabelsPercentage(series);
       }
     } finally {
       malloc.free(cValues);
@@ -93,5 +108,28 @@ final class Chart {
     } finally {
       malloc.free(cName);
     }
+  }
+
+  /// Places or hides the legend. Excel's default is [ChartLegendPosition.right].
+  void setLegend(ChartLegendPosition position) {
+    _workbook._ensureOpen();
+    bindings.xlsxwChartLegendSetPosition(_handle, position.value);
+  }
+
+  /// Applies one of Excel's 48 built-in chart styles, numbered 1 to 48.
+  ///
+  /// Style 2 is Excel's default and is omitted from the file. Any other id
+  /// in range is written as a `c:style` on the chart. Out of range is an
+  /// [ArgumentError]; libxlsxwriter would silently fall back to style 2.
+  void setStyle(int style) {
+    _workbook._ensureOpen();
+    if (style < 1 || style > 48) {
+      throw ArgumentError.value(
+        style,
+        'style',
+        'must be an Excel chart style id from 1 to 48',
+      );
+    }
+    bindings.xlsxwChartSetStyle(_handle, style);
   }
 }

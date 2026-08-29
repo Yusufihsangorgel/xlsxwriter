@@ -240,6 +240,9 @@ void *xlsxw_add_chart(void *workbook, int32_t chart_type) {
     case 5: lxw_type = LXW_CHART_DOUGHNUT; break;
     case 6: lxw_type = LXW_CHART_SCATTER; break;
     case 7: lxw_type = LXW_CHART_RADAR; break;
+    case 8: lxw_type = LXW_CHART_COLUMN_STACKED; break;
+    case 9: lxw_type = LXW_CHART_BAR_STACKED; break;
+    case 10: lxw_type = LXW_CHART_LINE_STACKED; break;
     default: lxw_type = LXW_CHART_COLUMN; break;
   }
   return (void *)workbook_add_chart((lxw_workbook *)workbook, lxw_type);
@@ -264,11 +267,40 @@ void xlsxw_chart_axis_set_name(void *chart, int32_t axis, const char *name) {
   chart_axis_set_name(axis == 0 ? c->x_axis : c->y_axis, name);
 }
 
+void xlsxw_chart_legend_set_position(void *chart, int32_t position) {
+  uint8_t lxw_pos;
+  switch (position) {
+    case 0: lxw_pos = LXW_CHART_LEGEND_NONE; break;
+    case 1: lxw_pos = LXW_CHART_LEGEND_RIGHT; break;
+    case 2: lxw_pos = LXW_CHART_LEGEND_LEFT; break;
+    case 3: lxw_pos = LXW_CHART_LEGEND_TOP; break;
+    case 4: lxw_pos = LXW_CHART_LEGEND_BOTTOM; break;
+    case 5: lxw_pos = LXW_CHART_LEGEND_TOP_RIGHT; break;
+    default: lxw_pos = LXW_CHART_LEGEND_RIGHT; break;
+  }
+  chart_legend_set_position((lxw_chart *)chart, lxw_pos);
+}
+
+void xlsxw_chart_set_style(void *chart, int32_t style_id) {
+  chart_set_style((lxw_chart *)chart, (uint8_t)style_id);
+}
+
+void xlsxw_chart_series_set_labels(void *series) {
+  chart_series_set_labels((lxw_chart_series *)series);
+}
+
+void xlsxw_chart_series_set_labels_percentage(void *series) {
+  chart_series_set_labels_percentage((lxw_chart_series *)series);
+}
+
 int32_t xlsxw_insert_chart(void *worksheet, uint32_t row, uint32_t col,
-                           void *chart, double x_scale, double y_scale) {
+                           void *chart, double x_scale, double y_scale,
+                           int32_t x_offset, int32_t y_offset) {
   lxw_chart_options options = {0};
   options.x_scale = x_scale;
   options.y_scale = y_scale;
+  options.x_offset = x_offset;
+  options.y_offset = y_offset;
   return (int32_t)worksheet_insert_chart_opt((lxw_worksheet *)worksheet, row,
                                              (lxw_col_t)col, (lxw_chart *)chart,
                                              &options);

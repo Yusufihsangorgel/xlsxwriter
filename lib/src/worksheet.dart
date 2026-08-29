@@ -431,8 +431,9 @@ final class Worksheet {
   /// Build the chart first with [Workbook.addChart] and [Chart.addSeries]; a
   /// chart with no series has nothing to draw. [xScale] and [yScale] scale the
   /// chart from its natural size (1.0), so `xScale: 2.0` draws it twice as
-  /// wide. The chart's data series reference cells by formula, so the data can
-  /// live on this sheet or another one.
+  /// wide. [xOffset] and [yOffset] nudge it within the cell in pixels. The
+  /// chart's data series reference cells by formula, so the data can live on
+  /// this sheet or another one.
   ///
   /// Throws a [RangeError] if the anchor is out of range and an
   /// [XlsxWriterException] if the native call fails.
@@ -442,6 +443,8 @@ final class Worksheet {
     Chart chart, {
     double xScale = 1.0,
     double yScale = 1.0,
+    int xOffset = 0,
+    int yOffset = 0,
   }) {
     _workbook._ensureOpen();
     _validateCell(row, col);
@@ -453,6 +456,8 @@ final class Worksheet {
         chart._handle,
         xScale,
         yScale,
+        xOffset,
+        yOffset,
       ),
     );
   }

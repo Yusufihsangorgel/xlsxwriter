@@ -162,11 +162,50 @@ enum ChartType {
   scatter(6),
 
   /// A radar chart.
-  radar(7);
+  radar(7),
+
+  /// Vertical bars stacked on one another.
+  columnStacked(8),
+
+  /// Horizontal bars stacked on one another.
+  barStacked(9),
+
+  /// Lines stacked on one another.
+  lineStacked(10);
 
   const ChartType(this.value);
 
   /// The shim chart-type code passed across the FFI boundary.
+  final int value;
+}
+
+/// Where [Chart.setLegend] places the legend.
+///
+/// Values are the shim's own stable codes; the native shim maps each to the
+/// matching libxlsxwriter `LXW_CHART_LEGEND_*` position, so this enum never
+/// depends on libxlsxwriter's internal enum values.
+enum ChartLegendPosition {
+  /// No legend.
+  none(0),
+
+  /// Right of the plot area. Excel's default.
+  right(1),
+
+  /// Left of the plot area.
+  left(2),
+
+  /// Above the plot area.
+  top(3),
+
+  /// Below the plot area.
+  bottom(4),
+
+  /// Top-right of the plot area.
+  topRight(5);
+
+  const ChartLegendPosition(this.value);
+
+  /// The shim legend-position code passed across the FFI boundary.
   final int value;
 }
 
