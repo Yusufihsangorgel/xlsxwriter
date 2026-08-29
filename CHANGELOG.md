@@ -1,3 +1,12 @@
+## 1.4.0
+
+- `excel_community` 2.3.0, the maintained fork of `excel`, is now in the
+  comparison in the README, measured on the same workload at four sizes. It
+  writes ten thousand rows faster than this package's default mode (0.26 s
+  against 0.31 s); what separates them is memory, and the gap widens with the
+  sheet. `bench/compare_writers.sh` and `bench/results/` hold the script and
+  the raw runs the table was computed from. Library code is unchanged.
+
 ## 1.3.0
 
 - Autofilter and defined names, the two remaining pieces of a report after

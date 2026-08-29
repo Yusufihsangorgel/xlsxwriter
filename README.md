@@ -120,6 +120,39 @@ before its first write. The chart is redrawn by `dart run tool/benchmark_chart.d
 holds the measured figures as constants; moving the chart means re-running the
 benchmark first.
 
+### The other pure-Dart writer, and where this package stops winning
+
+`excel_community` 2.3.0 is the maintained fork of `excel`, so it belongs in the
+comparison. It is a separate measurement run: Dart 3.13.2 rather than 3.11.0,
+which is why its baselines sit near 267 MiB instead of 188 and why the numbers
+here do not line up with the table above. Medians, five runs per size except
+where noted, same write-only workload of N rows by 10 columns.
+
+| rows | constant memory | default | `excel_community` 2.3.0 | `excel` 4.0.6 |
+| ---: | ---: | ---: | ---: | ---: |
+| 1,000 | 0.18 s / 0.0 MiB | 0.17 s / 0.0 MiB | 0.67 s / 2.6 MiB | 0.19 s / 9.7 MiB |
+| 10,000 | 0.24 s / 0.0 MiB | 0.31 s / 0.0 MiB | **0.26 s** / 42.1 MiB | 0.69 s / 144.0 MiB |
+| 100,000 | 0.91 s / 0.0 MiB | 0.97 s / 0.0 MiB | 1.50 s / 369.4 MiB | 13.58 s / 1585.4 MiB |
+| 1,000,000 | 29.17 s / 0.0 MiB | 36.16 s / 1175.1 MiB | 61.27 s / 1836.2 MiB | not measured |
+
+Each cell is time and then what the export added over that process's own
+baseline. Read the times as ratios, not as absolutes: the machine was under
+other load throughout, and at a million rows the same engine varied between 8.9
+and 35.2 seconds across runs. The memory column does not have that problem; a
+peak is a peak whatever else the machine is doing.
+
+At ten thousand rows `excel_community` writes the sheet in 0.26 s against
+default mode's 0.31 s. It is faster there, and at a thousand rows all three
+finish inside a fifth of a second, which is to say the choice does not matter
+at that size. What separates them is memory and what happens as the sheet
+grows: `excel_community` is holding 42 MiB at ten thousand rows and 1.8 GiB at
+a million, and constant-memory mode is holding nothing at either.
+
+`excel` was not measured at a million rows. Two attempts were cut off without
+finishing, one after 32 minutes; at a hundred thousand rows it already peaks at
+1.9 GiB, and ten times that does not fit in this machine. Recording that as a
+timeout would be inventing a number, so the cell says what happened instead.
+
 ## How it works
 
 An `.xlsx` file is a ZIP archive of XML documents, and for a large export

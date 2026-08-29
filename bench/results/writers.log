@@ -1,0 +1,1000 @@
+--- constant-memory rows=1000 run=0 ---
+RESULT 178 280952832 280952832
+Running build hooks...Running build hooks...        0.61 real         0.35 user         0.11 sys
+           280952832  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               32059  page reclaims
+                3270  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  16  voluntary context switches
+                4700  involuntary context switches
+          4301887076  instructions retired
+          1868524710  cycles elapsed
+           231670528  peak memory footprint
+--- default rows=1000 run=0 ---
+RESULT 174 280068096 280068096
+Running build hooks...Running build hooks...        0.47 real         0.35 user         0.08 sys
+           280068096  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               35300  page reclaims
+                  22  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                3643  involuntary context switches
+          4149842104  instructions retired
+          1731115095  cycles elapsed
+           230769384  peak memory footprint
+--- excel rows=1000 run=0 ---
+RESULT 192 323813376 313688064
+        1.00 real         1.34 user         0.16 sys
+           323813376  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               75827  page reclaims
+                 247  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 319  voluntary context switches
+                5116  involuntary context switches
+         13923508889  instructions retired
+          5968190023  cycles elapsed
+           270631680  peak memory footprint
+--- excel_community rows=1000 run=0 ---
+RESULT 665 320405504 317652992
+        3.93 real         3.39 user         0.36 sys
+           320651264  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               78385  page reclaims
+                  45  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 254  voluntary context switches
+               14683  involuntary context switches
+         14169762534  instructions retired
+          8950134813  cycles elapsed
+           267764528  peak memory footprint
+--- constant-memory rows=10000 run=1 ---
+RESULT 243 280543232 280543232
+Running build hooks...Running build hooks...        0.57 real         0.42 user         0.10 sys
+           280543232  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               35485  page reclaims
+                  24  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+                3709  involuntary context switches
+          5172485602  instructions retired
+          2073038269  cycles elapsed
+           231211776  peak memory footprint
+--- default rows=10000 run=1 ---
+RESULT 251 280330240 280330240
+Running build hooks...Running build hooks...        0.55 real         0.42 user         0.09 sys
+           280330240  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               36242  page reclaims
+                  66  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+                3565  involuntary context switches
+          5358414461  instructions retired
+          2040243995  cycles elapsed
+           230982376  peak memory footprint
+--- excel rows=10000 run=1 ---
+RESULT 692 465534976 313851904
+        1.47 real         2.00 user         0.22 sys
+           465829888  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               86707  page reclaims
+                  22  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 174  voluntary context switches
+               12508  involuntary context switches
+         22999034644  instructions retired
+          8706031284  cycles elapsed
+           412615520  peak memory footprint
+--- excel_community rows=10000 run=1 ---
+RESULT 277 362364928 317259776
+        1.36 real         1.83 user         0.21 sys
+           362627072  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               82642  page reclaims
+                  22  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 254  voluntary context switches
+                7241  involuntary context switches
+         16992007828  instructions retired
+          7733403047  cycles elapsed
+           309035848  peak memory footprint
+--- constant-memory rows=10000 run=2 ---
+RESULT 268 280936448 280936448
+Running build hooks...Running build hooks...        0.56 real         0.41 user         0.09 sys
+           280936448  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               35479  page reclaims
+                  45  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   9  voluntary context switches
+                3614  involuntary context switches
+          5181527790  instructions retired
+          2014763869  cycles elapsed
+           231621400  peak memory footprint
+--- default rows=10000 run=2 ---
+RESULT 395 280494080 280494080
+Running build hooks...Running build hooks...        0.72 real         0.43 user         0.11 sys
+           280494080  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               36280  page reclaims
+                  22  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   2  voluntary context switches
+                3699  involuntary context switches
+          5408387653  instructions retired
+          2143284904  cycles elapsed
+           231162624  peak memory footprint
+--- excel rows=10000 run=2 ---
+RESULT 1657 464748544 313802752
+        2.51 real         2.78 user         0.29 sys
+           464748544  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               86951  page reclaims
+                  24  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 176  voluntary context switches
+               14839  involuntary context switches
+         22886627861  instructions retired
+          9099739958  cycles elapsed
+           411599760  peak memory footprint
+--- excel_community rows=10000 run=2 ---
+RESULT 263 361512960 317145088
+        1.16 real         1.60 user         0.20 sys
+           361594880  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               82275  page reclaims
+                  65  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 256  voluntary context switches
+                5630  involuntary context switches
+         17127662794  instructions retired
+          7135736214  cycles elapsed
+           308003656  peak memory footprint
+--- constant-memory rows=10000 run=3 ---
+RESULT 239 280788992 280788992
+Running build hooks...Running build hooks...        0.58 real         0.41 user         0.11 sys
+           280788992  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               35474  page reclaims
+                  24  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  21  voluntary context switches
+                3716  involuntary context switches
+          5226585720  instructions retired
+          2087365375  cycles elapsed
+           231457536  peak memory footprint
+--- default rows=10000 run=3 ---
+RESULT 254 280035328 280035328
+Running build hooks...Running build hooks...        0.55 real         0.43 user         0.09 sys
+           280035328  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               36248  page reclaims
+                  44  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  22  voluntary context switches
+                3929  involuntary context switches
+          5351287079  instructions retired
+          2070360112  cycles elapsed
+           230753024  peak memory footprint
+--- excel rows=10000 run=3 ---
+RESULT 625 464289792 313491456
+        1.40 real         1.94 user         0.19 sys
+           464289792  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               87102  page reclaims
+                  22  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 174  voluntary context switches
+               12903  involuntary context switches
+         22829642033  instructions retired
+          8446517011  cycles elapsed
+           411173752  peak memory footprint
+--- excel_community rows=10000 run=3 ---
+RESULT 256 361431040 317587456
+        1.12 real         1.62 user         0.16 sys
+           361431040  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               81924  page reclaims
+                  22  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  54  voluntary context switches
+                5837  involuntary context switches
+         16872840199  instructions retired
+          7036127655  cycles elapsed
+           307872560  peak memory footprint
+--- constant-memory rows=10000 run=4 ---
+RESULT 243 280182784 280182784
+Running build hooks...Running build hooks...        0.55 real         0.43 user         0.09 sys
+           280182784  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               35442  page reclaims
+                  22  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                4129  involuntary context switches
+          5154417039  instructions retired
+          2044708773  cycles elapsed
+           230916888  peak memory footprint
+--- default rows=10000 run=4 ---
+RESULT 308 280608768 280608768
+Running build hooks...Running build hooks...        0.59 real         0.41 user         0.08 sys
+           280608768  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               36304  page reclaims
+                  22  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   8  voluntary context switches
+                3693  involuntary context switches
+          5338716321  instructions retired
+          1970231122  cycles elapsed
+           231277312  peak memory footprint
+--- excel rows=10000 run=4 ---
+RESULT 625 464699392 313868288
+        1.39 real         1.94 user         0.18 sys
+           464699392  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               87187  page reclaims
+                  22  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+               11791  involuntary context switches
+         22825773775  instructions retired
+          8420744672  cycles elapsed
+           411583352  peak memory footprint
+--- excel_community rows=10000 run=4 ---
+RESULT 254 361332736 317341696
+        1.07 real         1.55 user         0.15 sys
+           361431040  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               82392  page reclaims
+                  22  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                4773  involuntary context switches
+         16911051020  instructions retired
+          6791292810  cycles elapsed
+           307856200  peak memory footprint
+--- constant-memory rows=10000 run=5 ---
+RESULT 284 280641536 280641536
+Running build hooks...Running build hooks...        0.57 real         0.40 user         0.08 sys
+           280641536  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               35486  page reclaims
+                  22  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                3619  involuntary context switches
+          5178679190  instructions retired
+          1962725942  cycles elapsed
+           231310080  peak memory footprint
+--- default rows=10000 run=5 ---
+RESULT 317 280444928 280444928
+Running build hooks...Running build hooks...        0.61 real         0.42 user         0.08 sys
+           280444928  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               36291  page reclaims
+                  22  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                3585  involuntary context switches
+          5338139894  instructions retired
+          1997656196  cycles elapsed
+           231113472  peak memory footprint
+--- excel rows=10000 run=5 ---
+RESULT 694 465272832 313311232
+        1.53 real         2.11 user         0.25 sys
+           465272832  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               87406  page reclaims
+                  22  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+               16607  involuntary context switches
+         22977682933  instructions retired
+          9146009891  cycles elapsed
+           412173200  peak memory footprint
+--- excel_community rows=10000 run=5 ---
+RESULT 251 362594304 317931520
+        1.08 real         1.54 user         0.16 sys
+           362692608  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               81960  page reclaims
+                  26  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                4875  involuntary context switches
+         16938946857  instructions retired
+          6814835941  cycles elapsed
+           309084976  peak memory footprint
+--- constant-memory rows=100000 run=1 ---
+RESULT 910 280346624 280346624
+Running build hooks...Running build hooks...        1.20 real         0.88 user         0.16 sys
+           280346624  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               35423  page reclaims
+                  44  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 106  voluntary context switches
+                3583  involuntary context switches
+         14543097210  instructions retired
+          4182720407  cycles elapsed
+           231015168  peak memory footprint
+--- default rows=100000 run=1 ---
+RESULT 962 339165184 280379392
+Running build hooks...Running build hooks...        1.26 real         1.02 user         0.14 sys
+           339394560  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               43449  page reclaims
+                  22  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   6  voluntary context switches
+                3847  involuntary context switches
+         16148811845  instructions retired
+          4646554404  cycles elapsed
+           288654128  peak memory footprint
+--- excel rows=100000 run=1 ---
+RESULT 13578 1976139776 313753600
+       14.49 real        15.10 user         1.36 sys
+          1976139776  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              184662  page reclaims
+                 423  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   3  voluntary context switches
+              142731  involuntary context switches
+        113589417368  instructions retired
+         37859508191  cycles elapsed
+          1973094344  peak memory footprint
+--- excel_community rows=100000 run=1 ---
+RESULT 1503 703021056 317669376
+        2.47 real         3.04 user         0.27 sys
+           703021056  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              104481  page reclaims
+                3053  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 374  voluntary context switches
+               16721  involuntary context switches
+         42826558043  instructions retired
+         13122186660  cycles elapsed
+           649692192  peak memory footprint
+--- constant-memory rows=100000 run=2 ---
+RESULT 866 281034752 281034752
+Running build hooks...Running build hooks...        1.16 real         0.88 user         0.16 sys
+           281034752  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               35398  page reclaims
+                 120  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  22  voluntary context switches
+                4065  involuntary context switches
+         14524817714  instructions retired
+          4177897184  cycles elapsed
+           231686888  peak memory footprint
+--- default rows=100000 run=2 ---
+RESULT 959 339361792 280395776
+Running build hooks...Running build hooks...        1.26 real         1.03 user         0.14 sys
+           339591168  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               43417  page reclaims
+                  22  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   6  voluntary context switches
+                4377  involuntary context switches
+         16137372848  instructions retired
+          4702921916  cycles elapsed
+           288850736  peak memory footprint
+--- excel rows=100000 run=2 ---
+RESULT 4845 2042511360 314179584
+        5.60 real         7.46 user         0.73 sys
+          2042642432  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              184549  page reclaims
+                  24  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 163  voluntary context switches
+               99359  involuntary context switches
+        110405694004  instructions retired
+         32556109969  cycles elapsed
+          1990215648  peak memory footprint
+--- excel_community rows=100000 run=2 ---
+RESULT 1541 704872448 317014016
+        2.43 real         3.12 user         0.27 sys
+           704872448  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              107437  page reclaims
+                  44  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 253  voluntary context switches
+               17662  involuntary context switches
+         42805519624  instructions retired
+         13412405779  cycles elapsed
+           651576400  peak memory footprint
+--- constant-memory rows=100000 run=3 ---
+RESULT 875 280051712 280051712
+Running build hooks...Running build hooks...        1.21 real         0.92 user         0.17 sys
+           280051712  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               35300  page reclaims
+                  41  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 332  voluntary context switches
+                4300  involuntary context switches
+         14511268707  instructions retired
+          4326404169  cycles elapsed
+           230720256  peak memory footprint
+--- default rows=100000 run=3 ---
+RESULT 2515 339329024 280412160
+Running build hooks...Running build hooks...        2.82 real         1.05 user         0.15 sys
+           339558400  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               43449  page reclaims
+                  22  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                5201  involuntary context switches
+         16185767318  instructions retired
+          4758900134  cycles elapsed
+           288817968  peak memory footprint
+--- excel rows=100000 run=3 ---
+RESULT 28721 1906540544 313524224
+       29.64 real        26.09 user         3.42 sys
+          1906917376  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              488424  page reclaims
+                  22  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 177  voluntary context switches
+              111032  involuntary context switches
+        115144352989  instructions retired
+         45315821035  cycles elapsed
+          1976043464  peak memory footprint
+--- excel_community rows=100000 run=3 ---
+RESULT 1499 704512000 317489152
+        2.48 real         3.02 user         0.26 sys
+           704512000  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              105700  page reclaims
+                 647  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 401  voluntary context switches
+               12650  involuntary context switches
+         40923102428  instructions retired
+         12913267154  cycles elapsed
+           651215952  peak memory footprint
+--- constant-memory rows=100000 run=4 ---
+RESULT 1105 280559616 280559616
+Running build hooks...Running build hooks...        1.43 real         0.92 user         0.17 sys
+           280559616  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               35409  page reclaims
+                  82  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 267  voluntary context switches
+                3956  involuntary context switches
+         14548857021  instructions retired
+          4304886539  cycles elapsed
+           231228160  peak memory footprint
+--- default rows=100000 run=4 ---
+RESULT 1066 339378176 280625152
+Running build hooks...Running build hooks...        1.38 real         1.03 user         0.16 sys
+           339673088  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               43499  page reclaims
+                  23  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  15  voluntary context switches
+                4856  involuntary context switches
+         16083576228  instructions retired
+          4763063596  cycles elapsed
+           288867120  peak memory footprint
+--- excel rows=100000 run=4 ---
+RESULT 21777 1946763264 313769984
+       22.73 real        19.92 user         1.93 sys
+          1947271168  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              269817  page reclaims
+                 623  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 181  voluntary context switches
+              103533  involuntary context switches
+        113743449821  instructions retired
+         40819928826  cycles elapsed
+          1974667232  peak memory footprint
+--- excel_community rows=100000 run=4 ---
+RESULT 9907 699908096 316981248
+       15.61 real        12.27 user         1.05 sys
+           699908096  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              104097  page reclaims
+                3073  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 403  voluntary context switches
+               46976  involuntary context switches
+         42880873343  instructions retired
+         20474239315  cycles elapsed
+           650789920  peak memory footprint
+--- constant-memory rows=100000 run=5 ---
+RESULT 1237 280231936 280231936
+Running build hooks...Running build hooks...        1.58 real         0.88 user         0.16 sys
+           280231936  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               34550  page reclaims
+                 748  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  34  voluntary context switches
+                4313  involuntary context switches
+         14500163669  instructions retired
+          4199123436  cycles elapsed
+           230949632  peak memory footprint
+--- default rows=100000 run=5 ---
+RESULT 971 339771392 280870912
+Running build hooks...Running build hooks...        1.25 real         1.00 user         0.14 sys
+           340000768  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               43476  page reclaims
+                  24  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  36  voluntary context switches
+                3886  involuntary context switches
+         16116524521  instructions retired
+          4594119060  cycles elapsed
+           289276744  peak memory footprint
+--- excel rows=100000 run=5 ---
+RESULT 5106 2002960384 313769984
+        6.11 real         7.97 user         0.87 sys
+          2002960384  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              185798  page reclaims
+                  34  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 320  voluntary context switches
+               85236  involuntary context switches
+        114543853281  instructions retired
+         34319239290  cycles elapsed
+          1974011896  peak memory footprint
+--- excel_community rows=100000 run=5 ---
+RESULT 1495 704331776 317030400
+        2.34 real         3.03 user         0.24 sys
+           704331776  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              106706  page reclaims
+                  51  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 401  voluntary context switches
+               15653  involuntary context switches
+         42662692514  instructions retired
+         13035458492  cycles elapsed
+           651019320  peak memory footprint
+--- constant-memory rows=1000000 run=1 ---
+RESULT 40211 280641536 280641536
+Running build hooks...Running build hooks...       40.59 real        27.11 user         3.48 sys
+           280641536  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               35541  page reclaims
+                  22  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                1269  voluntary context switches
+               96282  involuntary context switches
+        103834030447  instructions retired
+         45726225855  cycles elapsed
+           231310080  peak memory footprint
+--- default rows=1000000 run=1 ---
+RESULT 37116 1512325120 280494080
+Running build hooks...Running build hooks...       37.53 real        29.28 user         2.08 sys
+          1512325120  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              120321  page reclaims
+                 706  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 337  voluntary context switches
+               71306  involuntary context switches
+        123469700123  instructions retired
+         50774254910  cycles elapsed
+          1462683280  peak memory footprint
+--- constant-memory rows=1000000 run=2 ---
+RESULT 6678 281051136 281051136
+Running build hooks...Running build hooks...        7.01 real         5.64 user         0.76 sys
+           281051136  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               34817  page reclaims
+                 707  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 744  voluntary context switches
+                6706  involuntary context switches
+        106233632051  instructions retired
+         25857636375  cycles elapsed
+           231703272  peak memory footprint
+--- default rows=1000000 run=2 ---
+RESULT 18039 1513209856 280461312
+Running build hooks...Running build hooks...       18.41 real        15.59 user         1.11 sys
+          1513439232  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              115115  page reclaims
+                  22  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 456  voluntary context switches
+               27688  involuntary context switches
+        122872993611  instructions retired
+         38085368958  cycles elapsed
+          1462797920  peak memory footprint
+--- constant-memory rows=1000000 run=3 ---
+RESULT 38925 280281088 280281088
+Running build hooks...Running build hooks...       39.34 real        26.89 user         2.85 sys
+           280281088  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               36202  page reclaims
+                 706  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                1017  voluntary context switches
+               84186  involuntary context switches
+        103158053219  instructions retired
+         45452420540  cycles elapsed
+           230982376  peak memory footprint
+--- default rows=1000000 run=3 ---
+RESULT 35198 1495613440 280412160
+Running build hooks...Running build hooks...       35.67 real        25.77 user         1.76 sys
+          1497710592  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              152463  page reclaims
+                 705  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 356  voluntary context switches
+               71907  involuntary context switches
+        123664920352  instructions retired
+         48945866872  cycles elapsed
+          1462879888  peak memory footprint
