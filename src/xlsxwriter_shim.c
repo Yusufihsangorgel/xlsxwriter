@@ -31,6 +31,12 @@ void *xlsxw_add_format(void *workbook) {
   return (void *)workbook_add_format((lxw_workbook *)workbook);
 }
 
+int32_t xlsxw_define_name(void *workbook, const char *name,
+                          const char *formula) {
+  return (int32_t)workbook_define_name((lxw_workbook *)workbook, name,
+                                       formula);
+}
+
 int32_t xlsxw_close(void *workbook) {
   return (int32_t)workbook_close((lxw_workbook *)workbook);
 }
@@ -117,6 +123,14 @@ int32_t xlsxw_merge_range(void *worksheet, uint32_t first_row,
   return (int32_t)worksheet_merge_range(
       (lxw_worksheet *)worksheet, first_row, (lxw_col_t)first_col, last_row,
       (lxw_col_t)last_col, value, (lxw_format *)format);
+}
+
+int32_t xlsxw_autofilter(void *worksheet, uint32_t first_row,
+                         uint32_t first_col, uint32_t last_row,
+                         uint32_t last_col) {
+  return (int32_t)worksheet_autofilter((lxw_worksheet *)worksheet, first_row,
+                                       (lxw_col_t)first_col, last_row,
+                                       (lxw_col_t)last_col);
 }
 
 void xlsxw_freeze_panes(void *worksheet, uint32_t row, uint32_t col) {

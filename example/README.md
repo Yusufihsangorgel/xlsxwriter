@@ -5,7 +5,7 @@ Three programs, for the things people write spreadsheets for.
 | file | what it is for |
 | --- | --- |
 | [`xlsxwriter_example.dart`](xlsxwriter_example.dart) | An export too big to hold in memory. Streams rows to disk and measures what that costs. |
-| [`formatted_report.dart`](formatted_report.dart) | A presentation report: merged title, styled headers, currency and date formats, a live formula, frozen panes, and a chart. |
+| [`formatted_report.dart`](formatted_report.dart) | A presentation report: merged title, styled headers, currency and date formats, a live formula, frozen panes, an autofilter, a defined name, and a chart. |
 | [`chart_report.dart`](chart_report.dart) | A small sales sheet with a column chart and a pie: titles, axis names, series names, a moved legend, and pie percentages. |
 
 Both write into a temporary directory and leave nothing behind in the directory
@@ -131,8 +131,9 @@ dart run example/formatted_report.dart
 ```
 
 Merged and colored title, styled header row, currency and date number formats,
-a live `=B3*C3` formula, column widths, frozen panes, and a column chart. This
-one uses the default `Workbook(...)`, which holds the workbook in memory and in
+a live `=B3*C3` formula, column widths, frozen panes, an autofilter over the
+table, a defined name for the units column, and a column chart. This one uses
+the default `Workbook(...)`, which holds the workbook in memory and in
 exchange lets you write cells in any order. That is the right trade for a
 report of this size.
 

@@ -39,6 +39,8 @@ XLSXW_EXPORT void *xlsxw_workbook_new(const char *filename);
 XLSXW_EXPORT void *xlsxw_workbook_new_constant_memory(const char *filename);
 XLSXW_EXPORT void *xlsxw_add_worksheet(void *workbook, const char *name);
 XLSXW_EXPORT void *xlsxw_add_format(void *workbook);
+XLSXW_EXPORT int32_t xlsxw_define_name(void *workbook, const char *name,
+                                       const char *formula);
 XLSXW_EXPORT int32_t xlsxw_close(void *workbook);
 XLSXW_EXPORT void xlsxw_workbook_free(void *workbook);
 
@@ -76,6 +78,9 @@ XLSXW_EXPORT int32_t xlsxw_merge_range(void *worksheet, uint32_t first_row,
                                        uint32_t first_col, uint32_t last_row,
                                        uint32_t last_col, const char *value,
                                        void *format);
+XLSXW_EXPORT int32_t xlsxw_autofilter(void *worksheet, uint32_t first_row,
+                                      uint32_t first_col, uint32_t last_row,
+                                      uint32_t last_col);
 XLSXW_EXPORT void xlsxw_freeze_panes(void *worksheet, uint32_t row,
                                      uint32_t col);
 

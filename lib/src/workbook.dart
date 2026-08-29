@@ -155,6 +155,33 @@ final class Workbook implements Finalizable {
     return Format._(this, handle);
   }
 
+  /// Creates a defined name that formulas can use as a variable.
+  ///
+  /// [name] is the name, [formula] the cell, range, or constant it refers to,
+  /// in Excel form with a leading `=`. A name is global unless prefixed with a
+  /// sheet, as in `'Sheet2!Sales'` or `"'New Data'!Sales"` when the sheet name
+  /// has spaces.
+  ///
+  /// ```dart
+  /// workbook.defineName('Exchange_rate', '=0.96');
+  /// sheet.writeFormula(2, 1, '=Exchange_rate');
+  ///
+  /// workbook.defineName('Sales', r'=Sheet1!$G$1:$H$10');
+  /// ```
+  void defineName(String name, String formula) {
+    _ensureOpen();
+    _checkNoEmbeddedNul(name, 'name');
+    _checkNoEmbeddedNul(formula, 'formula');
+    final cName = name.toNativeUtf8();
+    final cFormula = formula.toNativeUtf8();
+    try {
+      _check(bindings.xlsxwDefineName(_handle, cName, cFormula));
+    } finally {
+      malloc.free(cName);
+      malloc.free(cFormula);
+    }
+  }
+
   /// Creates a [Chart] of the given [type], owned by this workbook.
   ///
   /// Add data to it with [Chart.addSeries], then place it on a sheet with

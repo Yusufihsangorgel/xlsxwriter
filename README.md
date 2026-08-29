@@ -30,8 +30,8 @@ completed workbook as bytes (`workbook.dart:6221`, `6238`, `6250` in 34.2.2).
 - The row count comes from user input, so you cannot bound memory in advance.
 - A long-running server or CLI has to write reports while it handles other
   work.
-- The sheet needs formats, tables, charts, or conditional formatting rather
-  than only values.
+- The sheet needs formats, tables, charts, conditional formatting, an
+  autofilter, frozen panes, or defined names rather than only values.
 
 Skip it inside a Flutter app, on the web, or on mobile. The pubspec declares
 Linux, macOS, and Windows only, because the C library is compiled through
@@ -44,8 +44,8 @@ does not read them. To read or edit an existing file, reach for
 [`excel`](https://pub.dev/packages/excel) or
 [`spreadsheet_decoder`](https://pub.dev/packages/spreadsheet_decoder) instead.
 What is covered here is the export and report-generation path: rows of data into
-an `.xlsx`, with formats, tables, charts, images, and conditional formatting
-along the way.
+an `.xlsx`, with formats, tables, charts, images, conditional formatting,
+autofilter, frozen panes, and defined names along the way.
 
 ```dart
 import 'package:xlsxwriter/xlsxwriter.dart';
@@ -240,6 +240,18 @@ and a name you can use in formulas:
 
 ```dart
 sheet.addTable(0, 0, 3, 1, name: 'Sales', columns: ['Item', 'Amount']);
+```
+
+**Autofilter, frozen panes, defined names.** The three things a report reaches
+for after the chart. An autofilter is just the dropdowns, with no table
+wrapper; freeze the header so it stays put while the rest scrolls; name a
+range or a constant so a formula can use it:
+
+```dart
+sheet.autofilter(0, 0, 50, 3);
+sheet.freezePanes(1, 0);
+workbook.defineName('Exchange_rate', '=0.96');
+sheet.writeFormula(2, 1, '=Exchange_rate');
 ```
 
 **Charts.** Write a real Excel chart from data on a sheet. The pure-Dart writers

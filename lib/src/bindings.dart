@@ -53,6 +53,17 @@ external Pointer<Void> xlsxwAddWorksheet(
 @Native<Pointer<Void> Function(Pointer<Void>)>(symbol: 'xlsxw_add_format')
 external Pointer<Void> xlsxwAddFormat(Pointer<Void> workbook);
 
+/// Creates a defined name [name] referring to [formula]. Returns an
+/// `lxw_error` value.
+@Native<Int32 Function(Pointer<Void>, Pointer<Utf8>, Pointer<Utf8>)>(
+  symbol: 'xlsxw_define_name',
+)
+external int xlsxwDefineName(
+  Pointer<Void> workbook,
+  Pointer<Utf8> name,
+  Pointer<Utf8> formula,
+);
+
 /// Writes the file and frees the workbook. Returns an `lxw_error` value.
 @Native<Int32 Function(Pointer<Void>)>(symbol: 'xlsxw_close')
 external int xlsxwClose(Pointer<Void> workbook);
@@ -203,6 +214,19 @@ external int xlsxwMergeRange(
   int lastCol,
   Pointer<Utf8> value,
   Pointer<Void> format,
+);
+
+/// Adds an autofilter over the range [firstRow], [firstCol] to [lastRow],
+/// [lastCol]. Returns an `lxw_error` value.
+@Native<Int32 Function(Pointer<Void>, Uint32, Uint32, Uint32, Uint32)>(
+  symbol: 'xlsxw_autofilter',
+)
+external int xlsxwAutofilter(
+  Pointer<Void> worksheet,
+  int firstRow,
+  int firstCol,
+  int lastRow,
+  int lastCol,
 );
 
 /// Freezes panes above [row] and left of [col].

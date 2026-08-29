@@ -459,6 +459,7 @@ void main() {
       expect(() => sheet.writeString(0, 0, 'late'), throwsStateError);
       expect(() => workbook.addWorksheet(), throwsStateError);
       expect(() => workbook.addFormat(), throwsStateError);
+      expect(() => workbook.defineName('X', '=1'), throwsStateError);
     });
 
     test('close is idempotent', () {
@@ -548,6 +549,10 @@ void main() {
         throwsArgumentError,
       );
       expect(() => workbook.addWorksheet('bad\u0000name'), throwsArgumentError);
+      expect(
+        () => workbook.defineName('bad\u0000name', '=1'),
+        throwsArgumentError,
+      );
       expect(
         () => workbook.addFormat().fontName('bad\u0000font'),
         throwsArgumentError,

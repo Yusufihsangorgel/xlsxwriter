@@ -319,6 +319,26 @@ final class Worksheet {
     }
   }
 
+  /// Adds an autofilter dropdown to each column of the range from
+  /// ([firstRow], [firstCol]) to ([lastRow], [lastCol]) inclusive.
+  ///
+  /// The first row of the range is the header; Excel shows a filter arrow on
+  /// each of those cells. Unlike [addTable], this does not wrap the range as a
+  /// table — it is just the filter, which is what a report wants when the data
+  /// is already laid out.
+  ///
+  /// ```dart
+  /// sheet.autofilter(0, 0, 50, 3); // A1:D51
+  /// ```
+  void autofilter(int firstRow, int firstCol, int lastRow, int lastCol) {
+    _workbook._ensureOpen();
+    _validateCell(firstRow, firstCol);
+    _validateCell(lastRow, lastCol);
+    _check(
+      bindings.xlsxwAutofilter(_handle, firstRow, firstCol, lastRow, lastCol),
+    );
+  }
+
   /// Freezes rows above [row] and columns to the left of [col], keeping them
   /// visible while the rest of the sheet scrolls.
   ///

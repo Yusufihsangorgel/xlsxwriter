@@ -1,3 +1,14 @@
+## 1.3.0
+
+- Autofilter and defined names, the two remaining pieces of a report after
+  the chart. `Worksheet.autofilter` puts a filter dropdown on each column of
+  a range without wrapping it as a table; `Workbook.defineName` names a cell,
+  a range, or a constant so a formula can use it. Frozen panes have been
+  there since 0.1.0; the three together are what a person building a report
+  reaches for once the chart is in. Verified by writing each and reading the
+  XML back out of the xlsx zip: `autoFilter` ref, `pane` with
+  `state="frozen"`, `definedName`.
+
 ## 1.2.0
 
 - Charts: the rest of the report set. Stacked column, bar and line types;

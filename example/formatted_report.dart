@@ -1,6 +1,6 @@
 // A small formatted report: merged and colored title, styled headers, number
 // and currency formats, a live formula, a date column, column widths, frozen
-// panes, and a column chart.
+// panes, an autofilter, a defined name, and a column chart.
 //
 // This is the presentation side of the package. Charts in particular are a
 // reason to reach for a native writer: the pure-Dart writers cannot produce
@@ -75,10 +75,13 @@ void main() {
     sheet.writeString(6, 0, 'Report date');
     sheet.writeDateTime(6, 1, DateTime(2026, 7, 17), dateFormat);
 
-    // Widths and a frozen header.
+    // Widths, a frozen header, and a filter over the table. A defined name
+    // lets a formula refer to the units column without repeating the range.
     sheet.setColumn(0, 0, 16);
     sheet.setColumn(1, 3, 12);
     sheet.freezePanes(2, 0);
+    sheet.autofilter(1, 0, 4, 3);
+    workbook.defineName('Units', r'=Sales!$B$3:$B$5');
 
     // A column chart of units sold by item, plotting the data written above.
     // Ranges reference the sheet by name, so a chart can read data from any
