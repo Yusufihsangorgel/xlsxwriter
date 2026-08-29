@@ -1,3 +1,9 @@
+## 1.4.1
+
+- `code_assets` moved to `^2.0.0`. The 1.x constraint costs a pub.dev
+  scorecard point once the grace period on the 2.0.0 release expires. The
+  native writer builds unchanged.
+
 ## 1.4.0
 
 - `excel_community` 2.3.0, the maintained fork of `excel`, is now in the
