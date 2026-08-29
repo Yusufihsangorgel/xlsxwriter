@@ -78,8 +78,9 @@ void _spawn(String label, String engine, int rows, int cols) {
   // The child emits a "RESULT <millis> <peakRssBytes> <baselineRssBytes>"
   // marker; find it amid any toolchain output (such as the "Running build
   // hooks..." notice, which is printed without a trailing newline).
-  final match = RegExp(r'RESULT (\d+) (\d+) (\d+)')
-      .firstMatch(result.stdout as String);
+  final match = RegExp(
+    r'RESULT (\d+) (\d+) (\d+)',
+  ).firstMatch(result.stdout as String);
   if (match == null) {
     stdout.writeln('${label.padRight(22)}${'no result'.padLeft(10)}');
     return;
