@@ -14,6 +14,10 @@ import 'package:native_toolchain_c/native_toolchain_c.dart';
 /// Windows has no system zlib.
 void main(List<String> args) async {
   await build(args, (input, output) async {
+    // A build can ask for other asset types only; the code configuration is
+    // absent then and reading it throws, so there is nothing to compile.
+    if (!input.config.buildCodeAssets) return;
+
     final targetOS = input.config.code.targetOS;
 
     /// libxlsxwriter core, the 26 units its CMake `LIBXLSXWRITER_SOURCES`
