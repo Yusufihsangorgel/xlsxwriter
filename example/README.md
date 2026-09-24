@@ -8,8 +8,8 @@ Three programs, for the things people write spreadsheets for.
 | [`formatted_report.dart`](formatted_report.dart) | A presentation report: merged title, styled headers, currency and date formats, a live formula, frozen panes, an autofilter, a defined name, and a chart. |
 | [`chart_report.dart`](chart_report.dart) | A small sales sheet with a column chart and a pie: titles, axis names, series names, a moved legend, and pie percentages. |
 
-Both write into a temporary directory and leave nothing behind in the directory
-you happened to be in.
+All three write into a temporary directory and leave nothing behind in the
+directory you happened to be in.
 
 Run them with `dart run`. Compiling one from this repository with
 `dart compile exe` exits 0 and then produces a binary that dies on its first
