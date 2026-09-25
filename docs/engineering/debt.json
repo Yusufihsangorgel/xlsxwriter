@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "package": "xlsxwriter",
+  "survey_digest": "f90f45c8a172068c3ed3b9488ba5a7cb4e58efa93c380d2d9a70b399349ec35e",
+  "items": [
+    {
+      "id": "xlsxwriter-D001",
+      "source_index": 1,
+      "source_item_digest": "90c0a9ef5f797b8f65b7013449fbdf20fd38bc2ae0d2b58f628636d2b9963db3",
+      "baseline_revision": "e9a611b",
+      "status": "open",
+      "size": "small",
+      "locations": [
+        {
+          "path": "lib/src/workbook.dart",
+          "lines": "242,259-265"
+        },
+        {
+          "path": "src/xlsxwriter_shim.c",
+          "lines": "5-6,53,60,67,74,90,97,104,110,124-137,234-235,319,336,364-415"
+        }
+      ],
+      "kind": "correctness: silent data corruption",
+      "observation": "The column is Uint32 in the FFI (bindings.dart:76-79). `_validateCell` rejects a column only above 0xFFFFFFFF; the shim narrows the column unchecked to `(lxw_col_t)` = uint16. Columns between 65536 and 2^32-1 wrap modulo 65536, pass libxlsxwriter's bound check, and the data is silently written to the wrong column. This is exactly the failure class the `_maxCellIndex` comment (workbook.dart:233-241) wants to prevent. The tests only try values above 2^32 (test/xlsxwriter_test.dart:521-522). Proven by code reading, not executed.",
+      "certainty": "confirmed",
+      "proposed_fix": "A separate upper bound for the column (0xFFFF; libxlsxwriter keeps reporting the Excel limit with its own error), in all column paths including setColumn. A `writeNumber(0, 0x10003, 1)` throwsArgumentError test and a CHANGELOG entry.",
+      "related_rule_ids": [
+        "xlsxwriter/XW-04"
+      ],
+      "issue_url": null,
+      "closure_criteria": "Every column path, including setColumn, rejects columns above 0xFFFF before the native call. A writeNumber(0, 0x10003, 1) test expects ArgumentError and CHANGELOG.md records the fix.",
+      "review_trigger": "Before modifying the affected code",
+      "resolution": null
+    },
+    {
+      "id": "xlsxwriter-D002",
+      "source_index": 2,
+      "source_item_digest": "dbbbb7a75fddbb1f42f6da5b9028f6132ef2f903f53ba9cdedddaaa91777b402",
+      "baseline_revision": "e9a611b",
+      "status": "open",
+      "size": "small",
+      "locations": [
+        {
+          "path": "lib/src/worksheet.dart",
+          "lines": "239-253,261-271"
+        }
+      ],
+      "kind": "inconsistent validation",
+      "observation": "setColumn and setRow skip `_validateCell`. There is only a `< 0` check; setColumn throws an `ArgumentError(message)` without a name. There is no upper bound and no `firstCol <= lastCol` check; a row or column above 2^32 wraps in the FFI.",
+      "certainty": "confirmed",
+      "proposed_fix": "Row and column validation helpers + `ArgumentError.value`; a range-order check; a test.",
+      "related_rule_ids": [
+        "xlsxwriter/XW-04"
+      ],
+      "issue_url": null,
+      "closure_criteria": "setColumn and setRow validate bounds through shared helpers that throw ArgumentError.value and reject firstCol greater than lastCol. A test covers the out-of-range and reversed-range cases.",
+      "review_trigger": "Before modifying the affected code",
+      "resolution": null
+    },
+    {
+      "id": "xlsxwriter-D003",
+      "source_index": 3,
+      "source_item_digest": "b6863cc1e7cc9e0b079b9a88c4d2662580e39f7251f03b9a67da59e7cdc3e209",
+      "baseline_revision": "e9a611b",
+      "status": "open",
+      "size": "small",
+      "locations": [
+        {
+          "path": "lib/src/worksheet.dart",
+          "lines": "375,458"
+        },
+        {
+          "path": "lib/src/workbook.dart",
+          "lines": "244-266"
+        }
+      ],
+      "kind": "documentation drift",
+      "observation": "The dartdoc of addTable and insertChart promises a RangeError for coordinate errors; `_validateCell` throws ArgumentError.value (not RangeError).",
+      "certainty": "confirmed",
+      "proposed_fix": "Fix the dartdoc to ArgumentError.",
+      "related_rule_ids": [
+        "xlsxwriter/XW-06"
+      ],
+      "issue_url": null,
+      "closure_criteria": "The addTable and insertChart dartdoc names ArgumentError for coordinate errors, matching what _validateCell throws.",
+      "review_trigger": "Before modifying the affected code",
+      "resolution": null
+    },
+    {
+      "id": "xlsxwriter-D004",
+      "source_index": 4,
+      "source_item_digest": "c87fee54e3f6f9139cacf7c02da31d2a13779c98d7cc0dd996d219fd0fa5bba9",
+      "baseline_revision": "e9a611b",
+      "status": "open",
+      "size": "small",
+      "locations": [
+        {
+          "path": "lib/src/workbook.dart",
+          "lines": "73-89"
+        }
+      ],
+      "kind": "resource cleanup",
+      "observation": "toBytes does not close the workbook when `build` throws; the native memory is left to the finalizer and the temporary directory is still deleted.",
+      "certainty": "confirmed",
+      "proposed_fix": "Free without writing on the error path (detach + native free) and a 'build throws' test.",
+      "related_rule_ids": [
+        "xlsxwriter/XW-07"
+      ],
+      "issue_url": null,
+      "closure_criteria": "toBytes detaches the finalizer and frees the workbook without writing when build throws. A test forces build to throw and covers the error path.",
+      "review_trigger": "Before modifying the affected code",
+      "resolution": null
+    },
+    {
+      "id": "xlsxwriter-D005",
+      "source_index": 5,
+      "source_item_digest": "9a85bf379229423e37cb748195f523d31072d0984e88175793821a43fb0d8da1",
+      "baseline_revision": "e9a611b",
+      "status": "open",
+      "size": "small",
+      "locations": [
+        {
+          "path": "lib/src/chart.dart",
+          "lines": null
+        },
+        {
+          "path": "lib/src/format.dart",
+          "lines": null
+        },
+        {
+          "path": "lib/src/workbook.dart",
+          "lines": null
+        },
+        {
+          "path": "lib/src/worksheet.dart",
+          "lines": null
+        }
+      ],
+      "kind": "duplicated logic",
+      "observation": "The NUL check + toNativeUtf8 + try/finally malloc.free skeleton is written 17 times.",
+      "certainty": "confirmed",
+      "proposed_fix": "A `_withCString(String value, String name, void Function(Pointer<Utf8>))` helper that also contains the NUL check.",
+      "related_rule_ids": [
+        "xlsxwriter/XW-03",
+        "xlsxwriter/XW-15"
+      ],
+      "issue_url": null,
+      "closure_criteria": "All native string sites route through a single _withCString helper that performs the NUL check and the try/finally malloc.free.",
+      "review_trigger": "Before modifying the affected code",
+      "resolution": null
+    },
+    {
+      "id": "xlsxwriter-D006",
+      "source_index": 6,
+      "source_item_digest": "6c563d978b193a1ec6715dba7a02dcf1960ad91fdc34be70e222f9d50d4e0a0e",
+      "baseline_revision": "e9a611b",
+      "status": "open",
+      "size": "small",
+      "locations": [
+        {
+          "path": "lib/src/enums.dart",
+          "lines": "3,37,62,87"
+        }
+      ],
+      "kind": "upstream coupling / leaking native value",
+      "observation": "The Format enums mirror libxlsxwriter enum values and there is no test pinning them against the header. Every public enum exposes the native value through `.value`.",
+      "certainty": "confirmed",
+      "proposed_fix": "A header-pinning test for the mirrored values. `.value` stays to avoid a breaking change; new enums use a shim identity.",
+      "related_rule_ids": [
+        "xlsxwriter/XW-09"
+      ],
+      "issue_url": null,
+      "closure_criteria": "A test pins every mirrored Format enum value against the vendored libxlsxwriter header. The .value getter remains and new enums use shim identities.",
+      "review_trigger": "Before modifying the affected code",
+      "resolution": null
+    },
+    {
+      "id": "xlsxwriter-D007",
+      "source_index": 7,
+      "source_item_digest": "ce9e3a58335e3ad3e808b64abe5b1ef62875c0a08ab0a9e3c4a5e05af3b07bcc",
+      "baseline_revision": "e9a611b",
+      "status": "open",
+      "size": "small",
+      "locations": [
+        {
+          "path": "analysis_options.yaml",
+          "lines": "1"
+        }
+      ],
+      "kind": "analysis strictness",
+      "observation": "Only recommended.",
+      "certainty": "confirmed",
+      "proposed_fix": "Turn on the image_ffi settings.",
+      "related_rule_ids": [],
+      "issue_url": null,
+      "closure_criteria": "analysis_options.yaml enables the image_ffi strict settings and dart analyze reports no new diagnostics.",
+      "review_trigger": "Before modifying the affected code",
+      "resolution": null
+    }
+  ]
+}
