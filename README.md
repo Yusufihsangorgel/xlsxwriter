@@ -21,17 +21,33 @@ returns the finished bytes.
 This package streams rows to disk in constant-memory mode. Use it when an
 export must keep memory bounded.
 
-## Reach for it when
+## When to use it
+
+Use this package when:
 
 - The row count comes from user input, so you cannot bound memory in advance.
+  At 100,000 rows the export added 0.0 MiB in constant-memory mode.
+  `excel_community` 2.3.0 added 369.4 MiB and `excel` 4.0.6 added 1585.4 MiB
+  (the second table below).
 - A long-running server or CLI has to write reports while it handles other
   work.
 - The sheet needs formats, tables, charts, conditional formatting, an
   autofilter, frozen panes, or defined names rather than only values.
 
-Skip it inside a Flutter app, on the web, or on mobile. The pubspec declares
-Linux, macOS, and Windows only, because the C library is compiled through
-Dart's build hooks and those target the standalone runtime today.
+Use `excel` or `excel_community` instead when:
+
+- You need to read or edit an existing `.xlsx`. This package only writes files.
+  `excel_community` also lists read-only support for legacy `.xls`.
+- The code runs in a Flutter app, on the web, or on mobile. The pubspec of this
+  package declares Linux, macOS, and Windows only, because the C library is
+  compiled through Dart's build hooks and those target the standalone runtime
+  today. The `excel_community` README lists Flutter Web, Android, iOS, and
+  desktop, and the `excel` pubspec describes a library for Flutter and Dart on
+  both client and server.
+- You need pivot tables. The `excel_community` README lists them and this
+  package has no pivot API.
+- The build machine has no C toolchain. `excel` and `excel_community` are pure
+  Dart, and this package compiles vendored C during its build.
 
 The engine underneath is
 [libxlsxwriter](https://github.com/jmcnamara/libxlsxwriter) by John McNamara,
@@ -140,11 +156,12 @@ and 35.2 seconds across runs. The memory column does not have that problem; a
 peak is a peak whatever else the machine is doing.
 
 At ten thousand rows `excel_community` writes the sheet in 0.26 s against
-default mode's 0.31 s. It is faster there, and at a thousand rows all three
-finish inside a fifth of a second, which is to say the choice does not matter
-at that size. What separates them is memory and what happens as the sheet
-grows: `excel_community` is holding 42 MiB at ten thousand rows and 1.8 GiB at
-a million, and constant-memory mode is holding nothing at either.
+default mode's 0.31 s. It is faster there. At a thousand rows both modes of this
+package and `excel` finish in under 0.2 s, and `excel_community` takes 0.67 s.
+Speed alone does not settle the choice at that size. What separates them is
+memory and what happens as the sheet grows: `excel_community` is holding 42 MiB
+at ten thousand rows and 1.8 GiB at a million, and constant-memory mode is
+holding nothing at either.
 
 `excel` was not measured at a million rows. Two attempts were cut off without
 finishing, one after 32 minutes; at a hundred thousand rows it already peaks at
@@ -285,8 +302,8 @@ workbook.defineName('Exchange_rate', '=0.96');
 sheet.writeFormula(2, 1, '=Exchange_rate');
 ```
 
-**Charts.** Write a real Excel chart from data on a sheet. The pure-Dart writers
-cannot produce charts at all:
+**Charts.** Write a real Excel chart from data on a sheet. `excel` 4.0.6 has no
+chart API, and `excel_community` 2.3.0 writes charts too:
 
 ```dart
 final chart = workbook.addChart(ChartType.column)

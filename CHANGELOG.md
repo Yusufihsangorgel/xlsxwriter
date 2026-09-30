@@ -1,5 +1,6 @@
 ## 1.4.3
 
+- README: the "When to use it" section now says when `excel` or `excel_community` is the better choice, and the charts note no longer says the pure-Dart writers cannot write charts (`excel_community` can).
 - README: removed the unsourced comparison with `syncfusion_flutter_xlsio`.
 - README: the `writeRow` note now says a `DateTime` without a `dateFormat` throws `ArgumentError`.
 - README: the benchmark notes now say `bench/bench.dart --compare` also runs `excel`.
