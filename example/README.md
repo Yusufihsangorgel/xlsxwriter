@@ -8,8 +8,8 @@ Three programs, for the things people write spreadsheets for.
 | [`formatted_report.dart`](formatted_report.dart) | A presentation report: merged title, styled headers, currency and date formats, a live formula, frozen panes, an autofilter, a defined name, and a chart. |
 | [`chart_report.dart`](chart_report.dart) | A small sales sheet with a column chart and a pie: titles, axis names, series names, a moved legend, and pie percentages. |
 
-Both write into a temporary directory and leave nothing behind in the directory
-you happened to be in.
+All three write into a temporary directory and leave nothing behind in the
+directory you ran from.
 
 Run them with `dart run`. Compiling one from this repository with
 `dart compile exe` exits 0 and then produces a binary that dies on its first
@@ -94,8 +94,9 @@ Because `maxRss` is a whole-process peak, the two modes have to be separate
 runs; in one process whichever peaked higher would hide the other.
 [`bench/bench.dart`](../bench/bench.dart) automates both runs and prints them
 side by side, with the same baseline column; it is where the two `xlsxwriter`
-rows in the main README's benchmark table come from. (The `excel` row there is
-measured separately, for a dependency reason the main README explains.)
+rows in the main README's benchmark table come from. With `--compare` it also
+runs the `excel` packages from `bench/competitors/`, which sit in their own
+pubspecs for a dependency reason the main README explains.
 
 Other flags: `--rows=N` to pick your own size, `--keep` to leave the `.xlsx`
 behind and print its path so you can open it.

@@ -18,12 +18,8 @@ per cell for the life of the sheet, each with its own `CellStyle?`,
 source-level reason for the figure above: nothing reaches disk until `save()`
 returns the finished bytes.
 
-**Instead of syncfusion_flutter_xlsio.** It is the other real `.xlsx` writer on
-pub.dev, and it is not open source. Its LICENSE requires a commercial license
-or the Community License, which is limited to organizations under one million
-USD in annual revenue with fewer than five developers. Its save path is also
-whole-file: `saveAsStream()`, `saveSync()`, and `save()` each return the
-completed workbook as bytes (`workbook.dart:6221`, `6238`, `6250` in 34.2.2).
+This package streams rows to disk in constant-memory mode. Use it when an
+export must keep memory bounded.
 
 ## Reach for it when
 
@@ -110,13 +106,15 @@ mostly compares two runtimes. Measured on what the export actually added,
 constant memory there is no ratio worth quoting, because the denominator is the
 noise floor.
 
-The `excel` row comes from a throwaway package running the same workload with
-the same before-and-after sampling. `excel` and this package's dev dependency
-`archive` need incompatible major versions of `archive` and cannot share one
-pubspec, which is also why `bench/bench.dart` measures only the two
-`xlsxwriter` modes. That harness starts 75 MiB higher for the same reason: it
-is a different process, with `archive` and an in-memory cell model loaded
-before its first write. The chart is redrawn by `dart run tool/benchmark_chart.dart`, which
+The `excel` row comes from a separate package, `bench/competitors/excel`,
+running the same workload with the same before-and-after sampling. `excel` and
+this package's dev dependency `archive` need incompatible major versions of
+`archive` and cannot share one pubspec, which is why the pure-Dart writers live
+in packages of their own. `bench/bench.dart` measures only the two `xlsxwriter`
+modes unless you pass `--compare`, which also runs the writers under
+`bench/competitors/`. The `excel` harness starts 75 MiB higher: it is a
+different process, with `archive` and an in-memory cell model loaded before its
+first write. The chart is redrawn by `dart run tool/benchmark_chart.dart`, which
 holds the measured figures as constants; moving the chart means re-running the
 benchmark first.
 
@@ -243,8 +241,8 @@ workbook that is garbage-collected without `close()` is freed by a
 A short tour; see the API docs for the full set.
 
 **Values, a row at a time.** `writeRow` takes a `List<Object?>` and dispatches
-each value by runtime type. A `DateTime` needs a `dateFormat` to render as a
-date rather than a serial number:
+each value by runtime type. A `DateTime` needs a `dateFormat`, and `writeRow`
+throws `ArgumentError` without one:
 
 ```dart
 final date = workbook.addFormat()..numberFormat('yyyy-mm-dd');

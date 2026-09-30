@@ -1,3 +1,10 @@
+## 1.4.3
+
+- README: removed the unsourced comparison with `syncfusion_flutter_xlsio`.
+- README: the `writeRow` note now says a `DateTime` without a `dateFormat` throws `ArgumentError`.
+- README: the benchmark notes now say `bench/bench.dart --compare` also runs `excel`.
+- Example README: all three examples write into a temporary directory.
+
 ## 1.4.2
 
 - The build hook returns early when a build does not request code assets.
