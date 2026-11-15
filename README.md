@@ -38,12 +38,12 @@ Use `excel` or `excel_community` instead when:
 
 - You need to read or edit an existing `.xlsx`. This package only writes files.
   `excel_community` also lists read-only support for legacy `.xls`.
-- The code runs in a Flutter app, on the web, or on mobile. The pubspec of this
-  package declares Linux, macOS, and Windows only, because the C library is
-  compiled through Dart's build hooks and those target the standalone runtime
-  today. The `excel_community` README lists Flutter Web, Android, iOS, and
-  desktop, and the `excel` pubspec describes a library for Flutter and Dart on
-  both client and server.
+- The code runs on the web or on mobile. The pubspec of this package declares
+  Linux, macOS, and Windows only, and the C library is compiled through Dart's
+  build hooks, which are not verified here on Android or iOS. The
+  `excel_community` README lists Flutter Web, Android, iOS, and desktop, and the
+  `excel` pubspec describes a library for Flutter and Dart on both client and
+  server.
 - You need pivot tables. The `excel_community` README lists them and this
   package has no pivot API.
 - The build machine has no C toolchain. `excel` and `excel_community` are pure
@@ -382,8 +382,9 @@ same top-to-bottom ordering rule.
 
 ## Platforms and requirements
 
-- Dart 3.10 or newer, standalone (CLI and server). The native library is built
-  by a Dart build hook the first time you run or test the package.
+- Dart 3.10 or newer, standalone (CLI and server) or in a Flutter desktop app.
+  The native library is built by a Dart build hook the first time you run or
+  test the package.
 - Linux, macOS, and Windows. `pubspec.yaml` declares exactly these three; the
   build hook has no Android or iOS handling and has not been verified on them.
 - A C toolchain on the build machine: Clang or GCC on macOS and Linux, MSVC on
@@ -396,8 +397,12 @@ same top-to-bottom ordering rule.
   emits a bundle with your executable in `bin/` and the library beside it in
   `lib/` (`libxlsxwriter.dylib` on macOS). Ship the bundle rather than the bare
   binary. The command is still marked preview in Dart 3.11.
-- Flutter is not supported yet. Build hooks target the Dart standalone runtime
-  today, and Flutter support depends on native assets stabilizing for Flutter.
+- Flutter desktop apps can depend on this package through its build hook, which
+  is stable in Flutter since 3.38. CI tests it with the Dart runtime on Linux,
+  macOS, and Windows and does not test inside a Flutter app. Mobile is not
+  supported. The build hook has not been verified on Android or iOS, and
+  constant-memory mode would need a writable temp directory there that is
+  also unverified.
 
 CI builds and tests on Ubuntu, macOS, and Windows on every push
 (`.github/workflows/ci.yaml`): `dart format`, `dart analyze --fatal-infos`, and

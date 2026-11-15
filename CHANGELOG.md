@@ -5,6 +5,10 @@
 - README: the `writeRow` note now says a `DateTime` without a `dateFormat` throws `ArgumentError`.
 - README: the benchmark notes now say `bench/bench.dart --compare` also runs `excel`.
 - Example README: all three examples write into a temporary directory.
+- README: the Flutter note was out of date. Build hooks are stable in Flutter
+  since 3.38 and Flutter desktop apps can depend on the package. It is tested
+  with the Dart runtime on Linux, macOS, and Windows and not inside a Flutter
+  app. Mobile is not supported.
 - The package resolves again in apps on Flutter 3.38 to 3.44. The
   `code_assets` constraint is now `>=1.2.1 <3.0.0`. Version 2 of `code_assets`
   needs a newer `meta` than those Flutter releases pin.
