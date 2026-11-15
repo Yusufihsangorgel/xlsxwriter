@@ -40,15 +40,15 @@ dependencies:
   native_toolchain_c: '>=0.19.2 <0.20.0'
 
 # hook/build.dart only ever branches on OS.windows vs. everything else; it has
-# no Android/iOS handling and has never been built or tested on those
-# platforms (see README's "Platforms and requirements" section). Declaring
-# the supported set here overrides pub.dev's auto-detected tags (pana reads
-# this field first, ahead of import-graph analysis), so the site stops
-# claiming android/ios support the package doesn't have. This is the
-# top-level `platforms:` key (added in Dart 2.16), not the legacy
-# `flutter: plugin: platforms:` block — it carries no Flutter SDK constraint,
-# so pure-Dart/CLI consumers are unaffected. Add android/ios here once the
-# hook is actually verified to build and run on them.
+# no Android/iOS handling. Android builds and links in CI (flutter-compat) but
+# is not run there, and iOS has never been built or tested (see README's
+# "Platforms and requirements" section). Declaring the supported set here
+# overrides pub.dev's auto-detected tags (pana reads this field first, ahead of
+# import-graph analysis), so the site stops claiming android/ios support the
+# package doesn't have. This is the top-level `platforms:` key (added in Dart
+# 2.16), not the legacy `flutter: plugin: platforms:` block — it carries no
+# Flutter SDK constraint, so pure-Dart/CLI consumers are unaffected. Add
+# android/ios here once the hook is actually verified to build and run on them.
 platforms:
   linux:
   macos:

@@ -399,10 +399,12 @@ same top-to-bottom ordering rule.
   binary. The command is still marked preview in Dart 3.11.
 - Flutter desktop apps can depend on this package through its build hook, which
   is stable in Flutter since 3.38. CI tests it with the Dart runtime on Linux,
-  macOS, and Windows and does not test inside a Flutter app. Mobile is not
-  supported. The build hook has not been verified on Android or iOS, and
-  constant-memory mode would need a writable temp directory there that is
-  also unverified.
+  macOS, and Windows. A second workflow
+  (`.github/workflows/flutter-compat.yaml`) writes a workbook from a Flutter
+  Linux app on Flutter 3.38 to 3.50 and builds an Android APK without running
+  it. Mobile is not supported. The build hook has not been run on Android or
+  iOS, and constant-memory mode would need a writable temp directory there
+  that is also unverified.
 
 CI builds and tests on Ubuntu, macOS, and Windows on every push
 (`.github/workflows/ci.yaml`): `dart format`, `dart analyze --fatal-infos`, and
