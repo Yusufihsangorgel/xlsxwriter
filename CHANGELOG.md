@@ -14,7 +14,9 @@
   needs a newer `meta` than those Flutter releases pin.
 - Dev dependency bounds raised to `test` `^1.27.0` and `frontend_server_client`
   `^4.0.0`. With the old bounds `dart pub downgrade` resolved packages that do
-  not compile. CI now tests the lowest versions.
+  not compile. The `xml` dev dependency is now `>=6.5.0 <8.0.0`, because
+  `xml` 7 needs Dart 3.11 and the tests could not resolve on Dart 3.10. CI now
+  tests the lowest versions.
 
 ## 1.4.2
 

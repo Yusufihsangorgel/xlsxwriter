@@ -64,4 +64,7 @@ dev_dependencies:
   # package:test allows frontend_server_client 3.x, which starts a frontend
   # server snapshot that 64-bit SDKs do not ship.
   frontend_server_client: ^4.0.0
-  xml: ^7.0.0
+  # xml 7.0.0 needs Dart 3.11, so ^7.0.0 cannot resolve on this package's own
+  # SDK floor. The tests only parse XML and read elements and attributes, and
+  # they pass on both 6.5.0 and 7.1.0.
+  xml: '>=6.5.0 <8.0.0'
