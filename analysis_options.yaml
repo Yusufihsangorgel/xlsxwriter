@@ -6,3 +6,6 @@ analyzer:
     # and cannot be a dependency of this package, so the analyzer here cannot
     # resolve those imports.
     - 'bench/competitors/**'
+    # Copied into the app .github/workflows/flutter-compat.yaml generates. Its
+    # Flutter imports resolve there and not in this package.
+    - 'tool/ci/integration_test/**'
